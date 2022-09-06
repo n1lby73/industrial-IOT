@@ -1,2 +1,2 @@
 # industrial-IOT
-merging internet if things for industrial motor control 
+merging internet of things for industrial motor control 
