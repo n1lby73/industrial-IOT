@@ -18,7 +18,7 @@ class esp32(db.Model):
 
     __tablename__ = 'motor'
     id = db.Column(db.Integer, primary_key = True)
-    # esp32pin = db.Column(db.String(2), nullable = True)
+    esp32pin = db.Column(db.String(2), nullable = True)
     switchState = db.Column(db.String(2), nullable = True)
 
     def __repr__(self):
