@@ -6,7 +6,12 @@ const handleButtonClick = () => {
   if (button.innerHTML === "ON") {
 
     button.innerHTML = "OFF";
-    data = { state: 1 };
+    data = { 
+      
+      state: 1,
+      pin : 5
+
+    };
     rotateImage.classList.toggle("rotate");
     document.title = 'running'
 
@@ -15,7 +20,12 @@ const handleButtonClick = () => {
   else {
 
     button.innerHTML = "ON";
-    data = { state: 0 };
+    data = {
+
+      state: 0,
+      pin : 5
+      
+    };
     rotateImage.classList.remove("rotate");
     document.title = 'halted'
 
