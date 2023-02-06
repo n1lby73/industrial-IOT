@@ -18,7 +18,7 @@ class esp32(db.Model):
 
     __tablename__ = 'motor'
     id = db.Column(db.Integer, primary_key = True)
-    esp32pin = db.Column(db.String(2), nullable = True)
+    esp32pin = db.Column(db.String(2), nullable = True, unique = True)
     switchState = db.Column(db.String(2), nullable = True)
 
     def __repr__(self):
@@ -40,13 +40,14 @@ def btn():
     
     data = request.get_json()
     status = data['state']
+    pin = data['pin']
     
-    print (esp32.query.filter_by(id=1))
+    # print (esp32.query.filter_by(id=1))
     # column = esp32.query.get(motor_id)
     # column.switchstate = status
-    # new_value = esp32(switchState=status)
+    new_value = esp32(switchState=status, esp32pin=pin)
 
-    # db.session.add(new_value)
+    db.session.add(new_value)
     db.session.commit()
     
     return jsonify(success=True)
