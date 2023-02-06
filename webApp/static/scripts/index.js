@@ -6,6 +6,7 @@ const handleButtonClick = () => {
 
     button.innerHTML = "OFF";
     data = { state: 1 };
+    document.title = 'running'
 
   } 
   
@@ -13,6 +14,7 @@ const handleButtonClick = () => {
 
     button.innerHTML = "ON";
     data = { state: 0 };
+    document.title = 'halted'
 
   }
 
