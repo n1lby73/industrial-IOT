@@ -6,7 +6,24 @@ body {
     height: 109vh;
 }
 
-
+#rotate-image {
+    transform-origin: center center;
+  }
+  
+  .rotate {
+    animation: rotation 2s infinite linear;
+    animation-delay: 0s;
+  }
+  
+  @keyframes rotation {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
 .parentDiv {
     display: contents;
     justify-content: center;
