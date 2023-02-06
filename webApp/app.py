@@ -16,12 +16,12 @@ db = SQLAlchemy(app)
 
 class esp32(db.Model):
 
-    __tablename__ = 'motorControls'
+    __tablename__ = 'Emotor'
     id = db.Column(db.Integer, primary_key = True)
     switchState = db.Column(db.String(2), nullable = True)
 
-    # def __repr__(self):
-    #     return (f"esp32('{self.switch}')")
+    def __repr__(self):
+        return (f"esp32('{self.switch}')")
 
 
 @app.route('/')
