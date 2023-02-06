@@ -1,88 +1,33 @@
-// const button = document.getElementById('on');
-// const button2 = document.getElementById('off');
+const button = document.querySelector('#toggleBtn');
 
+const handleButtonClick = () => {
+  let data = {};
+  if (button.innerHTML === "ON") {
 
-let button1 = document.querySelector('#on');
-let button2 = document.querySelector('#off');
+    button.innerHTML = "OFF";
+    data = { state: 1 };
 
-button2.addEventListener('click', () => {
-    console.log("here");
+  } 
+  
+  else {
 
-    var data = { 
-    
-        "btnvalue": 0,
-                
-    };
-        
-    fetch('/btn', {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: { 'Content-Type': 'application/json' }
-    })
-    .then(response => {
-        if (response.ok){
-            console.log(response.status);
-            console.log("Request succeeded");
-            return response.json();
-        }
-        
-        else{
-        
-            console.log("error sending data");
-        }
-    })
-    .then(data => {
-        if (data.success === true){
-            console.log("succ");
-            window.location.replace('/');
-        }
-        
-        else{
-                        
-            console.log(data);
-            console.log("i won't redirect");
-        }
-    })
-    .catch(error => console.error(error));
-});
+    button.innerHTML = "ON";
+    data = { state: 0 };
 
-button1.addEventListener('click', () => {
-    console.log("got here")
-    var data = { 
-    
-        "btnvalue": 1,
-                
-    };
-        
-    fetch('/btn', {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: { 'Content-Type': 'application/json' }
-    })
-    .then(response => {
-        if (response.ok){
-            console.log(response.status);
-            console.log("Request succeeded");
-            return response.json();
-        }
-        
-        else{
-        
-            console.log("error sending data");
-        }
-    })
-    .then(data => {
-        if (data.success === true){
-            console.log("succ");
-            window.location.replace('/on');
-        }
-        
-        else{
-                        
-            console.log(data);
-            console.log("i won't redirect");
-        }
-    })
+  }
+
+  fetch('/btn', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  })
+
+    .then(res => res.json())
+    .then(data => console.log(data))
     .catch(error => console.error(error));
 
-});
+};
+
+button.addEventListener('click', handleButtonClick);
