@@ -19,8 +19,8 @@ def btn():
         return redirect(url_for('index'))
     
     data = request.get_json()
-    state = data['btnvalue']
-    print(data['btnvalue'])
+    # state = data['btnvalue']
+    print(data['state'])
     return jsonify(success=True)
 
 
