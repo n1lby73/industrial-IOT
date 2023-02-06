@@ -12,14 +12,14 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URI")
 
 db = SQLAlchemy(app)
 
-class linkAppDb(db.Model):
+class esp32(db.Model):
 
     __tablename__ = 'motorControls'
     id = db.Column(db.Integer, primary_key = True)
-    switch = db.Column(db.String(2), nullable = True)
+    switchState = db.Column(db.String(2), nullable = True)
 
     # def __repr__(self):
-    #     return (f"linkAppDb('{self.switch}')")
+    #     return (f"esp32('{self.switch}')")
 
 
 @app.route('/')
@@ -37,7 +37,12 @@ def btn():
     
     data = request.get_json()
     status = data['state']
-    print(status)
+    
+    new_value = esp32(switchState=status)
+
+    db.session.add(new_value)
+    db.session.commit()
+    
     return jsonify(success=True)
 
 
