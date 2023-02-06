@@ -1,9 +1,26 @@
 from flask import Flask, render_template, url_for, request, redirect, jsonify
+from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
 
 app = Flask(__name__)
+app.app_context().push()
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URI")
+
+db = SQLAlchemy(app)
+
+class linkAppDb(db.Model):
+
+    __tablename__ = 'motorControls'
+    id = db.Column(db.Integer, primary_key = True)
+    switch = db.Column(db.String(2), nullable = True)
+
+    # def __repr__(self):
+    #     return (f"linkAppDb('{self.switch}')")
+
 
 @app.route('/')
 def index():
@@ -19,8 +36,8 @@ def btn():
         return redirect(url_for('index'))
     
     data = request.get_json()
-    # state = data['btnvalue']
-    print(data['state'])
+    status = data['state']
+    print(status)
     return jsonify(success=True)
 
 
