@@ -1,4 +1,5 @@
 const button = document.querySelector('#toggleBtn');
+const rotateImage = document.getElementById("rotate");
 
 const handleButtonClick = () => {
   let data = {};
@@ -6,6 +7,7 @@ const handleButtonClick = () => {
 
     button.innerHTML = "OFF";
     data = { state: 1 };
+    rotateImage.classList.toggle("rotate");
     document.title = 'running'
 
   } 
@@ -14,6 +16,7 @@ const handleButtonClick = () => {
 
     button.innerHTML = "ON";
     data = { state: 0 };
+    rotateImage.classList.remove("rotate");
     document.title = 'halted'
 
   }
