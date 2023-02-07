@@ -23,15 +23,11 @@ class esp32(db.Model):
 
     def __repr__(self):
         return f'<esp32 {self.esp32pin} {self.switchState}>'
-        
+
 
 @app.route('/')
 def index():
     return render_template("index.html")
-
-@app.route('/on')
-def on():
-    return render_template("run.html")
 
 @app.route('/btn', methods=['POST', 'GET'])
 def btn():
