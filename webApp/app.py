@@ -43,14 +43,29 @@ def btn():
     status = data['state']
     pin = data['pin']
 
-    test = (esp32.query.filter_by(esp32pin='5').first())
-    if test.esp32pin == '5':
-        print ("work")
+    try:
 
-    new_value = esp32(switchState=status, esp32pin=pin)
+        query = (esp32.query.filter_by(esp32pin='5').first())
 
-    db.session.add(new_value)
-    db.session.commit()
+        if query.esp32pin == '5':
+
+            # esp32.data[status] = data[status]
+            # db.session.merge(esp32)
+            esp32.switchState = status
+            # new_value = esp32.switchState
+            # print (esp32.switchState)
+            # db.session.add(new_value)
+            # db.session.merge(esp32)
+            db.session.commit()
+            # db.session.commit()
+            print (esp32.switchState)
+
+    except:
+
+        new_value = esp32(switchState=status, esp32pin=pin)
+
+        db.session.add(new_value)
+        db.session.commit()
     
     return jsonify(success=True)
 
