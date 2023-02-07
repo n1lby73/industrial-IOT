@@ -43,7 +43,9 @@ def btn():
     status = data['state']
     pin = data['pin']
 
-    print (motor.query.filter_by(motor_esp32pin=pin).first())
+    test = (esp32.query.filter_by(esp32pin='5').first())
+    if test.esp32pin == '5':
+        print ("work")
     # if esp32.get_by_esp32pin(pin) == True:
     #     print ("work")
     # else:
