@@ -22,7 +22,8 @@ class esp32(db.Model):
     switchState = db.Column(db.String(2), nullable = True)
 
     def __repr__(self):
-        return (f"esp32('{self.switch}')")
+        return f'<esp32 {self.esp32pin} {self.switchState}>'
+        # return (f"esp32('{self.switch}')")
 
 
 @app.route('/')
@@ -41,6 +42,12 @@ def btn():
     data = request.get_json()
     status = data['state']
     pin = data['pin']
+
+    print (motor.query.filter_by(motor_esp32pin=pin).first())
+    # if esp32.get_by_esp32pin(pin) == True:
+    #     print ("work")
+    # else:
+    #     print("nope")
     
     # print (esp32.query.filter_by(id=1))
     # column = esp32.query.get(motor_id)
