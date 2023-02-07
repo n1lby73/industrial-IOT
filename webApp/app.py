@@ -1,5 +1,6 @@
 from flask import Flask, render_template, url_for, request, redirect, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from flask_socketio import SocketIO
 from dotenv import load_dotenv
 import os
 
@@ -13,6 +14,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
 db = SQLAlchemy(app)
+socketio = SocketIO(app)
 
 class esp32(db.Model):
 
