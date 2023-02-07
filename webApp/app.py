@@ -37,7 +37,7 @@ def query():
     query = esp32.query.filter_by(esp32pin='5').first()
     state = query.switchState
     print (state)
-    return jsonify(state)
+    return jsonify(success = state)
 
 
 @app.route('/btn', methods=['POST', 'GET'])
