@@ -66,7 +66,7 @@ function synchronize(){
         console.log("error sending data");
     }
   })
-  
+
   .then(data => {
     console.log(data.success)
     if (data.success == 1){
@@ -89,14 +89,7 @@ function synchronize(){
   })
     .catch(error => console.error(error));
 }
-// const onload = () => {
-  
-//   fetch('/query', {
 
-//     method: 'POST',
-//     headers: {'Content-Type': 'application/json'}
-
-//   })
 
 //     .then(res => res.json())
 
