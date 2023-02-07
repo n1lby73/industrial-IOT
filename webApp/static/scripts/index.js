@@ -2,7 +2,7 @@ const button = document.querySelector('#toggleBtn');
 const rotateImage = document.getElementById("rotate");
 
 const handleButtonClick = () => {
-  
+
   let data = {};
 
   if (button.innerHTML === "ON") {
@@ -37,16 +37,12 @@ const handleButtonClick = () => {
   }
 
   fetch('/btn', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
-  })
 
-    .then(res => res.json())
-    .then(data => console.log(data))
-    .catch(error => console.error(error));
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(data)
+    
+  })
 
 };
 
