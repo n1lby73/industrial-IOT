@@ -23,8 +23,7 @@ class esp32(db.Model):
 
     def __repr__(self):
         return f'<esp32 {self.esp32pin} {self.switchState}>'
-        # return (f"esp32('{self.switch}')")
-
+        
 
 @app.route('/')
 def index():
