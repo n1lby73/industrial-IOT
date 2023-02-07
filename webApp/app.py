@@ -36,7 +36,7 @@ def query():
 
     query = esp32.query.filter_by(esp32pin='5').first()
     state = query.switchState
-    print (state)
+
     return jsonify(success = state)
 
 
