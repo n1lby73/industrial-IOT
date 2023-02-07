@@ -3,9 +3,11 @@ const rotateImage = document.getElementById("rotate");
 
 const handleButtonClick = () => {
   let data = {};
+
   if (button.innerHTML === "ON") {
 
     button.innerHTML = "OFF";
+    
     data = { 
       
       state: 1,
@@ -55,10 +57,13 @@ function synchronize(){
   })
 
   .then(response => {
+
     if (response.ok){
+
         console.log(response.status);
         console.log("Request succeeded");
         return response.json();
+
     }
 
     else{
@@ -68,6 +73,7 @@ function synchronize(){
   })
 
   .then(data => {
+
     console.log(data.success)
     if (data.success == 1){
 
@@ -87,51 +93,9 @@ function synchronize(){
     }
 
   })
+
     .catch(error => console.error(error));
+
 }
 
-
-//     .then(res => res.json())
-
-//     .then(data => {
-//       if (data.state == 1){
-
-//         button.innerHTML = "OFF";
-
-//         rotateImage.classList.toggle("rotate");
-//         document.title = 'running'
-//       }
-
-//       else {
-
-//         button.innerHTML = "ON";
-    
-//         rotateImage.classList.remove("rotate");
-//         document.title = 'halted'
-    
-//       }
-
-//     })
-//     .catch(error => console.error(error));
-
-//   // if (button.innerHTML === "ON") {
-
-//   //   button.innerHTML = "OFF";
-
-//   //   rotateImage.classList.toggle("rotate");
-//   //   document.title = 'running'
-//   // }
-
-//   // else {
-
-//   //   button.innerHTML = "ON";
-
-//   //   rotateImage.classList.remove("rotate");
-//   //   document.title = 'halted'
-
-//   // }
-
-// }
-
 button.addEventListener('click', handleButtonClick);
-// window.addEventListener('unload',onload)
