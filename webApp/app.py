@@ -46,14 +46,7 @@ def btn():
     test = (esp32.query.filter_by(esp32pin='5').first())
     if test.esp32pin == '5':
         print ("work")
-    # if esp32.get_by_esp32pin(pin) == True:
-    #     print ("work")
-    # else:
-    #     print("nope")
-    
-    # print (esp32.query.filter_by(id=1))
-    # column = esp32.query.get(motor_id)
-    # column.switchstate = status
+
     new_value = esp32(switchState=status, esp32pin=pin)
 
     db.session.add(new_value)
