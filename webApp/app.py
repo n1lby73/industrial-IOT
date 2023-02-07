@@ -27,7 +27,18 @@ class esp32(db.Model):
 
 @app.route('/')
 def index():
+
     return render_template("index.html")
+
+
+@app.route('/query', methods=['POST', 'GET'])
+def query():
+
+    query = esp32.query.filter_by(esp32pin='5').first()
+    state = query.switchState
+    print (state)
+    return jsonify(state)
+
 
 @app.route('/btn', methods=['POST', 'GET'])
 def btn():
