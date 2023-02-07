@@ -63,24 +63,3 @@ def btn():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True, port=3565)
-
-    # try:
-
-    #     query = (esp32.query.filter_by(esp32pin='5').first())
-    #     print(query)
-
-    #     if query.esp32pin == '5':
-
-    #         # esp32.data[status] = data[status]
-    #         # db.session.merge(esp32)
-    #     # esp32.switchState = 1 if query.switchState == 0 else 0
-    #         esp32.switchState = status
-    #         # new_value = esp32.switchState
-    #         # print (esp32.switchState)
-    #         # db.session.add(new_value)
-    #         # db.session.merge(esp32)
-    #         db.session.commit()
-    #         # db.session.commit()
-    #         print (esp32.switchState)
-    # else:
-    # # except:
