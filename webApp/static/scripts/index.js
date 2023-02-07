@@ -45,4 +45,26 @@ const handleButtonClick = () => {
 
 };
 
+// const onload = () => {
+  
+//   if (button.innerHTML === "ON") {
+
+//     button.innerHTML = "OFF";
+
+//     rotateImage.classList.toggle("rotate");
+//     document.title = 'running'
+//   }
+
+//   else {
+
+//     button.innerHTML = "ON";
+
+//     rotateImage.classList.remove("rotate");
+//     document.title = 'halted'
+
+//   }
+
+// }
+
 button.addEventListener('click', handleButtonClick);
+// window.addEventListener('unload',onload)
