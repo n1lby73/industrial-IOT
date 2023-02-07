@@ -2,18 +2,20 @@ const button = document.querySelector('#toggleBtn');
 const rotateImage = document.getElementById("rotate");
 
 const handleButtonClick = () => {
+  
   let data = {};
 
   if (button.innerHTML === "ON") {
 
     button.innerHTML = "OFF";
-    
+
     data = { 
       
       state: 1,
       pin : 5
 
     };
+
     rotateImage.classList.toggle("rotate");
     document.title = 'running'
 
@@ -28,6 +30,7 @@ const handleButtonClick = () => {
       pin : 5
       
     };
+
     rotateImage.classList.remove("rotate");
     document.title = 'halted'
 
@@ -60,8 +63,6 @@ function synchronize(){
 
     if (response.ok){
 
-        console.log(response.status);
-        console.log("Request succeeded");
         return response.json();
 
     }
@@ -74,7 +75,6 @@ function synchronize(){
 
   .then(data => {
 
-    console.log(data.success)
     if (data.success == 1){
 
       button.innerHTML = "OFF";
