@@ -45,26 +45,56 @@ const handleButtonClick = () => {
 
 };
 
-// const onload = () => {
+const onload = () => {
   
-//   if (button.innerHTML === "ON") {
+  fetch('/query', {
 
-//     button.innerHTML = "OFF";
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'}
 
-//     rotateImage.classList.toggle("rotate");
-//     document.title = 'running'
-//   }
+  })
 
-//   else {
+    .then(res => res.json())
+    
+    .then(data => {
+      if (data.state == 1){
 
-//     button.innerHTML = "ON";
+        button.innerHTML = "OFF";
 
-//     rotateImage.classList.remove("rotate");
-//     document.title = 'halted'
+        rotateImage.classList.toggle("rotate");
+        document.title = 'running'
+      }
 
-//   }
+      else {
 
-// }
+        button.innerHTML = "ON";
+    
+        rotateImage.classList.remove("rotate");
+        document.title = 'halted'
+    
+      }
+
+    })
+    .catch(error => console.error(error));
+
+  // if (button.innerHTML === "ON") {
+
+  //   button.innerHTML = "OFF";
+
+  //   rotateImage.classList.toggle("rotate");
+  //   document.title = 'running'
+  // }
+
+  // else {
+
+  //   button.innerHTML = "ON";
+
+  //   rotateImage.classList.remove("rotate");
+  //   document.title = 'halted'
+
+  // }
+
+}
 
 button.addEventListener('click', handleButtonClick);
-// window.addEventListener('unload',onload)
+window.addEventListener('unload',onload)
