@@ -28,6 +28,18 @@ void setup(){
 }
 
 void loop() {
+
+//   Use WiFiClient class to create TCP connections
+
+  WiFiClient client;
+
+  if (!client.connect(host, port)) {
+
+    Serial.println("connection failed");
+    delay(5000);
+    return;
+    
+  }  
   
   client.println("GET / HTTP/1.1");
   client.println("Host: 127.0.0.1:3333");
