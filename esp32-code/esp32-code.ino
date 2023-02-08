@@ -50,8 +50,11 @@ void loop() {
 
   // Read the response from the server
 
-  while (client.available()) {
+  int timeOut = 0;
+  
+  while (client.available() && timeOut < 60000) {
 
+    timeOut ++;
     String value = client.readString();
     Serial.println(value);
 
