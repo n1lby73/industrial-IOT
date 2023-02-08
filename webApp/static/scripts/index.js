@@ -1,5 +1,6 @@
 const button = document.querySelector('#toggleBtn');
 const rotateImage = document.getElementById("rotate");
+// const socket = io.connect('http://localhost:5000'); //url currently subject to change
 
 const handleButtonClick = () => {
 
@@ -41,7 +42,7 @@ const handleButtonClick = () => {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(data)
-    
+
   })
 
 };
@@ -93,5 +94,20 @@ function synchronize(){
     .catch(error => console.error(error));
 
 }
+
+// socket.on('switchState', data => {
+  // Update page with data received from server
+// });
+
+// socket = io()
+// socket.connect('/realtime')
+// socket.on('connect',function(){
+//   console.log(here)
+//   socket.send('a');
+// })
+// socket.on('message',function(state){
+//   console.log("here also")
+//   // socket.send('a');
+// })
 
 button.addEventListener('click', handleButtonClick);

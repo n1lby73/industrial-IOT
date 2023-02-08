@@ -1,6 +1,6 @@
 from flask import Flask, render_template, url_for, request, redirect, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, send
 from dotenv import load_dotenv
 import os
 
@@ -10,6 +10,7 @@ app = Flask(__name__)
 app.app_context().push()
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URI")
+app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
@@ -40,6 +41,14 @@ def query():
     state = query.switchState
 
     return jsonify(success = state)
+
+# @socketio.on('realtime')
+# def realtime_update(value):
+
+#     query = esp32.query.filter_by(esp32pin='5').first()
+#     state = query.switchState
+#     print(value)
+#     send(state, broadcast=True)
 
 
 @app.route('/btn', methods=['POST', 'GET'])
@@ -72,4 +81,5 @@ def page_not_found(e):
     return render_template('404.html')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True, port=3565)
+    socketio.run(app)
+    # app.run(host='0.0.0.0', debug=True, port=3565)
