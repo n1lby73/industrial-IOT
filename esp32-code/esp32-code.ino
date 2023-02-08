@@ -53,7 +53,7 @@ void loop() {
 
   int timeOut = 0;
   
-  while (client.available() && timeOut < 60000) {
+  while (!client.available() && timeOut < 60000) {
 
     timeOut ++;
     delay(minDt);
