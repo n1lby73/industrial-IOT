@@ -20,7 +20,8 @@ void setup(){
   while (WiFi.status() != WL_CONNECTED) {
 
      delay(dt);
-     Serial.print(".");
+     Serial.print("Connecting to Wifi network...");
+     Serial.println(".");
 
   }
   
@@ -61,7 +62,7 @@ void loop() {
   }
 
   // Read data from the buffer
-  
+
   if (client.available() > 0){
   
     String value = client.readString();
