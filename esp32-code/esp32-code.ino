@@ -1,7 +1,7 @@
 #include <ESP8266WiFi.h>
 
-int dt_out = 25;
-int dt = 5000;
+int dt_out = 25; //dt_out ==> delay timer out (out denoting the end of the void loop)
+int dt = 5000; //dt ==> delay timer
 
 #define ssid "esp8266"
 #define password "forTheLoveOfEmbededSystem"
@@ -42,15 +42,21 @@ void loop() {
 
   }  
   
+  // Make a POST request to the server
+
   client.println("GET / HTTP/1.1");
   client.println("Host: 127.0.0.1:3333");
   client.println();
 
   // Read the response from the server
+
   while (client.available()) {
+
     String line = client.readStringUntil('\n');
     Serial.println(line);
+
   }
 
   delay (dt_out);
+  
 }
