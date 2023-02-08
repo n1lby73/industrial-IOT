@@ -1,6 +1,6 @@
 #include <ESP8266WiFi.h>
 
-int dt = 500;
+int dt_out = 25;
 
 #define ssid "esp8266"
 #define password "forTheLoveOfEmbededSystem"
@@ -38,7 +38,7 @@ void loop() {
     Serial.println("connection failed");
     delay(5000);
     return;
-    
+
   }  
   
   client.println("GET / HTTP/1.1");
