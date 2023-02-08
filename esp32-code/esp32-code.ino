@@ -44,7 +44,7 @@ void loop() {
   
   // Make a POST request to the server
 
-  client.println("GET / HTTP/1.1");
+  client.println("POST / HTTP/1.1");
   client.println("Host: 127.0.0.1:3333");
   client.println();
 
@@ -52,11 +52,11 @@ void loop() {
 
   while (client.available()) {
 
-    String line = client.readStringUntil('\n');
-    Serial.println(line);
+    String value = client.readString();
+    Serial.println(value);
 
   }
 
   delay (dt_out);
-  
+
 }
