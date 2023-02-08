@@ -1,6 +1,7 @@
 #include <ESP8266WiFi.h>
 
 int dt_out = 25;
+int dt = 5000;
 
 #define ssid "esp8266"
 #define password "forTheLoveOfEmbededSystem"
