@@ -3,6 +3,7 @@ sqlalchemy
 flask_sqlalchemy
 python-dotenv
 flask-socketio
+flask-sock
 # flask-mail
 # flask-WTF
 psycopg2-binary
