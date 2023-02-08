@@ -37,6 +37,9 @@ def index():
 @app.route('/query', methods=['POST', 'GET'])
 def query():
 
+    if request.method != 'POST':
+        return redirect(url_for('index'))
+        
     query = esp32.query.filter_by(esp32pin='5').first()
     state = query.switchState
 
