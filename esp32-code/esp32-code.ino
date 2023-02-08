@@ -3,12 +3,10 @@
 int dt = 500;
 
 #define ssid "esp8266"
-#define password "stancyleemallstancy"
+#define password "forTheLoveOfEmbededSystem"
 
-#define host "192.168.47.87"
+#define host "192.168.11.87" //host subject to change always untill app is hosted
 int port = 3565;
-
-WiFiClient client;
 
 void setup(){ 
 
@@ -26,13 +24,6 @@ void setup(){
   
   Serial.println("");
   Serial.println("WiFi connected");
-  Serial.println(WiFi.localIP());
-
-  if (!client.connect(host,port)) {
-    Serial.println("Connection to server failed");
-    return;
-  }
-  Serial.println("Connected to server");
   
 }
 
