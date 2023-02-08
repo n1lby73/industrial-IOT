@@ -60,6 +60,8 @@ void loop() {
 
   }
 
+  // Read data from the buffer
+  
   if (client.available() > 0){
   
     String value = client.readString();
