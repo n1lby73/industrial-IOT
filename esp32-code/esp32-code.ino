@@ -6,7 +6,7 @@ int dt = 5000; //dt ==> delay timer
 #define ssid "esp8266"
 #define password "forTheLoveOfEmbededSystem"
 
-#define host "192.168.11.87" //host subject to change always untill app is hosted
+#define host "192.168.115.87" //host subject to change always untill app is hosted
 int port = 3565;
 
 void setup(){ 
