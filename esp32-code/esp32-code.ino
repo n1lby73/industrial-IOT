@@ -55,9 +55,20 @@ void loop() {
   while (client.available() && timeOut < 60000) {
 
     timeOut ++;
+
+  }
+
+  if (client.available() > 0){
+  
     String value = client.readString();
     Serial.println(value);
 
+  }
+
+  else{
+
+    Serial.println("client.available() timed out ");
+    
   }
 
   delay (dt_out);
