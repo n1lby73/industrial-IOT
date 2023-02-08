@@ -50,4 +50,6 @@ void loop() {
     String line = client.readStringUntil('\n');
     Serial.println(line);
   }
+
+  delay (dt_out);
 }
