@@ -2,6 +2,7 @@
 
 int dt_out = 25; //dt_out ==> delay timer out (out denoting the end of the void loop)
 int dt = 5000; //dt ==> delay timer
+int minDt = 0.5; //minDt ==> minimum timer
 
 #define ssid "esp8266"
 #define password "forTheLoveOfEmbededSystem"
@@ -55,6 +56,7 @@ void loop() {
   while (client.available() && timeOut < 60000) {
 
     timeOut ++;
+    delay(minDt);
 
   }
 
@@ -68,7 +70,7 @@ void loop() {
   else{
 
     Serial.println("client.available() timed out ");
-    
+
   }
 
   delay (dt_out);
