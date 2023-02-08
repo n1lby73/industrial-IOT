@@ -48,7 +48,7 @@ void loop() {
   client.println("Host: 127.0.0.1:3333");
   client.println();
 
-  // Read the response from the server
+  // Check for response from the server
 
   int timeOut = 0;
   
