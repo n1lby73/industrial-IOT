@@ -19,7 +19,7 @@ int eMotorStartPin  = LED_BUILTIN;
 #define ssid "esp8266"
 #define password "forTheLoveOfEmbededSystem"
 
-const char* serverIP = "192.168.169.87"; //host subject to change always untill app is hosted
+const char* serverIP = "192.168.203.87"; //host subject to change always untill app is hosted
 const int serverPort = 3565; 
 
 void setup(){ 
