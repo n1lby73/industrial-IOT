@@ -7,21 +7,24 @@
 
 #include <ESP8266WiFi.h>
 #include <ArduinoJson.h>
+#include <ESP8266HTTPClient.h>
 
 int dt_out = 25; //dt_out ==> delay timer out (out denoting the end of the void loop)
 int dt = 5000; //dt ==> delay timer
 int minDt = 0.5; //minDt ==> minimum timer
 int eMotorStartPin  = LED_BUILTIN;
+int led = 4;
 
 #define ssid "esp8266"
 #define password "forTheLoveOfEmbededSystem"
 
-#define host "192.168.115.87" //host subject to change always untill app is hosted
+#define host "192.168.245.87" //host subject to change always untill app is hosted
 int port = 3565;
 
 void setup(){ 
 
   pinMode(eMotorStartPin, OUTPUT);
+  pinMode(led, OUTPUT);
 
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
@@ -80,7 +83,9 @@ void loop() {
     //Striped out json object
 
     int json = value.indexOf("{");
-    String jsonData = value.substring(json);    
+    String jsonData = value.substring(json); 
+    Serial.print("data ==> ");
+    Serial.println(jsonData);   
 
     // Re-assign json object to a usable json method in esp
 
@@ -101,12 +106,14 @@ void loop() {
       if (motorState == 1){
 
         digitalWrite(eMotorStartPin, HIGH);
+        digitalWrite(led, HIGH);
       
       }
 
       else{
 
         digitalWrite(eMotorStartPin,LOW);
+        digitalWrite(led, LOW);
 
       }    
 
