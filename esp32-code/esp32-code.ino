@@ -66,7 +66,7 @@ void syncHardChanges(){
   HTTPClient http;
   WiFiClient client;
 
-  String url = "http://" + String(serverIP) + ":" + String(serverPort) + "/syncHardChanges";
+  String url = "http://" + String(serverIP) + ":" + String(serverPort) + "/synchardchanges";
 
   http.begin(client, url);
 
@@ -109,7 +109,7 @@ void setup(){
 void loop() {
 
   hardChanges();
-  
+
   // Check if wifi is connected
 
   if (WiFi.status() == WL_CONNECTED){
