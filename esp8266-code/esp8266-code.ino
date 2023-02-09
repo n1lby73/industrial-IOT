@@ -1,3 +1,11 @@
+/*
+  Refrence:
+
+    WiFiClient (Arduino pre-built example)
+    WiFiClientBasic (Arduino pre-built exaample)
+    
+*/
+
 #include <ESP8266WiFi.h>
 
 int dt_out = 25; //dt_out ==> delay timer out (out denoting the end of the void loop)
