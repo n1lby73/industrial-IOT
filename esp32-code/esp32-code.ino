@@ -18,6 +18,7 @@ int minDt = 0.5; //minDt ==> minimum timer
 int wifiDt = 5000;
 
 int eMotorStartPin  = 26;
+int pb = 27;
 
 #define ssid "esp8266"
 #define password "forTheLoveOfEmbededSystem"
@@ -28,6 +29,7 @@ const int serverPort = 3565;
 void setup(){ 
 
   pinMode(eMotorStartPin, OUTPUT);
+  pinMode(pb, INPUT);
 
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
@@ -37,8 +39,10 @@ void setup(){
   while (WiFi.status() != WL_CONNECTED) {
 
      delay(wifiDt);
-     Serial.print("Connecting to Wifi network...");
+     Serial.print("Connecting to "+String(ssid)+" Wifi network");
      Serial.println(".");
+
+
 
   }
   
