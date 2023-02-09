@@ -77,10 +77,14 @@ void loop() {
   
     String value = client.readString();
 
+    //Striped out json object
+
     int json = value.indexOf("{");
     String jsonData = value.substring(json);    
 
-    StaticJsonDocument<200> doc;
+    // Re-assign json object to a usable json method in esp
+
+    DynamicJsonDocument doc(200);
     DeserializationError error = deserializeJson(doc, jsonData);
 
     if (error) {
@@ -92,7 +96,9 @@ void loop() {
 
     int motorState = doc["success"];
 
-     if (motorState == 1){
+      // Make decisions base on the key of the json object(dictionary)
+
+      if (motorState == 1){
 
         digitalWrite(eMotorStartPin, HIGH);
       
