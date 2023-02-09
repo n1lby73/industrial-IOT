@@ -2,6 +2,7 @@
   Refrence:
     WiFiClient (Arduino pre-built example)
     WiFiClientBasic (Arduino pre-built exaample)
+    Httpclient (Arduino pre-built example)
     
 */
 
@@ -10,21 +11,20 @@
 #include <ESP8266HTTPClient.h>
 
 int dt_out = 25; //dt_out ==> delay timer out (out denoting the end of the void loop)
-int dt = 5000; //dt ==> delay timer
 int minDt = 0.5; //minDt ==> minimum timer
+int wifiDt = 5000;
+
 int eMotorStartPin  = LED_BUILTIN;
-int led = 4;
 
 #define ssid "esp8266"
 #define password "forTheLoveOfEmbededSystem"
 
-#define host "192.168.245.87" //host subject to change always untill app is hosted
-int port = 3565;
+const char* serverIP = "192.168.169.87"; //host subject to change always untill app is hosted
+const int serverPort = 3565; 
 
 void setup(){ 
 
   pinMode(eMotorStartPin, OUTPUT);
-  pinMode(led, OUTPUT);
 
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
@@ -33,7 +33,7 @@ void setup(){
   
   while (WiFi.status() != WL_CONNECTED) {
 
-     delay(dt);
+     delay(wifiDt);
      Serial.print("Connecting to Wifi network...");
      Serial.println(".");
 
@@ -46,82 +46,77 @@ void setup(){
 
 void loop() {
 
-//   Use WiFiClient class to create TCP connections
+  // Check if wifi is connected
 
-  WiFiClient client;
+  if (WiFi.status() == WL_CONNECTED){
 
-  if (!client.connect(host, port)) {
+    // Use WiFiClient and HTTPclient class to create TCP connections
 
-    Serial.println("connection failed");
-    delay(5000);
-    return;
+    HTTPClient http;
+    WiFiClient client;
 
-  }  
-  
-  // Make a POST request to the server
+    String url = "http://" + String(serverIP) + ":" + String(serverPort) + "/query";
 
-  client.println("POST /query HTTP/1.1");
-  client.println();
+    http.begin(client, url);
 
-  // Check for response from the server
+    int httpCode = http.POST("");
 
-  int timeOut = 0;
-  
-  while (!client.available() && timeOut < 60000) {
+    if (httpCode > 0){
 
-    timeOut ++;
-    delay(minDt);
+      String payload = http.getString();
 
-  }
+      int json = payload.indexOf("{");
+      String jsonData = payload.substring(json);
 
-  // Read data from the buffer
+      DynamicJsonDocument doc(200);
+      DeserializationError error = deserializeJson(doc, jsonData);
 
-  if (client.available() > 0){
-  
-    String value = client.readString();
-
-    //Striped out json object
-
-    int json = value.indexOf("{");
-    String jsonData = value.substring(json); 
-    Serial.print("data ==> ");
-    Serial.println(jsonData);   
-
-    // Re-assign json object to a usable json method in esp
-
-    DynamicJsonDocument doc(200);
-    DeserializationError error = deserializeJson(doc, jsonData);
-
-    if (error) {
+      if (error) {
 
       Serial.println("Deserialization failed: " + String(error.c_str()));
       return;
 
-    }
+      }
 
-    int motorState = doc["success"];
-
-      // Make decisions base on the key of the json object(dictionary)
+      int motorState = doc["success"];
 
       if (motorState == 1){
 
         digitalWrite(eMotorStartPin, HIGH);
-        digitalWrite(led, HIGH);
-      
+
       }
 
       else{
 
-        digitalWrite(eMotorStartPin,LOW);
-        digitalWrite(led, LOW);
+        digitalWrite(eMotorStartPin, LOW);
 
-      }    
+      }
 
+    }
+
+    else{
+
+      Serial.println("Error: " + String(httpCode));
+
+    }
+
+    http.end();
+    
   }
 
   else{
 
-    Serial.println("client.available() timed out ");
+    Serial.println("Wifi disconnected");
+    delay(wifiDt);
+
+    while (WiFi.status() != WL_CONNECTED) {
+
+      delay(wifiDt);
+      Serial.println("Reconnecting to "+String(ssid)+"....");
+
+    }
+
+    Serial.println("Connected to "+String(ssid));
 
   }
 
