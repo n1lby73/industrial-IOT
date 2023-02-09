@@ -1,6 +1,5 @@
 /*
   Refrence:
-
     WiFiClient (Arduino pre-built example)
     WiFiClientBasic (Arduino pre-built exaample)
     
@@ -55,7 +54,6 @@ void loop() {
   // Make a POST request to the server
 
   client.println("POST /query HTTP/1.1");
-  client.println("Host: 127.0.0.1:3333");
   client.println();
 
   // Check for response from the server
