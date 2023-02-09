@@ -14,17 +14,77 @@ int dt_out = 25; //dt_out ==> delay timer out (out denoting the end of the void 
 int minDt = 0.5; //minDt ==> minimum timer
 int wifiDt = 5000;
 
-int eMotorStartPin  = 26;
+int motor  = 26;
+int motorPb = 27;
+int pbStateOld;
+int pbStateNew;
+int localMotorState;
+int motorState;
 
+int syncSuccess;
 #define ssid "esp8266"
 #define password "forTheLoveOfEmbededSystem"
 
-const char* serverIP = "192.168.70.87"; //host subject to change always untill app is hosted
+const char* serverIP = "192.168.56.87"; //host subject to change always untill app is hosted
 const int serverPort = 3565; 
+
+// Function to constantly check for changes on the hardware
+
+void hardChanges(){
+
+  pbStateNew = digitalRead(motorPb);
+
+  if ((pbStateNew == 1) && (pbStateOld == 0)) {
+
+    if (localMotorState == 0) {
+
+      digitalWrite(motor, HIGH);
+      localMotorState = 1;
+
+    }
+
+    else {
+
+      digitalWrite(motor, LOW);
+      localMotorState = 0;
+
+    }
+  }
+
+  pbStateOld = pbStateNew;
+
+}
+
+void syncHardChanges(){
+
+  DynamicJsonDocument doc(200);
+  doc["motorState"] = localMotorState;
+
+  String jsonString;
+  serializeJson(doc, jsonString);
+
+  HTTPClient http;
+  WiFiClient client;
+
+  String url = "http://" + String(serverIP) + ":" + String(serverPort) + "/syncHardChanges";
+
+  http.begin(client, url);
+
+  int httpCode = http.POST(jsonString);
+
+  if (httpCode > 0){
+
+    localMotorState = motorState;
+
+  }
+
+  http.end();
+
+}
 
 void setup(){ 
 
-  pinMode(eMotorStartPin, OUTPUT);
+  pinMode(motor, OUTPUT);
 
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
@@ -37,6 +97,8 @@ void setup(){
      Serial.print("Connecting to Wifi network...");
      Serial.println(".");
 
+     hardChanges();
+
   }
   
   Serial.println("");
@@ -46,6 +108,8 @@ void setup(){
 
 void loop() {
 
+  hardChanges();
+  
   // Check if wifi is connected
 
   if (WiFi.status() == WL_CONNECTED){
@@ -78,17 +142,24 @@ void loop() {
 
       }
 
-      int motorState = doc["success"];
+      motorState = doc["success"];
+
+      if (motorState != localMotorState){
+
+        syncHardChanges();
+        return;
+
+      }
 
       if (motorState == 1){
 
-        digitalWrite(eMotorStartPin, HIGH);
+        digitalWrite(motor, HIGH);
 
       }
 
       else{
 
-        digitalWrite(eMotorStartPin, LOW);
+        digitalWrite(motor, LOW);
 
       }
 
@@ -114,9 +185,12 @@ void loop() {
       delay(wifiDt);
       Serial.println("Reconnecting to "+String(ssid)+"....");
 
+      hardChanges();
+
     }
 
     Serial.println("Connected to "+String(ssid));
+    syncHardChanges();
 
   }
 
