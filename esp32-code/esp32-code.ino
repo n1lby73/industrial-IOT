@@ -58,15 +58,15 @@ void hardChanges(){
 void syncHardChanges(){
 
   DynamicJsonDocument doc(200);
-  doc["motorState"] = localMotorState;
+  doc["state"] = localMotorState;
+  doc["pin"] = 5;
 
   String jsonString;
-  serializeJson(doc, jsonString);
 
   HTTPClient http;
   WiFiClient client;
 
-  String url = "http://" + String(serverIP) + ":" + String(serverPort) + "/synchardchanges";
+  String url = "http://" + String(serverIP) + ":" + String(serverPort) + "/btn";
 
   http.begin(client, url);
 
