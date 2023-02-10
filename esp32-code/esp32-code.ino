@@ -76,7 +76,7 @@ void syncHardChanges(){
 
   if (httpCode > 0){
 
-    localMotorState = motorState;
+    motorState = localMotorState;
     String payload = http.getString();
     int json = payload.indexOf("{");
     String jsonData = payload.substring(json);
@@ -151,7 +151,7 @@ void loop() {
       }
 
       motorState = doc["success"];
-
+      Serial.print
       if (motorState != localMotorState){
 
         syncHardChanges();
