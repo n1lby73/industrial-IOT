@@ -210,59 +210,66 @@ void loop() {
 
       delay(2000);
 
-      if (globalState == 0){
+      // if (globalState == 0){
 
-        if (motorState == 1){
+      //   if (motorState == 1){
 
-          digitalWrite(motor, motorState);
-          globalState = 1;
-          // return;
+      //     digitalWrite(motor, motorState);
+      //     globalState = 1;
+      //     // return;
 
-        }
+      //   }
 
-        if (localMotorState == 1){
+      //   if (localMotorState == 1){
 
-          digitalWrite(motor, localMotorState);
-          globalState = 1;
-          // return;
+      //     digitalWrite(motor, localMotorState);
+      //     globalState = 1;
+      //     // return;
 
-        }
-      }
+      //   }
+      // }
 
       // else {
 
-        if (motorState == 0){
+        // if (motorState == 0){
 
-          digitalWrite(motor, motorState);
-          globalState = 0;
-          // return;
+        //   digitalWrite(motor, motorState);
+        //   globalState = 0;
+        //   // return;
 
-        }
+        // }
 
-        if (localMotorState == 0){
+        // if (localMotorState == 0){
 
-          digitalWrite(motor, localMotorState);
-          globalState = 0;
-          // return;
+        //   digitalWrite(motor, localMotorState);
+        //   globalState = 0;
+        //   // return;
 
-        }
-
-      // }
-
-      // if (motorState == 1){
-      //   Serial.println("this block");
-      //   digitalWrite(motor, HIGH);
-      //   globalState = 1;
+        // }
 
       // }
 
-      // else{
-      //   Serial.println("this block2");
-      //   Serial.println("");
-      //   digitalWrite(motor, LOW);
-      //   globalState = 0;
+      if (motorState == 1){
 
-      // }
+        Serial.println("");
+        Serial.println("this block");
+        Serial.println("");
+        digitalWrite(motor, HIGH);
+        globalState = 1;
+
+        delay(1000);
+
+      }
+
+      else{
+
+        Serial.println("");
+        Serial.println("this block2");
+        Serial.println("");
+        digitalWrite(motor, LOW);
+        globalState = 0;
+        delay(1000);
+      }
       
       Serial.println("");
 
