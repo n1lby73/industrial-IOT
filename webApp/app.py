@@ -45,6 +45,28 @@ def query():
 
     return jsonify(success = state)
 
+@app.route('/synchardchanges', methods=['POST', 'GET'])
+def synchardchanges():
+
+    if request.method != 'POST':
+        return redirect(url_for('index'))
+    
+    data = request.get_json()
+    status = data['state']
+    pin = data['pin']
+
+    query = esp32.query.filter_by(esp32pin='5').first()
+    state = query.switchState
+
+    if state != status:
+
+        query.switchState = status
+        db.session.commit()
+        state = status
+
+    return jsonify(success = state)
+    # print(query.switchState)
+
 # @socketio.on('realtime')
 # def realtime_update(value):
 
@@ -64,7 +86,7 @@ def btn():
     pin = data['pin']
 
     query = esp32.query.filter_by(esp32pin='5').first()
-
+    
     if query:
 
         query.switchState = status
