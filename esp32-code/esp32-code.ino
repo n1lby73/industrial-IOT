@@ -117,9 +117,28 @@ void loop() {
   // Serial.println(localMotorState);
   hardChanges();
 
+  Serial.println("");
+
+  Serial.print("motor state @ start: ");
+  Serial.println(motorState);
+
+  Serial.print("local motor @ start: ");
+  Serial.println(localMotorState);
+
+  delay(2000);
   // Check if wifi is connected
 
   if (WiFi.status() == WL_CONNECTED){
+
+    Serial.println("");
+
+    Serial.print("motor state inside wifi: ");
+    Serial.println(motorState);
+
+    Serial.print("local motor inside wifi: ");
+    Serial.println(localMotorState);
+
+    delay(2000);
 
     // Use WiFiClient and HTTPclient class to create TCP connections
 
@@ -151,6 +170,8 @@ void loop() {
 
       motorState = doc["success"];
 
+      Serial.println("");
+
       Serial.print("motor state: ");
       Serial.println(motorState);
 
@@ -161,19 +182,32 @@ void loop() {
 
       delay(1000);
 
-      if (motorState != localMotorState){
+      // if (motorState = localMotorState){
+      if (localMotorState == 1){
         Serial.println("enter");
         syncHardChanges();
-
+        // update globalstate
         Serial.println("");
-        
-        Serial.print("motor state: ");
+
+        Serial.print("motor state after enter: ");
         Serial.println(motorState);
 
-        Serial.print("local motor: ");
+        Serial.print("local motor after enter: ");
         Serial.println(localMotorState);
 
+        delay(2000);
+
       }
+
+      Serial.println("");
+
+      Serial.print("motor state on exit: ");
+      Serial.println(motorState);
+
+      Serial.print("local motor on exit: ");
+      Serial.println(localMotorState);
+
+      delay(2000);
 
       if (globalState == 0){
 
@@ -181,7 +215,7 @@ void loop() {
 
           digitalWrite(motor, motorState);
           globalState = 1;
-          return;
+          // return;
 
         }
 
@@ -189,7 +223,7 @@ void loop() {
 
           digitalWrite(motor, localMotorState);
           globalState = 1;
-          return;
+          // return;
 
         }
       }
@@ -200,7 +234,7 @@ void loop() {
 
           digitalWrite(motor, motorState);
           globalState = 0;
-          return;
+          // return;
 
         }
 
@@ -208,11 +242,22 @@ void loop() {
 
           digitalWrite(motor, localMotorState);
           globalState = 0;
-          return;
+          // return;
 
         }
 
       }
+
+      Serial.println("");
+
+      Serial.print("motor state after global: ");
+      Serial.println(motorState);
+
+      Serial.print("local motor after global: ");
+      Serial.println(localMotorState);
+
+      delay(2000);
+
     }
 
     else{
@@ -221,7 +266,7 @@ void loop() {
 
     }
 
-    http.end();
+    // http.end();
 
   }
 
