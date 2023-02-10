@@ -62,6 +62,7 @@ void syncHardChanges(){
   doc["pin"] = 5;
 
   String jsonString;
+  serializeJson(doc, jsonString);
 
   HTTPClient http;
   WiFiClient client;
@@ -75,7 +76,7 @@ void syncHardChanges(){
 
   if (httpCode > 0){
 
-    motorState = localMotorState;
+    localMotorState = motorState;
     String payload = http.getString();
     int json = payload.indexOf("{");
     String jsonData = payload.substring(json);
