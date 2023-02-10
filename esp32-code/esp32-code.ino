@@ -113,8 +113,8 @@ void setup(){
 
 void loop() {
   
-  Serial.print("Inside the loop: ");
-  Serial.println(localMotorState);
+  // Serial.print("Inside the loop: ");
+  // Serial.println(localMotorState);
   hardChanges();
 
   // Check if wifi is connected
@@ -144,67 +144,75 @@ void loop() {
 
       if (error) {
 
-      Serial.println("Deserialization failed: " + String(error.c_str()));
-      return;
+        Serial.println("Deserialization failed: " + String(error.c_str()));
+        return;
 
       }
 
       motorState = doc["success"];
-      Serial.print("got here ==> ");
+
+      Serial.print("motor state: ");
       Serial.println(motorState);
-      // if (localMotorState == 1){
+
+      Serial.print("local motor: ");
+      Serial.println(localMotorState);
+
+      Serial.println("");
+
+      delay(1000);
+
       if (motorState != localMotorState){
-
-        // motorState = doc["success"];
-        Serial.print("got here 2==> ");
-        Serial.println(motorState);
+        Serial.println("enter");
         syncHardChanges();
-        Serial.print("new motor: ");
+
+        Serial.println("");
+        
+        Serial.print("motor state: ");
         Serial.println(motorState);
 
-        if (globalState == 0){
+        Serial.print("local motor: ");
+        Serial.println(localMotorState);
 
-          if ((motorState == 1) || (localMotorState == 1)){
+      }
 
-              digitalWrite(motor, HIGH);
-              globalState = 1;
-              return;
+      if (globalState == 0){
 
-          }
+        if (motorState == 1){
+
+          digitalWrite(motor, motorState);
+          globalState = 1;
+          return;
+
         }
 
-        else {
+        if (localMotorState == 1){
 
-          if ((motorState == 0) || (localMotorState == 0)){
-
-              digitalWrite(motor, LOW);
-              globalState = 0;
-              return;
-
-          }
+          digitalWrite(motor, localMotorState);
+          globalState = 1;
+          return;
 
         }
-        
-        delay(2000);
-        // return;
-
       }
 
-      if (motorState == 1){
-        Serial.println("this block");
-        digitalWrite(motor, HIGH);
-        globalState = 1;
+      else {
+
+        if (motorState == 0){
+
+          digitalWrite(motor, motorState);
+          globalState = 0;
+          return;
+
+        }
+
+        if (localMotorState == 0){
+
+          digitalWrite(motor, localMotorState);
+          globalState = 0;
+          return;
+
+        }
 
       }
-
-      else{
-        Serial.println("this block2");
-        Serial.println("");
-        digitalWrite(motor, LOW);
-        globalState = 0;
-
-      }
-
     }
 
     else{
@@ -214,7 +222,7 @@ void loop() {
     }
 
     http.end();
-    delay(1000);
+
   }
 
   else{
