@@ -74,7 +74,7 @@ void syncHardChanges(){
 
   if (httpCode > 0){
 
-    localMotorState = motorState;
+    motorState = localMotorState;
     String payload = http.getString();
     int json = payload.indexOf("{");
     String jsonData = payload.substring(json);
@@ -97,7 +97,6 @@ void setup(){
   
   while (WiFi.status() != WL_CONNECTED) {
 
-    //  delay(wifiDt);
      Serial.print("Connecting to Wifi network...");
      Serial.println(".");
 
@@ -112,7 +111,9 @@ void setup(){
 }
 
 void loop() {
-
+  
+  Serial.print("Inside the loop: ");
+  Serial.println(localMotorState);
   hardChanges();
 
   // Check if wifi is connected
@@ -149,7 +150,7 @@ void loop() {
 
       motorState = doc["success"];
 
-      if (motorState != localMotorState){
+      if (localMotorState != motorState){
 
         syncHardChanges();
         digitalWrite(motor, motorState);
