@@ -12,7 +12,7 @@
 
 int dt_out = 25; //dt_out ==> delay timer out (out denoting the end of the void loop)
 int minDt = 0.5; //minDt ==> minimum timer
-int wifiDt = 5000;
+int wifiDt = 100;
 
 int motor  = 26;
 int motorPb = 27;
@@ -75,7 +75,11 @@ void syncHardChanges(){
   if (httpCode > 0){
 
     localMotorState = motorState;
+    String payload = http.getString();
+    int json = payload.indexOf("{");
+    String jsonData = payload.substring(json);
 
+    Serial.println(jsonData);
   }
 
   http.end();
@@ -93,11 +97,12 @@ void setup(){
   
   while (WiFi.status() != WL_CONNECTED) {
 
-     delay(wifiDt);
+    //  delay(wifiDt);
      Serial.print("Connecting to Wifi network...");
      Serial.println(".");
 
      hardChanges();
+     Serial.println(localMotorState);
 
   }
   
@@ -147,6 +152,7 @@ void loop() {
       if (motorState != localMotorState){
 
         syncHardChanges();
+        digitalWrite(motor, motorState);
         return;
 
       }
