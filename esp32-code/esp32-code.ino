@@ -66,9 +66,10 @@ void syncHardChanges(){
   HTTPClient http;
   WiFiClient client;
 
-  String url = "http://" + String(serverIP) + ":" + String(serverPort) + "/btn";
+  String url = "http://" + String(serverIP) + ":" + String(serverPort) + "/synchardchanges";
 
   http.begin(client, url);
+  http.addHeader("Content-Type", "application/json");
 
   int httpCode = http.POST(jsonString);
 
@@ -150,7 +151,7 @@ void loop() {
 
       motorState = doc["success"];
 
-      if (localMotorState != motorState){
+      if (motorState != localMotorState){
 
         syncHardChanges();
         digitalWrite(motor, motorState);
