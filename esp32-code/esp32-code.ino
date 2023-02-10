@@ -20,12 +20,13 @@ int pbStateOld;
 int pbStateNew;
 int localMotorState;
 int motorState;
+int globalState;
 
 int syncSuccess;
 #define ssid "esp8266"
 #define password "forTheLoveOfEmbededSystem"
 
-const char* serverIP = "192.168.56.87"; //host subject to change always untill app is hosted
+const char* serverIP = "192.168.170.87"; //host subject to change always untill app is hosted
 const int serverPort = 3565; 
 
 // Function to constantly check for changes on the hardware
@@ -40,6 +41,7 @@ void hardChanges(){
 
       digitalWrite(motor, HIGH);
       localMotorState = 1;
+      globalState = 1;
 
     }
 
@@ -47,6 +49,7 @@ void hardChanges(){
 
       digitalWrite(motor, LOW);
       localMotorState = 0;
+      globalState = 0;
 
     }
   }
@@ -75,13 +78,9 @@ void syncHardChanges(){
   int httpCode = http.POST(jsonString);
 
   if (httpCode > 0){
+    // pass;
+    // motorState = localMotorState;
 
-    motorState = localMotorState;
-    String payload = http.getString();
-    int json = payload.indexOf("{");
-    String jsonData = payload.substring(json);
-
-    Serial.println(jsonData);
   }
 
   http.end();
@@ -151,24 +150,58 @@ void loop() {
       }
 
       motorState = doc["success"];
-      Serial.print
+      Serial.print("got here ==> ");
+      Serial.println(motorState);
+      // if (localMotorState == 1){
       if (motorState != localMotorState){
 
+        // motorState = doc["success"];
+        Serial.print("got here 2==> ");
+        Serial.println(motorState);
         syncHardChanges();
-        digitalWrite(motor, motorState);
-        return;
+        Serial.print("new motor: ");
+        Serial.println(motorState);
+
+        if (globalState == 0){
+
+          if ((motorState == 1) || (localMotorState == 1)){
+
+              digitalWrite(motor, HIGH);
+              globalState = 1;
+              return;
+
+          }
+        }
+
+        else {
+
+          if ((motorState == 0) || (localMotorState == 0)){
+
+              digitalWrite(motor, LOW);
+              globalState = 0;
+              return;
+
+          }
+
+        }
+        
+        delay(2000);
+        // return;
 
       }
 
       if (motorState == 1){
-
+        Serial.println("this block");
         digitalWrite(motor, HIGH);
+        globalState = 1;
 
       }
 
       else{
-
+        Serial.println("this block2");
+        Serial.println("");
         digitalWrite(motor, LOW);
+        globalState = 0;
 
       }
 
@@ -181,7 +214,7 @@ void loop() {
     }
 
     http.end();
-    
+    delay(1000);
   }
 
   else{
@@ -192,7 +225,7 @@ void loop() {
     while (WiFi.status() != WL_CONNECTED) {
 
       delay(wifiDt);
-      Serial.println("Reconnecting to "+String(ssid)+"....");
+      Serial.println("Reconnecting to "+String(ssid)+" wifi network....");
 
       hardChanges();
 
