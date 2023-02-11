@@ -20,13 +20,12 @@ int pbStateOld;
 int pbStateNew;
 int localMotorState;
 int motorState;
-int globalState;
 
 int syncSuccess;
 #define ssid "esp8266"
 #define password "forTheLoveOfEmbededSystem"
 
-const char* serverIP = "192.168.68.87"; //host subject to change always untill app is hosted
+const char* serverIP = "192.168.155.87"; //host subject to change always untill app is hosted
 const int serverPort = 3565; 
 
 // Function to constantly check for changes on the hardware
@@ -41,7 +40,6 @@ void hardChanges(){
 
       digitalWrite(motor, HIGH);
       localMotorState = 1;
-      globalState = 1;
 
     }
 
@@ -49,7 +47,6 @@ void hardChanges(){
 
       digitalWrite(motor, LOW);
       localMotorState = 0;
-      globalState = 0;
 
     }
   }
@@ -198,22 +195,12 @@ void loop() {
       delay(1000);
 
       // if (motorState = localMotorState){
-      if (localMotorState == 1){
+      if ((localMotorState == 1) && (pbStateOld == 1)){
         Serial.println("enter");
         syncHardChanges();
 
-        // if (motorState == 1){
+        localMotorState = 0;
 
-        //   localMotorState = 1;
-
-        // }
-
-        // else{
-
-          localMotorState = 0;
-
-        // }
-        // update globalstate
         Serial.println("");
 
         Serial.print("motor state after enter: ");
@@ -223,6 +210,26 @@ void loop() {
         Serial.println(localMotorState);
 
         delay(2000);
+
+      }
+
+      if ((localMotorState == 0) && (pbStateNew == 1)){
+        if (motorState != 1){
+          Serial.println("enter000000");
+          syncHardChanges();
+
+          localMotorState = 1;
+
+          Serial.println("");
+
+          Serial.print("motor state after enter 000: ");
+          Serial.println(motorState);
+
+          Serial.print("local motor after enter 0000: ");
+          Serial.println(localMotorState);
+
+          delay(2000);
+        }
 
       }
 
@@ -242,7 +249,6 @@ void loop() {
         Serial.println("this block");
         Serial.println("");
         digitalWrite(motor, HIGH);
-        globalState = 1;
 
         delay(1000);
 
@@ -254,7 +260,6 @@ void loop() {
         Serial.println("this block2");
         Serial.println("");
         digitalWrite(motor, LOW);
-        globalState = 0;
         delay(1000);
       }
       
@@ -265,11 +270,6 @@ void loop() {
 
       Serial.print("local motor after global: ");
       Serial.println(localMotorState);
-
-      delay(2000);
-
-      Serial.print("global state: ");
-      Serial.println(globalState);
 
       delay(2000);
 
