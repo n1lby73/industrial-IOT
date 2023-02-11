@@ -26,13 +26,13 @@ int syncSuccess;
 #define ssid "esp8266"
 #define password "forTheLoveOfEmbededSystem"
 
-const char* serverIP = "192.168.191.87"; //host subject to change always untill app is hosted
+const char* serverIP = "192.168.68.87"; //host subject to change always untill app is hosted
 const int serverPort = 3565; 
 
 // Function to constantly check for changes on the hardware
 
 void hardChanges(){
-
+  Serial.println("hardware");
   pbStateNew = digitalRead(motorPb);
 
   if ((pbStateNew == 1) && (pbStateOld == 0)) {
@@ -80,7 +80,22 @@ void syncHardChanges(){
   if (httpCode > 0){
     // pass;
     // motorState = localMotorState;
+    String payload = http.getString();
 
+    int json = payload.indexOf("{");
+    String jsonData = payload.substring(json);
+
+    DynamicJsonDocument doc(200);
+    DeserializationError error = deserializeJson(doc, jsonData);
+
+    if (error) {
+
+        Serial.println("Deserialization failed: " + String(error.c_str()));
+        return;
+
+      }
+
+    motorState = doc["success"];
   }
 
   http.end();
@@ -186,7 +201,18 @@ void loop() {
       if (localMotorState == 1){
         Serial.println("enter");
         syncHardChanges();
-        localMotorState = 0;
+
+        // if (motorState == 1){
+
+        //   localMotorState = 1;
+
+        // }
+
+        // else{
+
+          localMotorState = 0;
+
+        // }
         // update globalstate
         Serial.println("");
 
@@ -209,45 +235,6 @@ void loop() {
       Serial.println(localMotorState);
 
       delay(2000);
-
-      // if (globalState == 0){
-
-      //   if (motorState == 1){
-
-      //     digitalWrite(motor, motorState);
-      //     globalState = 1;
-      //     // return;
-
-      //   }
-
-      //   if (localMotorState == 1){
-
-      //     digitalWrite(motor, localMotorState);
-      //     globalState = 1;
-      //     // return;
-
-      //   }
-      // }
-
-      // else {
-
-        // if (motorState == 0){
-
-        //   digitalWrite(motor, motorState);
-        //   globalState = 0;
-        //   // return;
-
-        // }
-
-        // if (localMotorState == 0){
-
-        //   digitalWrite(motor, localMotorState);
-        //   globalState = 0;
-        //   // return;
-
-        // }
-
-      // }
 
       if (motorState == 1){
 
@@ -283,25 +270,6 @@ void loop() {
 
       Serial.print("global state: ");
       Serial.println(globalState);
-
-      delay(2000);
-
-      if (globalState == 1){
-
-        globalState = 0;
-
-      }
-
-      if (globalState == 0){
-
-        globalState = 1;
-
-      }
-
-      Serial.println("");
-      Serial.print("global state after swap: ");
-      Serial.println(globalState);
-      Serial.println("");
 
       delay(2000);
 
