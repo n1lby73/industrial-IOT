@@ -20,6 +20,7 @@ int pbStateOld;
 int pbStateNew;
 int localMotorState;
 int motorState;
+int test;
 
 int syncSuccess;
 #define ssid "esp8266"
@@ -36,10 +37,11 @@ void hardChanges(){
 
   if ((pbStateNew == 1) && (pbStateOld == 0)) {
 
-    if (localMotorState == 0) {
+    if ((localMotorState == 0) && (test == 1)) {
 
       digitalWrite(motor, HIGH);
       localMotorState = 1;
+      test = 0;
 
     }
 
@@ -47,8 +49,21 @@ void hardChanges(){
 
       digitalWrite(motor, LOW);
       localMotorState = 0;
+      test = 1;
 
     }
+  }
+
+  else{
+
+    if ((pbStateNew == 0) && (pbStateOld == 1)){
+
+      digitalWrite(motor, LOW);
+      localMotorState = 0;
+      test = 1;
+
+    }  
+
   }
 
   pbStateOld = pbStateNew;
@@ -213,8 +228,8 @@ void loop() {
 
       }
 
-      if ((localMotorState == 0) && (pbStateNew == 1)){
-        if (motorState != 1){
+      if ((localMotorState == 0) && (test == 1)){
+        // if (motorState != 1){
           Serial.println("enter000000");
           syncHardChanges();
 
@@ -229,7 +244,7 @@ void loop() {
           Serial.println(localMotorState);
 
           delay(2000);
-        }
+        // }
 
       }
 
