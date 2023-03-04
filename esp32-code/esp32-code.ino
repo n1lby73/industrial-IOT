@@ -22,7 +22,6 @@ int localMotorState;
 int motorState;
 int globalState;
 
-int syncSuccess;
 #define ssid "esp8266"
 #define password "forTheLoveOfEmbededSystemS"
 
@@ -32,7 +31,7 @@ const int serverPort = 3565;
 // Function to constantly check for changes on the hardware
 
 void hardChanges(){
-  Serial.println("hardware");
+
   pbStateNew = digitalRead(motorPb);
 
   if ((pbStateNew == 1) && (pbStateOld == 0)) {
@@ -41,7 +40,6 @@ void hardChanges(){
 
       digitalWrite(motor, HIGH);
       localMotorState = 1;
-      globalState = 1;
 
     }
 
@@ -49,7 +47,6 @@ void hardChanges(){
 
       digitalWrite(motor, LOW);
       localMotorState = 0;
-      globalState = 0;
 
     }
   }
@@ -57,6 +54,8 @@ void hardChanges(){
   pbStateOld = pbStateNew;
 
 }
+
+// Function to send hardware changes to server
 
 void syncHardChanges(){
 
@@ -78,8 +77,7 @@ void syncHardChanges(){
   int httpCode = http.POST(jsonString);
 
   if (httpCode > 0){
-    // pass;
-    // motorState = localMotorState;
+
     String payload = http.getString();
 
     int json = payload.indexOf("{");
@@ -128,32 +126,13 @@ void setup(){
 
 void loop() {
   
-  // Serial.print("Inside the loop: ");
-  // Serial.println(localMotorState);
+  // Check for hardwware changes 
+
   hardChanges();
 
-  Serial.println("");
-
-  Serial.print("motor state @ start: ");
-  Serial.println(motorState);
-
-  Serial.print("local motor @ start: ");
-  Serial.println(localMotorState);
-
-  delay(2000);
   // Check if wifi is connected
 
   if (WiFi.status() == WL_CONNECTED){
-
-    Serial.println("");
-
-    Serial.print("motor state inside wifi: ");
-    Serial.println(motorState);
-
-    Serial.print("local motor inside wifi: ");
-    Serial.println(localMotorState);
-
-    delay(2000);
 
     // Use WiFiClient and HTTPclient class to create TCP connections
 
@@ -165,6 +144,8 @@ void loop() {
     http.begin(client, url);
 
     int httpCode = http.POST("");
+
+    // Retrieve Json data from server
 
     if (httpCode > 0){
 
@@ -185,17 +166,7 @@ void loop() {
 
       motorState = doc["success"];
 
-      Serial.println("");
-
-      Serial.print("motor state: ");
-      Serial.println(motorState);
-
-      Serial.print("local motor: ");
-      Serial.println(localMotorState);
-
-      Serial.println("");
-
-      delay(1000);
+      // Synchronizing realtime update with local changes
 
       if ((motorState == 1) && (localMotorState == 3)){
 
@@ -209,84 +180,41 @@ void loop() {
 
       }
 
+      // Updating and Assigning a new value to local state other than 0 and 1 o keep track of changes
+
       if ((localMotorState == 1) || (localMotorState == 0)){
 
         if (localMotorState == 1){
-          Serial.println("enter 1");
+
           syncHardChanges();
           localMotorState = 2;
+
         }
 
         else{
 
-          Serial.println("enter 0");
           syncHardChanges();
           localMotorState = 3;
+
         }
-
-
-        Serial.println("");
-
-        Serial.print("motor state after enter: ");
-        Serial.println(motorState);
-
-        Serial.print("local motor after enter: ");
-        Serial.println(localMotorState);
-
-        delay(2000);
-
       }
 
-      Serial.println("");
-
-      Serial.print("motor state on exit: ");
-      Serial.println(motorState);
-
-      Serial.print("local motor on exit: ");
-      Serial.println(localMotorState);
-
-      delay(2000);
-
-      // if ((motorState == 1) && localMotorState == 3
+      // Giving conditions to write the esp32 pin either high or low
 
       if ((motorState == 1) && (localMotorState == 2)){
 
-        Serial.println("");
-        Serial.println("this block");
-        Serial.println("");
         digitalWrite(motor, HIGH);
-        globalState = 1;
-
-        delay(1000);
 
       }
 
       else{
 
-        Serial.println("");
-        Serial.println("this block2");
-        Serial.println("");
         digitalWrite(motor, LOW);
-        globalState = 0;
-        delay(1000);
+
       }
-      
-      Serial.println("");
-
-      Serial.print("motor state after global: ");
-      Serial.println(motorState);
-
-      Serial.print("local motor after global: ");
-      Serial.println(localMotorState);
-
-      delay(2000);
-
-      Serial.print("global state: ");
-      Serial.println(globalState);
-
-      delay(2000);
-
     }
+
+    // Printing error code if unable to get to the server
 
     else{
 
@@ -297,6 +225,8 @@ void loop() {
     http.end();
 
   }
+  
+  // In cases where internet is disconnected
 
   else{
 
