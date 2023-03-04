@@ -69,7 +69,7 @@ def synchardchanges():
 
 @app.route('/btn', methods=['POST', 'GET'])
 def btn():
-    
+
     if request.method != 'POST':
         return redirect(url_for('index'))
     
@@ -92,6 +92,20 @@ def btn():
     db.session.commit()
     
     return jsonify(success=True)
+
+@app.route('/espstatus', methods=['POST','GET'])
+def espstatus():
+
+    if request.method != 'Post':
+        return redirect(url_for('index'))
+    
+    data = request.get_json()
+    status = data['espStatus']
+    print(status)
+    # if status != 1:
+    #     return jsonify(success=0)
+
+    return jsonify(success=True) 
 
 @app.errorhandler(404)
 def page_not_found(e):
