@@ -24,9 +24,9 @@ int globalState;
 
 int syncSuccess;
 #define ssid "esp8266"
-#define password "forTheLoveOfEmbededSystems"
+#define password "forTheLoveOfEmbededSystemS"
 
-const char* serverIP = "192.168.173.87"; //host subject to change always untill app is hosted
+const char* serverIP = "192.168.187.87"; //host subject to change always untill app is hosted
 const int serverPort = 3565; 
 
 // Function to constantly check for changes on the hardware
@@ -37,7 +37,7 @@ void hardChanges(){
 
   if ((pbStateNew == 1) && (pbStateOld == 0)) {
 
-    if (localMotorState == 0) {
+    if ((localMotorState == 0) || (localMotorState == 3)) {
 
       digitalWrite(motor, HIGH);
       localMotorState = 1;
@@ -197,23 +197,34 @@ void loop() {
 
       delay(1000);
 
-      // if (motorState = localMotorState){
-      if (localMotorState == 1){
-        Serial.println("enter");
-        syncHardChanges();
+      if ((motorState == 1) && (localMotorState == 3)){
 
-        // if (motorState == 1){
+        localMotorState = 2;
 
-        //   localMotorState = 1;
+      }
 
-        // }
+      if ((motorState == 0) && (localMotorState == 2)){
 
-        // else{
+        localMotorState = 3;
 
-          localMotorState = pbStateOld;
+      }
 
-        // }
-        // update globalstate
+      if ((localMotorState == 1) || (localMotorState == 0)){
+
+        if (localMotorState == 1){
+          Serial.println("enter 1");
+          syncHardChanges();
+          localMotorState = 2;
+        }
+
+        else{
+
+          Serial.println("enter 0");
+          syncHardChanges();
+          localMotorState = 3;
+        }
+
+
         Serial.println("");
 
         Serial.print("motor state after enter: ");
@@ -236,7 +247,9 @@ void loop() {
 
       delay(2000);
 
-      if (motorState == 1){
+      // if ((motorState == 1) && localMotorState == 3
+
+      if ((motorState == 1) && (localMotorState == 2)){
 
         Serial.println("");
         Serial.println("this block");
