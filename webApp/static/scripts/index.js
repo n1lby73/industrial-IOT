@@ -1,6 +1,52 @@
 const button = document.querySelector('#toggleBtn');
 const rotateImage = document.getElementById("rotate");
+var esp;
 // const socket = io.connect('http://localhost:5000'); //url currently subject to change
+
+function espstatus(){
+
+  console.log("inside")
+
+  fetch('/espstatus', {
+
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'}
+
+  })
+
+  .then(response => {
+
+    if (response.ok){
+      console.log("o")
+      return response.json();
+
+    }
+
+    else{
+      
+      console.log("error sending data");
+
+    }
+  })
+  .then(data => {
+
+    console.log("p")
+    if (data.success === 1){
+      
+      console.log('esp is active')
+
+    }
+
+    else {
+
+      console.log('esp is offline')
+
+    }
+  })
+
+  .catch(error => console.error(error));
+
+}
 
 const handleButtonClick = () => {
 
@@ -44,7 +90,6 @@ const handleButtonClick = () => {
     body: JSON.stringify(data)
 
   })
-
 };
 
 function synchronize(){
@@ -110,4 +155,5 @@ function synchronize(){
 //   // socket.send('a');
 // })
 
-button.addEventListener('click', handleButtonClick);
+// button.addEventListener('click', handleButtonClick);
+button.addEventListener('click', espstatus);
