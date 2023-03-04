@@ -25,7 +25,7 @@ int globalState;
 #define ssid "esp8266"
 #define password "forTheLoveOfEmbededSystemS"
 
-const char* serverIP = "192.168.187.87"; //host subject to change always untill app is hosted
+const char* serverIP = "192.168.152.87"; //host subject to change always untill app is hosted
 const int serverPort = 3565; 
 
 // Function to constantly check for changes on the hardware
@@ -91,9 +91,50 @@ void syncHardChanges(){
         Serial.println("Deserialization failed: " + String(error.c_str()));
         return;
 
-      }
+    }
 
     motorState = doc["success"];
+  }
+
+  http.end();
+
+}
+
+void onlineStatus(){
+
+  DynamicJsonDocument doc(200);
+
+  doc["espStatus"] = 1;
+
+  String jsonString;
+  serializeJson(doc, jsonString);
+
+  HTTPClient http;
+  WiFiClient client;
+
+  String url = "http://" + String(serverIP) + ":" + String(serverPort) + "/synchardchanges";
+
+  http.begin(client, url);
+  http.addHeader("Content-Type", "application/json");
+
+  int httpCode = http.POST(jsonString);
+
+  if (httpCode > 0){
+
+    String payload = http.getString();
+
+    int json = payload.indexOf("{");
+    String jsonData = payload.substring(json);
+
+    DynamicJsonDocument doc(200);
+    DeserializationError error = deserializeJson(doc, jsonData);
+
+    if (error) {
+
+        Serial.println("Deserialization failed: " + String(error.c_str()));
+        return;
+
+    }
   }
 
   http.end();
