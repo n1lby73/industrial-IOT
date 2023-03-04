@@ -65,19 +65,11 @@ def synchardchanges():
         state = status
 
     return jsonify(success = state)
-    # print(query.switchState)
-
-# @socketio.on('realtime')
-# def realtime_update(value):
-
-#     query = esp32.query.filter_by(esp32pin='5').first()
-#     state = query.switchState
-#     print(value)
-#     send(state, broadcast=True)
 
 
 @app.route('/btn', methods=['POST', 'GET'])
 def btn():
+    
     if request.method != 'POST':
         return redirect(url_for('index'))
     
@@ -106,5 +98,4 @@ def page_not_found(e):
     return render_template('404.html')
 
 if __name__ == '__main__':
-    # socketio.run(app)
     app.run(host='0.0.0.0', debug=True, port=3565)
