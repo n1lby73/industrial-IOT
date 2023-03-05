@@ -50,11 +50,11 @@ def online():
 
     if request.method != 'POST':
         return redirect(url_for('index'))
-        
-    query = esp32.query.filter_by(esp32pin='5').first()
-    state = query.switchState
 
-    return jsonify(success = state)
+    data = request.get_json()
+    online = data['online']
+    print(online)
+    return jsonify(success = True)
 
 @app.route('/synchardchanges', methods=['POST', 'GET'])
 def synchardchanges():
