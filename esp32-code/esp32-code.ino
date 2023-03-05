@@ -256,7 +256,8 @@ void loop() {
 
       delay(wifiDt);
       Serial.println("Reconnecting to "+String(ssid)+" wifi network....");
-
+      WiFi.disconnect();
+      WiFi.begin(ssid, password);
       hardChanges();
 
     }
