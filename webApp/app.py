@@ -17,6 +17,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 socketio = SocketIO(app)
 
+# Global varialbles
+onlineStatus = 0
 class esp32(db.Model):
 
     __tablename__ = 'motor'
@@ -53,7 +55,11 @@ def online():
 
     data = request.get_json()
     online = data['online']
-    print(online)
+    
+    if online:
+        onlineStatus = 1
+        print(onlineStatus)
+
     return jsonify(success = True)
 
 @app.route('/synchardchanges', methods=['POST', 'GET'])
@@ -88,21 +94,40 @@ def btn():
     status = data['state']
     pin = data['pin']
 
+    global onlineStatus
+    print ("online is",onlineStatus)
+
     query = esp32.query.filter_by(esp32pin='5').first()
     
     if query:
 
-        query.switchState = status
+        if onlineStatus == 1:
+
+            onlineStatus = 0
+            query.switchState = status
+            db.session.commit()
+
+            return jsonify(success=True)
+        
+        else:
+
+            return jsonify(success=False)
+            
+        
+    if onlineStatus == 1:
+
+        onlineStatus = 0
+
+        new_value = esp32(switchState=status, esp32pin=pin)
+
+        db.session.add(new_value)
         db.session.commit()
         
         return jsonify(success=True)
-
-    new_value = esp32(switchState=status, esp32pin=pin)
-
-    db.session.add(new_value)
-    db.session.commit()
     
-    return jsonify(success=True)
+    else:
+
+        return jsonify(success=True)
 
 @app.errorhandler(404)
 def page_not_found(e):
