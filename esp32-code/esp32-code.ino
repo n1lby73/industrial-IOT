@@ -110,6 +110,13 @@ void online(){
   String jsonString;
   serializeJson(doc, jsonString);
 
+  String url = "http://" + String(serverIP) + ":" + String(serverPort) + "/online";
+
+  http.begin(client, url);
+  http.addHeader("Content-Type", "application/json");
+
+  int httpCode = http.POST(jsonString);
+
 }
 
 void setup(){ 
@@ -146,6 +153,8 @@ void loop() {
 
   if (WiFi.status() == WL_CONNECTED){
 
+    online();
+    
     String url = "http://" + String(serverIP) + ":" + String(serverPort) + "/query";
 
     http.begin(client, url);
