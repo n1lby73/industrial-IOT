@@ -129,15 +129,19 @@ void setup(){
   WiFi.begin(ssid, password);
 
   Serial.begin (115200);
-  
+  int trial = 0;
   while (WiFi.status() != WL_CONNECTED) {
 
-     Serial.print("Connecting to Wifi network...");
+     Serial.print("Connecting to "+String(ssid)+" Wifi network...");
      Serial.println(".");
-
+     trial++;
      hardChanges();
      Serial.println(localMotorState);
 
+     if (trial == 1000){
+        Serial.println("resetting");
+        ESP.restart();
+      }
   }
   
   Serial.println("");
@@ -251,14 +255,21 @@ void loop() {
 
     Serial.println("Wifi disconnected");
     delay(wifiDt);
+    int trial = 0;
 
     while (WiFi.status() != WL_CONNECTED) {
-
-      delay(wifiDt);
+      
+//      delay(wifiDt);
       Serial.println("Reconnecting to "+String(ssid)+" wifi network....");
       WiFi.disconnect();
       WiFi.begin(ssid, password);
+      trial++;
       hardChanges();
+
+      if (trial == 500){
+        Serial.println("resetting");
+        ESP.restart();
+      }
 
     }
 
