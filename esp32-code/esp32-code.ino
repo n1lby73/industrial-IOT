@@ -102,6 +102,16 @@ void syncHardChanges(){
 
 }
 
+void online(){
+
+  DynamicJsonDocument doc(200);
+  doc["online"] = 1;
+
+  String jsonString;
+  serializeJson(doc, jsonString);
+
+}
+
 void setup(){ 
 
   pinMode(motor, OUTPUT);
