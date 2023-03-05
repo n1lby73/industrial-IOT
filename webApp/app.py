@@ -25,6 +25,7 @@ class esp32(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     esp32pin = db.Column(db.String(2), nullable = False, unique = True)
     switchState = db.Column(db.String(2), nullable = False)
+    onlineStatus = db.Column(db.String(2), nullable = False)
 
     def __repr__(self):
         return f'<esp32 {self.esp32pin} {self.switchState}>'
