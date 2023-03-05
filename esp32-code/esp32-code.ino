@@ -118,7 +118,7 @@ void online(){
   int httpCode = http.POST(jsonString);
 
   http.end();
-  
+
 }
 
 void setup(){ 
@@ -156,7 +156,6 @@ void loop() {
   if (WiFi.status() == WL_CONNECTED){
 
     online();
-    
 
     String url = "http://" + String(serverIP) + ":" + String(serverPort) + "/query";
 
@@ -169,8 +168,6 @@ void loop() {
     if (httpCode > 0){
 
       String payload = http.getString();
-      Serial.println("here");
-      delay(10000);
       
       int json = payload.indexOf("{");
       String jsonData = payload.substring(json);
