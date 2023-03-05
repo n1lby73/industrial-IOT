@@ -17,8 +17,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 socketio = SocketIO(app)
 
-# Global varialbles
-onlineStatus = 0
+# global variable to store value if esp is online. To be used when inputting new set of value in db
+esponline = 0 
 class esp32(db.Model):
 
     __tablename__ = 'motor'
@@ -56,12 +56,18 @@ def online():
 
     data = request.get_json()
     online = data['online']
-    
-    if online:
-        onlineStatus = 1
-        print(onlineStatus)
+    esponline = online
 
-    return jsonify(success = True)
+    query = esp32.query.filter_by(esp32pin='5').first()
+
+    if query:
+
+        query.onlineStatus = online
+        db.session.commit()
+
+        return jsonify(success = True)
+
+    return jsonify(success = False)
 
 @app.route('/synchardchanges', methods=['POST', 'GET'])
 def synchardchanges():
@@ -95,17 +101,17 @@ def btn():
     status = data['state']
     pin = data['pin']
 
-    global onlineStatus
-    print ("online is",onlineStatus)
-
     query = esp32.query.filter_by(esp32pin='5').first()
-    
+
     if query:
+        online = query.onlineStatus
 
-        if onlineStatus == 1:
+        if online == 1:
 
-            onlineStatus = 0
+            online = 0
             query.switchState = status
+            query.onlineStatus = online
+
             db.session.commit()
 
             return jsonify(success=True)
@@ -114,21 +120,16 @@ def btn():
 
             return jsonify(success=False)
             
-        
-    if onlineStatus == 1:
+    if esponline == 1:
 
-        onlineStatus = 0
-
-        new_value = esp32(switchState=status, esp32pin=pin)
+        new_value = esp32(switchState=status, esp32pin=pin, onlineStatus=esponline)
 
         db.session.add(new_value)
         db.session.commit()
-        
-        return jsonify(success=True)
-    
-    else:
 
         return jsonify(success=True)
+    
+    return "esp not up"
 
 @app.errorhandler(404)
 def page_not_found(e):
