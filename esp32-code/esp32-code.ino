@@ -117,6 +117,8 @@ void online(){
 
   int httpCode = http.POST(jsonString);
 
+  http.end();
+  
 }
 
 void setup(){ 
@@ -145,7 +147,7 @@ void setup(){
 
 void loop() {
   
-  // Check for hardwware changes 
+  // Check for hardwware changes
 
   hardChanges();
 
@@ -155,10 +157,11 @@ void loop() {
 
     online();
     
+
     String url = "http://" + String(serverIP) + ":" + String(serverPort) + "/query";
 
     http.begin(client, url);
-
+    
     int httpCode = http.POST("");
 
     // Retrieve Json data from server
@@ -166,16 +169,19 @@ void loop() {
     if (httpCode > 0){
 
       String payload = http.getString();
-
+      Serial.println("here");
+      delay(10000);
+      
       int json = payload.indexOf("{");
       String jsonData = payload.substring(json);
-
+      
       DynamicJsonDocument doc(200);
       DeserializationError error = deserializeJson(doc, jsonData);
 
       if (error) {
 
         Serial.println("Deserialization failed: " + String(error.c_str()));
+        
         return;
 
       }
