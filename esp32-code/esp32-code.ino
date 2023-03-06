@@ -110,13 +110,35 @@ void online(){
   String jsonString;
   serializeJson(doc, jsonString);
 
-  String url = "http://" + String(serverIP) + ":" + String(serverPort) + "/online";
+  String url = "http://" + String(serverIP) + ":" + String(serverPort) + "/query";
 
   http.begin(client, url);
   http.addHeader("Content-Type", "application/json");
 
   int httpCode = http.POST(jsonString);
 
+  if (httpCode > 0){
+
+    Serial.println("here again 2");
+    delay(1000);
+    String payload = http.getString();
+    delay(10000);
+    Serial.println(payload);
+    int json = payload.indexOf("{");
+    String jsonData = payload.substring(json);
+      
+    DynamicJsonDocument doc(200);
+    DeserializationError error = deserializeJson(doc, jsonData);
+    motorState = doc["success"];
+    Serial.println(motorState);
+    if (error) {
+
+      Serial.println("Deserialization failed: " + String(error.c_str()));
+        
+      return;
+
+    }
+  }
   http.end();
 
 }
@@ -159,18 +181,28 @@ void loop() {
 
   if (WiFi.status() == WL_CONNECTED){
 
+    // online();
+    DynamicJsonDocument doc(200);
+    doc["online"] = 1;
+
+    String jsonString;
+    serializeJson(doc, jsonString);
+
     String url = "http://" + String(serverIP) + ":" + String(serverPort) + "/query";
 
     http.begin(client, url);
-    
-    int httpCode = http.POST("");
+    http.addHeader("Content-Type", "application/json");
+    int httpCode = http.POST(jsonString);
 
     // Retrieve Json data from server
 
     if (httpCode > 0){
 
+      Serial.println("here again 2");
+      delay(1000);
       String payload = http.getString();
-      
+      delay(10000);
+      Serial.println(payload);
       int json = payload.indexOf("{");
       String jsonData = payload.substring(json);
       
