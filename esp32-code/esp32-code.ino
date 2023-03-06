@@ -25,7 +25,7 @@ int globalState;
 #define ssid "esp8266"
 #define password "forTheLoveOfEmbededSystemS"
 
-const char* serverIP = "192.168.103.87"; //host subject to change always untill app is hosted
+const char* serverIP = "192.168.48.87"; //host subject to change always untill app is hosted
 const int serverPort = 3565; 
 
 // Use WiFiClient and HTTPclient class to create TCP connections
@@ -159,8 +159,6 @@ void loop() {
 
   if (WiFi.status() == WL_CONNECTED){
 
-    online();
-
     String url = "http://" + String(serverIP) + ":" + String(serverPort) + "/query";
 
     http.begin(client, url);
@@ -259,7 +257,7 @@ void loop() {
 
     while (WiFi.status() != WL_CONNECTED) {
       
-//      delay(wifiDt);
+     delay(wifiDt);
       Serial.println("Reconnecting to "+String(ssid)+" wifi network....");
       WiFi.disconnect();
       WiFi.begin(ssid, password);
