@@ -7,10 +7,11 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <script defer src="{{ url_for('static', filename='scripts/index.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script> 
 
     <title>Halted</title>
 </head>
-<body onload="synchronize()">
+<body>
         
     <div class="container ">
 
@@ -20,8 +21,8 @@
         
         </div>
 
-    <button class="btnn" id="toggleBtn">ON</button>
-</div>   
+        <button class="btnn" id="toggleBtn">ON</button>
+    </div>   
 
 </body>
 </html>

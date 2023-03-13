@@ -43,14 +43,7 @@ def query():
     query = esp32.query.filter_by(esp32pin='5').first()
     state = query.switchState
 
-    try:
-        data=request.get_json()
-        online = data['online']
-        print(online)
-        return jsonify(success = state)
-    except:
-        return jsonify(success = "sta")
-    # return jsonify(success = state)
+    return jsonify(success = state)
 
 @app.route('/synchardchanges', methods=['POST', 'GET'])
 def synchardchanges():
@@ -73,10 +66,8 @@ def synchardchanges():
 
     return jsonify(success = state)
 
-
 @app.route('/btn', methods=['POST', 'GET'])
 def btn():
-    
     if request.method != 'POST':
         return redirect(url_for('index'))
     
@@ -100,9 +91,21 @@ def btn():
     
     return jsonify(success=True)
 
+@socketio.on('message')
+def websocket(data):
+    query = esp32.query.filter_by(esp32pin='5').first()
+    state = query.switchState
+    value = {"success":state}
+    # value = ('success':state)
+    # value = jsonify(success = state)
+    socketio.send(value, broadcast=True)
+
+
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True, port=3565)
+    socketio.run(app)
+    # socketio.run(app, debug=True, port=3565, host='0.0.0.0')
+    # app.run(host='0.0.0.0', debug=True, port=3565)
