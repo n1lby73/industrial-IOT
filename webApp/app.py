@@ -1,6 +1,6 @@
 from flask import Flask, render_template, url_for, request, redirect, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from flask_socketio import SocketIO, send
+from flask_socketio import SocketIO, send, emit
 from dotenv import load_dotenv
 import os
 
@@ -91,14 +91,48 @@ def btn():
     
     return jsonify(success=True)
 
-@socketio.on('message')
-def websocket(data):
+# @socketio.on('connect')
+# def handle_connect():
+#     query = esp32.query.filter_by(esp32pin='5').first()
+#     state = query.switchState
+#     current_status = {"success":state}
+#     socketio.emit('message', current_status, broadcast=True)
+#     print("A new client connected")
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    print("device offline")
+
+@socketio.on('current_status')
+def websocket():
     query = esp32.query.filter_by(esp32pin='5').first()
     state = query.switchState
-    value = {"success":state}
-    # value = ('success':state)
-    # value = jsonify(success = state)
-    socketio.send(value, broadcast=True)
+    current_status_from_db = {"success":state}
+    socketio.emit('message', current_status_from_db, json=True)
+    print("A new client connected")
+
+@socketio.on('update')
+def websocket(update):
+    state = update.get('state')
+    pin  = update.get('pin')
+
+    query = esp32.query.filter_by(esp32pin='5').first()
+    
+    if query:
+
+        query.switchState = state
+        db.session.commit()
+        current_status_from_db = {"success":state}
+        socketio.emit('message', current_status_from_db, json=True, broadcast=True)
+
+    else:
+
+        new_value = esp32(switchState=state, esp32pin=pin)
+        db.session.add(new_value)
+        db.session.commit()
+
+        current_status_from_db = {"success":state}
+        socketio.emit('message', current_status_from_db, json=True, broadcast=True)
 
 
 @app.errorhandler(404)

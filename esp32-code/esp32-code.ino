@@ -25,7 +25,7 @@ int globalState;
 #define ssid "esp8266"
 #define password "forTheLoveOfEmbededSystemS"
 
-const char* serverIP = "192.168.48.87"; //host subject to change always untill app is hosted
+const char* serverIP = "192.168.43.87"; //host subject to change always untill app is hosted
 const int serverPort = 3565; 
 
 // Use WiFiClient and HTTPclient class to create TCP connections
@@ -102,47 +102,6 @@ void syncHardChanges(){
 
 }
 
-void online(){
-
-  DynamicJsonDocument doc(200);
-  doc["online"] = 1;
-
-  String jsonString;
-  serializeJson(doc, jsonString);
-
-  String url = "http://" + String(serverIP) + ":" + String(serverPort) + "/query";
-
-  http.begin(client, url);
-  http.addHeader("Content-Type", "application/json");
-
-  int httpCode = http.POST(jsonString);
-
-  if (httpCode > 0){
-
-    Serial.println("here again 2");
-    delay(1000);
-    String payload = http.getString();
-    delay(10000);
-    Serial.println(payload);
-    int json = payload.indexOf("{");
-    String jsonData = payload.substring(json);
-      
-    DynamicJsonDocument doc(200);
-    DeserializationError error = deserializeJson(doc, jsonData);
-    motorState = doc["success"];
-    Serial.println(motorState);
-    if (error) {
-
-      Serial.println("Deserialization failed: " + String(error.c_str()));
-        
-      return;
-
-    }
-  }
-  http.end();
-
-}
-
 void setup(){ 
 
   pinMode(motor, OUTPUT);
@@ -181,7 +140,6 @@ void loop() {
 
   if (WiFi.status() == WL_CONNECTED){
 
-    // online();
     DynamicJsonDocument doc(200);
     doc["online"] = 1;
 
@@ -198,11 +156,8 @@ void loop() {
 
     if (httpCode > 0){
 
-      Serial.println("here again 2");
-      delay(1000);
       String payload = http.getString();
-      delay(10000);
-      Serial.println(payload);
+
       int json = payload.indexOf("{");
       String jsonData = payload.substring(json);
       
