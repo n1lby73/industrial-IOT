@@ -2,6 +2,7 @@ from flask import Flask, render_template, url_for, request, redirect, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_socketio import SocketIO, send, emit
 from dotenv import load_dotenv
+import time
 import os
 
 load_dotenv()
@@ -27,6 +28,9 @@ class esp32(db.Model):
     def __repr__(self):
         return f'<esp32 {self.esp32pin} {self.switchState}>'
 
+# global variables
+
+espstate = 0
 
 @app.route('/')
 def index():
@@ -105,9 +109,12 @@ def handle_disconnect():
 
 @socketio.on('current_status')
 def websocket():
+
+    global espstate
+
     query = esp32.query.filter_by(esp32pin='5').first()
     state = query.switchState
-    current_status_from_db = {"success":state}
+    current_status_from_db = {"success":state, "onlineStatus":espstate}
     socketio.emit('message', current_status_from_db, json=True)
     print("A new client connected")
 
@@ -135,11 +142,36 @@ def websocket(update):
         socketio.emit('message', current_status_from_db, json=True, broadcast=True)
 
 
+@socketio.on('espOnline')
+def websocket(espOnlinie):
+    global espstate
+    espstate = 1
+
+# Background task to monitor incoming data
+def espOffline():
+    # Set a timeout period of 5 seconds
+    timeout_period = 1
+    start_time = time.time()
+
+    while True:
+        # Check if the timeout period has elapsed
+        elapsed_time = time.time() - start_time
+        if elapsed_time > timeout_period:
+            # Carry out some task if no data is received in the given time frame
+            # print('No data received in the given time frame')
+            global espstate
+            espstate = 0
+            start_time = time.time()
+
+        # Wait for 1 second before checking again
+        time.sleep(1)
+
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html')
 
 if __name__ == '__main__':
+    socketio.start_background_task(espOffline)
     socketio.run(app)
     # socketio.run(app, debug=True, port=3565, host='0.0.0.0')
     # app.run(host='0.0.0.0', debug=True, port=3565)
