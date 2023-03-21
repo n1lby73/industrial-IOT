@@ -3,12 +3,11 @@
     WiFiClient (Arduino pre-built example)
     WiFiClientBasic (Arduino pre-built exaample)
     Httpclient (Arduino pre-built example)
-
+    
 */
-
+#include <WebSocketsClient.h>
 #include <ArduinoJson.h>
 #include <HTTPClient.h>
-#include <ESPping.h>
 #include <WiFi.h>
 
 int dt_out = 25; //dt_out ==> delay timer out (out denoting the end of the void loop)
@@ -24,23 +23,20 @@ int motorState;
 int globalState;
 
 #define ssid "esp8266"
-#define password "forTheLoveOfEmbededSystemSs"
+#define password "forTheLoveOfEmbededSystemS"
 
-const char* serverIP = "192.168.137.87"; //host subject to change always untill app is hosted
-const int serverPort = 3565;
-
-// Ping google.com to know if connected wifi has access to internet
-const char* google = "google.com";
+const char* serverIP = "192.168.43.87"; //host subject to change always untill app is hosted
+const int serverPort = 3565; 
 
 // Use WiFiClient and HTTPclient class to create TCP connections
 
 HTTPClient http;
 WiFiClient client;
-IPAddress ip;
+WebSocketsClient webSocket;
 
 // Function to constantly check for changes on the hardware
 
-void hardChanges() {
+void hardChanges(){
 
   pbStateNew = digitalRead(motorPb);
 
@@ -67,7 +63,7 @@ void hardChanges() {
 
 // Function to send hardware changes to server
 
-void syncHardChanges() {
+void syncHardChanges(){
 
   DynamicJsonDocument doc(200);
   doc["state"] = localMotorState;
@@ -83,7 +79,7 @@ void syncHardChanges() {
 
   int httpCode = http.POST(jsonString);
 
-  if (httpCode > 0) {
+  if (httpCode > 0){
 
     String payload = http.getString();
 
@@ -95,10 +91,10 @@ void syncHardChanges() {
 
     if (error) {
 
-      Serial.println("Deserialization failed: " + String(error.c_str()));
-      return;
+        Serial.println("Deserialization failed: " + String(error.c_str()));
+        return;
 
-    }
+      }
 
     motorState = doc["success"];
   }
@@ -107,24 +103,7 @@ void syncHardChanges() {
 
 }
 
-// check if connected wifi has internet connection
-
-
-void internetAccess() {
-
-  while (!Ping.ping(google, 1)) {
-
-    hardChanges();
-    Serial.println(String(ssid) + " has no internet connection");
-    Serial.println();
-    Serial.print("Local state is ==>: ");
-    Serial.println(localMotorState);
-
-  }
-
-}
-
-void setup() {
+void setup(){ 
 
   pinMode(motor, OUTPUT);
 
@@ -133,65 +112,66 @@ void setup() {
 
   Serial.begin (115200);
   int trial = 0;
-
-  // check if wifi is connected
-
   while (WiFi.status() != WL_CONNECTED) {
 
-    Serial.print("Connecting to " + String(ssid) + " Wifi network...");
-    Serial.println(".");
-    trial++;
-    hardChanges();
-    Serial.println(localMotorState);
+     Serial.print("Connecting to "+String(ssid)+" Wifi network...");
+     Serial.println(".");
+     trial++;
+     hardChanges();
+     Serial.println(localMotorState);
 
-    if (trial == 1000) {
-      Serial.println("resetting");
-      ESP.restart();
-    }
-    
+     if (trial == 1000){
+        Serial.println("resetting");
+        ESP.restart();
+      }
   }
-
-  internetAccess();
-
+  
   Serial.println("");
-  Serial.println("WiFi connected with internet access");
+  Serial.println("WiFi connected");
 
+  webSocket.begin(serverIP, serverPort, "/espOnline");
 }
 
 void loop() {
-
+  
   // Check for hardwware changes
 
   hardChanges();
 
   // Check if wifi is connected
 
-  if (WiFi.status() == WL_CONNECTED) {
+  if (WiFi.status() == WL_CONNECTED){
 
-    internetAccess();
+    webSocket.sendTXT("1");
+    
+    DynamicJsonDocument doc(200);
+    doc["online"] = 1;
+
+    String jsonString;
+    serializeJson(doc, jsonString);
 
     String url = "http://" + String(serverIP) + ":" + String(serverPort) + "/query";
 
     http.begin(client, url);
-
-    int httpCode = http.POST("");
+    http.addHeader("Content-Type", "application/json");
+    int httpCode = http.POST(jsonString);
 
     // Retrieve Json data from server
 
-    if (httpCode > 0) {
+    if (httpCode > 0){
 
       String payload = http.getString();
 
       int json = payload.indexOf("{");
       String jsonData = payload.substring(json);
-
+      
       DynamicJsonDocument doc(200);
       DeserializationError error = deserializeJson(doc, jsonData);
 
       if (error) {
 
         Serial.println("Deserialization failed: " + String(error.c_str()));
-
+        
         return;
 
       }
@@ -200,13 +180,13 @@ void loop() {
 
       // Synchronizing realtime update with local changes
 
-      if ((motorState == 1) && (localMotorState == 3)) {
+      if ((motorState == 1) && (localMotorState == 3)){
 
         localMotorState = 2;
 
       }
 
-      if ((motorState == 0) && (localMotorState == 2)) {
+      if ((motorState == 0) && (localMotorState == 2)){
 
         localMotorState = 3;
 
@@ -214,16 +194,16 @@ void loop() {
 
       // Updating and Assigning a new value to local state other than 0 and 1 o keep track of changes
 
-      if ((localMotorState == 1) || (localMotorState == 0)) {
+      if ((localMotorState == 1) || (localMotorState == 0)){
 
-        if (localMotorState == 1) {
+        if (localMotorState == 1){
 
           syncHardChanges();
           localMotorState = 2;
 
         }
 
-        else {
+        else{
 
           syncHardChanges();
           localMotorState = 3;
@@ -233,13 +213,13 @@ void loop() {
 
       // Giving conditions to write the esp32 pin either high or low
 
-      if ((motorState == 1) && (localMotorState == 2)) {
+      if ((motorState == 1) && (localMotorState == 2)){
 
         digitalWrite(motor, HIGH);
 
       }
 
-      else {
+      else{
 
         digitalWrite(motor, LOW);
 
@@ -248,7 +228,7 @@ void loop() {
 
     // Printing error code if unable to get to the server
 
-    else {
+    else{
 
       Serial.println("Error: " + String(httpCode));
 
@@ -257,32 +237,32 @@ void loop() {
     http.end();
 
   }
-
+  
   // In cases where internet is disconnected
 
-  else {
+  else{
 
     Serial.println("Wifi disconnected");
     delay(wifiDt);
     int trial = 0;
 
     while (WiFi.status() != WL_CONNECTED) {
-
-      delay(wifiDt);
-      Serial.println("Reconnecting to " + String(ssid) + " wifi network....");
+      
+     delay(wifiDt);
+      Serial.println("Reconnecting to "+String(ssid)+" wifi network....");
       WiFi.disconnect();
       WiFi.begin(ssid, password);
       trial++;
       hardChanges();
 
-      if (trial == 500) {
+      if (trial == 500){
         Serial.println("resetting");
         ESP.restart();
       }
 
     }
 
-    Serial.println("Connected to " + String(ssid));
+    Serial.println("Connected to "+String(ssid));
     syncHardChanges();
 
   }
