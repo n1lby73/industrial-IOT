@@ -8,9 +8,10 @@
 #include <WebSocketsClient.h>
 #include <ArduinoJson.h>
 #include <HTTPClient.h>
+#include <ESPping.h>
 #include <WiFi.h>
 
-int dt_out = 25; //dt_out ==> delay timer out (out denoting the end of the void loop)
+int dt_out = 100; //dt_out ==> delay timer out (out denoting the end of the void loop)
 int minDt = 0.5; //minDt ==> minimum timer
 int wifiDt = 100;
 
@@ -23,13 +24,19 @@ int motorState;
 int globalState;
 
 #define ssid "esp8266"
-#define password "forTheLoveOfEmbededSystemS"
+#define password "forTheLoveOfEmbededSystemSsS"
 
-const char* serverIP = "192.168.43.87"; //host subject to change always untill app is hosted
-const int serverPort = 3565; 
+const char* serverIP = "192.168.146.87"; //host subject to change always untill app is hosted
+const int serverPort = 5000;
+
+// Ping google.com to know if connected wifi has access to internet
+const char* google = "google.com";
+
+const char* webSocketServer = "ws://192.168.194.87:5000";
 
 // Use WiFiClient and HTTPclient class to create TCP connections
 
+IPAddress ip;
 HTTPClient http;
 WiFiClient client;
 WebSocketsClient webSocket;
@@ -103,6 +110,29 @@ void syncHardChanges(){
 
 }
 
+void internetAccess() {
+
+  while (!Ping.ping(google, 1)) {
+
+    hardChanges();
+    Serial.println(String(ssid) + " has no internet connection");
+    Serial.println();
+    Serial.print("Local state is ==>: ");
+    Serial.println(localMotorState);
+
+  }
+
+
+}
+
+void sendWebSocketMessage(String message, String event) {
+  // Create a JSON payload with the message and event
+  String payload = "{\"message\":\"" + message + "\",\"event\":\"" + event + "\"}";
+
+  // Send the payload over WebSocket
+  webSocket.sendTXT(payload);
+}
+
 void setup(){ 
 
   pinMode(motor, OUTPUT);
@@ -125,11 +155,26 @@ void setup(){
         ESP.restart();
       }
   }
+
+  internetAccess();
   
   Serial.println("");
   Serial.println("WiFi connected");
 
-  webSocket.begin(serverIP, serverPort, "/espOnline");
+  webSocket.begin(serverIP, serverPort);
+
+//what would web socket connected return
+  while (!webSocket.isConnected()){
+    delay(1000);
+    Serial.println("here");
+    webSocket.loop();
+    delay(1000);
+//    Serial.println("here");
+//    return;
+  }
+
+  delay(1000);
+  Serial.println("here2");
 }
 
 void loop() {
@@ -142,7 +187,9 @@ void loop() {
 
   if (WiFi.status() == WL_CONNECTED){
 
-    webSocket.sendTXT("1");
+    internetAccess();
+
+    sendWebSocketMessage("1", "espOnline");
     
     DynamicJsonDocument doc(200);
     doc["online"] = 1;
