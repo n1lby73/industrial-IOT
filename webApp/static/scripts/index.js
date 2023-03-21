@@ -1,6 +1,6 @@
 const button = document.querySelector('#toggleBtn');
 const rotateImage = document.getElementById("rotate");
-const offlineMsg = document.getElementById("onlinie");
+const offlineMsg = document.getElementById("online");
 var socket = io.connect('http://127.0.0.1:5000/'); //url currently subject to change
 var onlineStatus;
 
@@ -11,42 +11,54 @@ socket.emit("current_status")
 
 const handleButtonClick = () => {
 
-  let data = {};
+  if (onlineStatus === 1){
 
-  if (button.innerHTML === "ON") {
+    offlineMsg.classList.remove("online");
 
-    button.innerHTML = "OFF";
+    let data = {};
 
-    data = { 
-      
-      state: 1,
-      pin : 5
+    if (button.innerHTML === "ON") {
 
-    };
+      button.innerHTML = "OFF";
 
-    rotateImage.classList.toggle("rotate");
-    document.title = 'running'
+      data = { 
+        
+        state: 1,
+        pin : 5
 
-    socket.emit('update', data);
+      };
 
-  } 
-  
-  else {
+      rotateImage.classList.toggle("rotate");
+      document.title = 'Running'
 
-    button.innerHTML = "ON";
-    data = {
+      socket.emit('update', data);
 
-      state: 0,
-      pin : 5
-      
-    };
+    } 
+    
+    else {
 
-    rotateImage.classList.remove("rotate");
-    document.title = 'halted'
+      button.innerHTML = "ON";
+      data = {
 
-    socket.emit('update', data)
+        state: 0,
+        pin : 5
+        
+      };
 
+      rotateImage.classList.remove("rotate");
+      document.title = 'Halted'
+
+      socket.emit('update', data)
+
+    }
   }
+  
+  else{
+
+    offlineMsg.classList.toggle("online");
+    document.title = 'Offline';
+
+    }
 };
 
 // const handleButtonClick = () => {
@@ -147,7 +159,7 @@ function handleOnLoad(value, onlineStatus){
 
       button.innerHTML = "OFF";
       rotateImage.classList.toggle("rotate");
-      document.title = 'running';
+      document.title = 'Running';
 
     }
 
@@ -163,6 +175,7 @@ function handleOnLoad(value, onlineStatus){
   else{
 
     offlineMsg.classList.toggle("online");
+    document.title = 'Offline';
 
   }
 };
@@ -170,7 +183,7 @@ function handleOnLoad(value, onlineStatus){
 socket.on('message', function(msg){
 
   var value = JSON.parse(msg.success);
-  onlineStatus = JSON.parse(msg.onlineState)
+  onlineStatus = JSON.parse(msg.onlineStatus)
 
   console.log(value);
 
