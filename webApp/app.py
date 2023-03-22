@@ -32,6 +32,7 @@ class esp32(db.Model):
 # global variables
 
 espstate = 0
+timeout_period = 1
 
 @app.route('/')
 def index():
@@ -99,6 +100,57 @@ def btn():
     
     return jsonify(success=True)
 
+@app.route('/espOnline', methods=['POST', 'GET'])
+def espOnline():
+
+    if request.method != 'POST':
+        return redirect(url_for('index'))
+    
+    global espstate, start_time
+
+    espstate = 1
+    start_time = time.time()
+
+def espOffline():
+    
+    global timeout_period
+    elapsed_time = time.time() - start_time
+
+    if elapsed_time > timeout_period:
+        espstate = 0
+    
+    else:
+        espstate = 1
+    # def check_route_access():
+#     global last_accessed_time, is_route_accessed
+#     while True:
+#         if last_accessed_time is None or datetime.now() - last_accessed_time > timedelta(seconds=10):
+#             is_route_accessed = False
+#         else:
+#             is_route_accessed = True
+#         time.sleep(1)
+    while True:
+        # Check if the timeout period has elapsed
+        elapsed_time = time.time() - start_time
+        if elapsed_time > timeout_period:
+            # Carry out some task if no data is received in the given time frame
+            # print('No data received in the given time frame')
+            # global espstate
+            espstate = 0
+            start_time = time.time()
+
+        # else:
+        #     espstate = 1
+        # Wait for 1 second before checking again
+        time.sleep(1)
+
+    global last_accessed_time, is_route_accessed
+#     while True:
+#         if last_accessed_time is None or datetime.now() - last_accessed_time > timedelta(seconds=10):
+#             is_route_accessed = False
+#         else:
+#             is_route_accessed = True
+#         time.sleep(1)
 # @socketio.on('connect')
 # def handle_connect():
 #     query = esp32.query.filter_by(esp32pin='5').first()
@@ -146,34 +198,36 @@ def websocket(update):
         socketio.emit('message', current_status_from_db, json=True, broadcast=True)
 
 
-@socketio.on('espOnline')
-def websocket(espOnlinie):
-    global espstate
-    espstate = 1
-    print ("espstateggh is ", espstate)
-# Background task to monitor incoming data
-def espOffline():
+# @socketio.on('espOnline')
+# def websocket(espOnlinie):
+#     global espstate
+#     espstate = 1
+#     print ("espstateggh is ", espstate)
+# # Background task to monitor incoming data
+# def espOffline():
 
-    global espstate
+#     global espstate
 
-    # Set a timeout period of 5 seconds
-    timeout_period = 1
-    start_time = time.time()
+#     # Set a timeout period of 5 seconds
+#     timeout_period = 1
+#     start_time = time.time()
 
-    while True:
-        # Check if the timeout period has elapsed
-        elapsed_time = time.time() - start_time
-        if elapsed_time > timeout_period:
-            # Carry out some task if no data is received in the given time frame
-            # print('No data received in the given time frame')
-            # global espstate
-            espstate = 0
-            start_time = time.time()
+#     while True:
+#         # Check if the timeout period has elapsed
+#         elapsed_time = time.time() - start_time
+#         if elapsed_time > timeout_period:
+#             # Carry out some task if no data is received in the given time frame
+#             # print('No data received in the given time frame')
+#             # global espstate
+#             espstate = 0
+#             start_time = time.time()
 
-        # else:
-        #     espstate = 1
-        # Wait for 1 second before checking again
-        time.sleep(1)
+#         # else:
+#         #     espstate = 1
+#         # Wait for 1 second before checking again
+#         time.sleep(1)
+
+
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -184,3 +238,35 @@ if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0')
     # socketio.run(app, debug=True, port=3565, host='0.0.0.0')
     # app.run(host='0.0.0.0', debug=True, port=3565)
+
+
+
+# from flask import Flask
+# from datetime import datetime, timedelta
+# import threading
+
+# app = Flask(__name__)
+
+# last_accessed_time = None
+# is_route_accessed = False
+
+# def check_route_access():
+#     global last_accessed_time, is_route_accessed
+#     while True:
+#         if last_accessed_time is None or datetime.now() - last_accessed_time > timedelta(seconds=10):
+#             is_route_accessed = False
+#         else:
+#             is_route_accessed = True
+#         time.sleep(1)
+
+# @app.route('/')
+# def index():
+#     global last_accessed_time, is_route_accessed
+#     last_accessed_time = datetime.now()
+#     is_route_accessed = True
+#     return 'Hello, World!'
+
+# if __name__ == '__main__':
+#     t = threading.Thread(target=check_route_access)
+#     t.start()
+#     app.run()
