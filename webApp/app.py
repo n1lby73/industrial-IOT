@@ -17,6 +17,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 socketio = SocketIO(app)
+# socketio = SocketIO(app, cors_allowed_origins="*")
 
 class esp32(db.Model):
 
@@ -67,6 +68,9 @@ def synchardchanges():
         query.switchState = status
         db.session.commit()
         state = status
+        value = {"update":state}
+
+    socketio.emit("localUpdate", value, broadcast=True)
 
     return jsonify(success = state)
 
@@ -146,9 +150,12 @@ def websocket(update):
 def websocket(espOnlinie):
     global espstate
     espstate = 1
-
+    print ("espstateggh is ", espstate)
 # Background task to monitor incoming data
 def espOffline():
+
+    global espstate
+
     # Set a timeout period of 5 seconds
     timeout_period = 1
     start_time = time.time()
@@ -159,10 +166,12 @@ def espOffline():
         if elapsed_time > timeout_period:
             # Carry out some task if no data is received in the given time frame
             # print('No data received in the given time frame')
-            global espstate
+            # global espstate
             espstate = 0
             start_time = time.time()
 
+        # else:
+        #     espstate = 1
         # Wait for 1 second before checking again
         time.sleep(1)
 
@@ -172,6 +181,6 @@ def page_not_found(e):
 
 if __name__ == '__main__':
     socketio.start_background_task(espOffline)
-    socketio.run(app)
+    socketio.run(app, host='0.0.0.0')
     # socketio.run(app, debug=True, port=3565, host='0.0.0.0')
     # app.run(host='0.0.0.0', debug=True, port=3565)
