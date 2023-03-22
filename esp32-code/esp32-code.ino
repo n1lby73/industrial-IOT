@@ -26,13 +26,13 @@ int globalState;
 #define ssid "esp8266"
 #define password "forTheLoveOfEmbededSystemSsS"
 
-const char* serverIP = "192.168.146.87"; //host subject to change always untill app is hosted
+const char* serverIP = "192.168.29.87"; //host subject to change always untill app is hosted
 const int serverPort = 5000;
 
 // Ping google.com to know if connected wifi has access to internet
-const char* google = "google.com";
+const char* google = "216.58.223.238";
 
-const char* webSocketServer = "ws://192.168.194.87:5000";
+const char* webSocketServer = "ws://192.168.67.87:5000/socket.io/?EIO=3&transport=websocket";
 
 // Use WiFiClient and HTTPclient class to create TCP connections
 
@@ -161,14 +161,15 @@ void setup(){
   Serial.println("");
   Serial.println("WiFi connected");
 
-  webSocket.begin(serverIP, serverPort);
+  webSocket.begin(serverIP, serverPort, "?EIO=4&transport=polling&t=OS5cXHQ&sid=yVVKl82WWGqh7h_UAAAE");
 
-//what would web socket connected return
-  while (!webSocket.isConnected()){
+  while (webSocket.isConnected() == false){
+    hardChanges();
+    internetAccess();
     delay(1000);
     Serial.println("here");
-    webSocket.loop();
-    delay(1000);
+//    webSocket.loop();
+//    delay(1000);
 //    Serial.println("here");
 //    return;
   }
@@ -188,7 +189,7 @@ void loop() {
   if (WiFi.status() == WL_CONNECTED){
 
     internetAccess();
-
+    webSocket.loop();
     sendWebSocketMessage("1", "espOnline");
     
     DynamicJsonDocument doc(200);
