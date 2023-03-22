@@ -185,13 +185,22 @@ socket.on('message', function(msg){
   var value = JSON.parse(msg.success);
   onlineStatus = JSON.parse(msg.onlineStatus)
 
-  console.log(value);
+  console.log(onlineStatus);
 
   handleOnLoad(value, onlineStatus);
   
   console.log("valuefcmxgfdx ngfgf");
 });
 
+socket.on('localUpdate', function(msg){
 
+  var update = JSON.parse(msg.update);
+  
+  console.log(update);
+
+  handleOnLoad(value, 1);
+  
+  console.log("syncupdate");
+});
 
 button.addEventListener('click', handleButtonClick);
