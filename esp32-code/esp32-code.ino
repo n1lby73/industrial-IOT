@@ -24,7 +24,7 @@ int motorState;
 int globalState;
 
 #define ssid "esp8266"
-#define password "forTheLoveOfEmbededSystemSsS"
+#define password "forTheLoveOfEmbededSystem"
 
 const char* serverIP = "192.168.29.87"; //host subject to change always untill app is hosted
 const int serverPort = 5000;
@@ -32,7 +32,7 @@ const int serverPort = 5000;
 // Ping google.com to know if connected wifi has access to internet
 const char* google = "216.58.223.238";
 
-const char* webSocketServer = "ws://192.168.67.87:5000/socket.io/?EIO=3&transport=websocket";
+//const char* webSocketServer = "ws://192.168.67.87:5000/socket.io/?EIO=3&transport=websocket";
 
 // Use WiFiClient and HTTPclient class to create TCP connections
 
@@ -115,23 +115,32 @@ void internetAccess() {
   while (!Ping.ping(google, 1)) {
 
     hardChanges();
-    Serial.println(String(ssid) + " has no internet connection");
-    Serial.println();
-    Serial.print("Local state is ==>: ");
-    Serial.println(localMotorState);
 
+    if (WiFi.status() == WL_CONNECTED){
+
+      Serial.println(String(ssid) + " has no internet connection");
+      Serial.println();
+      Serial.print("Local state is ==>: ");
+      Serial.println(localMotorState);
+      
+    }
+
+    else{
+      Serial.println("wifi disconnected");
+      ESP.restart();
+    }
   }
 
 
 }
 
-void sendWebSocketMessage(String message, String event) {
-  // Create a JSON payload with the message and event
-  String payload = "{\"message\":\"" + message + "\",\"event\":\"" + event + "\"}";
-
-  // Send the payload over WebSocket
-  webSocket.sendTXT(payload);
-}
+//void sendWebSocketMessage(String message, String event) {
+//  // Create a JSON payload with the message and event
+//  String payload = "{\"message\":\"" + message + "\",\"event\":\"" + event + "\"}";
+//
+//  // Send the payload over WebSocket
+//  webSocket.sendTXT(payload);
+//}
 
 void setup(){ 
 
@@ -161,21 +170,21 @@ void setup(){
   Serial.println("");
   Serial.println("WiFi connected");
 
-  webSocket.begin(serverIP, serverPort, "?EIO=4&transport=polling&t=OS5cXHQ&sid=yVVKl82WWGqh7h_UAAAE");
+//  webSocket.begin(serverIP, serverPort, "?EIO=4&transport=polling&t=OS5cXHQ&sid=yVVKl82WWGqh7h_UAAAE");
 
-  while (webSocket.isConnected() == false){
-    hardChanges();
-    internetAccess();
-    delay(1000);
-    Serial.println("here");
-//    webSocket.loop();
+//  while (webSocket.isConnected() == false){
+//    hardChanges();
+//    internetAccess();
 //    delay(1000);
 //    Serial.println("here");
-//    return;
-  }
+////    webSocket.loop();
+////    delay(1000);
+////    Serial.println("here");
+////    return;
+//  }
 
-  delay(1000);
-  Serial.println("here2");
+//  delay(1000);
+//  Serial.println("here2");
 }
 
 void loop() {
@@ -189,8 +198,8 @@ void loop() {
   if (WiFi.status() == WL_CONNECTED){
 
     internetAccess();
-    webSocket.loop();
-    sendWebSocketMessage("1", "espOnline");
+//    webSocket.loop();
+//    sendWebSocketMessage("1", "espOnline");
     
     DynamicJsonDocument doc(200);
     doc["online"] = 1;
