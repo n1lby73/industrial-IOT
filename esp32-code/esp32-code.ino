@@ -319,6 +319,8 @@ void loop() {
 
     }
 
+    internetAccess();
+    
     Serial.println("Connected to "+String(ssid));
     syncHardChanges();
 
