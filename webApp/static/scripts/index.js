@@ -61,95 +61,6 @@ const handleButtonClick = () => {
     }
 };
 
-// const handleButtonClick = () => {
-  
-//   if (button.innerHTML === "ON") {
-//     button.innerHTML = "OFF";
-
-//     data = { 
-//       state: 1
-//       pin : 5
-//     };
-
-//     rotateImage.classList.toggle("rotate");
-//     document.title = 'running'
-
-//     const jsonString = JSON.stringify(data);
-//     socket.send(jsonString);
-//   };
-
-//   else {
-
-//     button.innerHTML = "ON";
-//     data = {
-    
-//       state: 0,
-//       pin : 5
-       
-//     };
-   
-//     rotateImage.classList.remove("rotate");
-//     document.title = 'halted'
-    
-//   }
-
-// };
-
-// function synchronize(){
-
-//   fetch('/query', {
-
-//     method: 'POST',
-//     headers: {'Content-Type': 'application/json'}
-
-//   })
-
-//   .then(response => {
-
-//     if (response.ok){
-
-//         return response.json();
-
-//     }
-
-//     else{
-
-//         console.log("error sending data");
-//     }
-//   })
-
-//   .then(data => {
-
-//     if (data.success == 1){
-
-//       button.innerHTML = "OFF";
-
-//       rotateImage.classList.toggle("rotate");
-//       document.title = 'running'
-//     }
-
-//     else {
-
-//       button.innerHTML = "ON";
-    
-//       rotateImage.classList.remove("rotate");
-//       document.title = 'halted'
-    
-//     }
-
-//   })
-
-//     .catch(error => console.error(error));
-
-// }
-
-
-// socket.on('connect', function() {
-
-//   console.log('browser connected!');
-
-// });
-
 function handleOnLoad(value, onlineStatus){
   if (onlineStatus === 1){
 
@@ -183,7 +94,7 @@ function handleOnLoad(value, onlineStatus){
 socket.on('message', function(msg){
 
   var value = JSON.parse(msg.success);
-  onlineStatus = JSON.parse(msg.onlineStatus)
+  onlineStatus = JSON.parse(msg.onlineStatus);
 
   console.log(onlineStatus);
 
@@ -198,7 +109,7 @@ socket.on('localUpdate', function(msg){
   
   console.log(update);
 
-  handleOnLoad(value, 1);
+  handleOnLoad(update, 1);
   
   console.log("syncupdate");
 });
