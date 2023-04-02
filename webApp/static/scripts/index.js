@@ -94,13 +94,9 @@ function handleOnLoad(value, onlineStatus){
 socket.on('message', function(msg){
 
   var value = JSON.parse(msg.success);
-  onlineStatus = JSON.parse(msg.onlineStatus);
-
-  console.log(onlineStatus);
 
   handleOnLoad(value, onlineStatus);
   
-  console.log("valuefcmxgfdx ngfgf");
 });
 
 socket.on('localUpdate', function(msg){
@@ -114,4 +110,8 @@ socket.on('localUpdate', function(msg){
   console.log("syncupdate");
 });
 
+socket.on('espOnlineState', function(msg){
+  onlineStatus = JSON.parse(msg.value);
+  console.log("here");
+})
 button.addEventListener('click', handleButtonClick);
