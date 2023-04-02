@@ -28,11 +28,21 @@ class esp32(db.Model):
     def __repr__(self):
         return f'<esp32 {self.esp32pin} {self.switchState}>'
 
+class users(db.Model):
+
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key = True)
+    email = db.Column(db.String(150), nullable = False, unique = True)
+    password = db.Column(db.String(150), nullable = False)
+
+    def __repr__(self):
+        return f'<users {self.email} {self.password}>'
+
 # global variables
 
 espstate = 0
-start_time = 0
-timeout_period = 1
+last_accessed = {}
+timeout = 1
 
 @app.route('/')
 def index():
@@ -105,26 +115,33 @@ def espOnline():
 
     if request.method != 'POST':
         return redirect(url_for('index'))
-    
-    global espstate, start_time
 
-    espstate = 1
-    start_time = time.time()
+    last_accessed['index'] = time.time()
 
     return "online"
 
-def espOffline():
+def espOffline(route_key):
     
-    global timeout_period, start_time
-    elapsed_time = time.time() - start_time
+    global timeout
 
-    if elapsed_time > timeout_period:
-        espstate = 0
-        print("000000000000000000000000000000000")
-        
+    last_time = last_accessed.get(route_key, None)
+
+    if last_time is None or time() - last_time > timeout:
+
+        return 0
+    
     else:
-        print("11111111111111111111111111111111111111111111")
-        espstate = 1
+
+        return 1
+
+
+def check_accessed_thread():
+
+    while True:
+
+        result = espOffline('espOnline')
+        socketio.emit('espOnlineState', {'value': result})
+    
 
 @socketio.on('disconnect')
 def handle_disconnect():
@@ -137,7 +154,7 @@ def websocket():
 
     query = esp32.query.filter_by(esp32pin='5').first()
     state = query.switchState
-    current_status_from_db = {"success":state, "onlineStatus":espstate}
+    current_status_from_db = {"success":state}
     socketio.emit('message', current_status_from_db, json=True, broadcast=True)
     print("A new client connected")
 
@@ -169,14 +186,8 @@ def page_not_found(e):
     return render_template('404.html')
 
 if __name__ == '__main__':
-    t = threading.Thread(target=espOffline)
+    t = threading.Thread(target=check_accessed_thread)
     t.daemon = True # set the thread as a daemon thread
     t.start()
-    
-    while True:
-        socketio.run(app, host='0.0.0.0', debug=True)
-# if __name__ == '__main__':
-#     t = threading.Thread(target=espOffline)
-#     # t.start()
-#     socketio.run(app, host='0.0.0.0', debug=True)
-#     t.start()
+    socketio.run(app, host='0.0.0.0', debug=True)
+
