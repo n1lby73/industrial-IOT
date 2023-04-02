@@ -26,7 +26,7 @@ int globalState;
 #define ssid "esp8266"
 #define password "forTheLoveOfEmbededSystem"
 
-const char* serverIP = "192.168.111.87"; //host subject to change always untill app is hosted
+const char* serverIP = "192.168.5.87"; //host subject to change always untill app is hosted
 const int serverPort = 5000;
 
 // Ping google.com to know if connected wifi has access to internet
@@ -133,16 +133,6 @@ void internetAccess() {
 
 void onlineStatus(){
 
-//  DynamicJsonDocument doc(200);
-//
-//  doc["espStatus"] = 1;
-//
-//  String jsonString;
-//  serializeJson(doc, jsonString);
-//
-//  HTTPClient http;
-//  WiFiClient client;
-
   String url = "http://" + String(serverIP) + ":" + String(serverPort) + "/espOnline";
 
   http.begin(client, url);
@@ -152,21 +142,6 @@ void onlineStatus(){
 
   if (httpCode > 0){
 
-
-//    String payload = http.getString();
-//
-//    int json = payload.indexOf("{");
-//    String jsonData = payload.substring(json);
-//
-//    DynamicJsonDocument doc(200);
-//    DeserializationError error = deserializeJson(doc, jsonData);
-//
-//    if (error) {
-//
-//        Serial.println("Deserialization failed: " + String(error.c_str()));
-//        return;
-//
-//    }
   }
 
   http.end();
@@ -214,12 +189,6 @@ void loop() {
 
     internetAccess();
     onlineStatus();
-    
-    // DynamicJsonDocument doc(200);
-    // doc["online"] = 1;
-
-    // String jsonString;
-    // serializeJson(doc, jsonString);
 
     String url = "http://" + String(serverIP) + ":" + String(serverPort) + "/query";
 
