@@ -55,7 +55,7 @@ def query():
 
     if request.method != 'POST':
         return redirect(url_for('index'))
-        
+         
     query = esp32.query.filter_by(esp32pin='5').first()
     state = query.switchState
 
@@ -94,21 +94,22 @@ def btn():
     status = data['state']
     pin = data['pin']
 
-    query = esp32.query.filter_by(esp32pin='5').first()
-    
-    if query:
+    try:
+        query = esp32.query.filter_by(esp32pin='5').first()
+        
+        if query:
 
-        query.switchState = status
+            query.switchState = status
+            db.session.commit()
+            
+            return jsonify(success=True)
+    except:
+        new_value = esp32(switchState=status, esp32pin=pin)
+
+        db.session.add(new_value)
         db.session.commit()
         
         return jsonify(success=True)
-
-    new_value = esp32(switchState=status, esp32pin=pin)
-
-    db.session.add(new_value)
-    db.session.commit()
-    
-    return jsonify(success=True)
 
 @app.route('/espOnline', methods=['POST', 'GET'])
 def espOnline():
@@ -139,7 +140,7 @@ def check_accessed_thread():
 
     while True:
 
-        result = espOffline('espOnline')
+        result = espOffline(espOnline)
         socketio.emit('espOnlineState', {'value': result})
     
 
@@ -154,7 +155,7 @@ def websocket():
 
     query = esp32.query.filter_by(esp32pin='5').first()
     state = query.switchState
-    current_status_from_db = {"success":state}
+    current_status_from_db = {"success":state, "value":espstate}
     socketio.emit('message', current_status_from_db, json=True, broadcast=True)
     print("A new client connected")
 
@@ -186,8 +187,8 @@ def page_not_found(e):
     return render_template('404.html')
 
 if __name__ == '__main__':
-    t = threading.Thread(target=check_accessed_thread)
-    t.daemon = True # set the thread as a daemon thread
-    t.start()
+    # t = threading.Thread(target=check_accessed_thread)
+    # t.daemon = True # set the thread as a daemon thread
+    # t.start()
     socketio.run(app, host='0.0.0.0', debug=True)
 

@@ -94,7 +94,9 @@ function handleOnLoad(value, onlineStatus){
 socket.on('message', function(msg){
 
   var value = JSON.parse(msg.success);
-
+  onlineStatus = JSON.parse(msg.value);
+  console.log(onlineStatus)
+  console.log("here we are");
   handleOnLoad(value, onlineStatus);
   
 });
@@ -112,6 +114,7 @@ socket.on('localUpdate', function(msg){
 
 socket.on('espOnlineState', function(msg){
   onlineStatus = JSON.parse(msg.value);
-  console.log("here");
+  console.log("under is the value");
+  console.log(onlineStatus);
 })
 button.addEventListener('click', handleButtonClick);
