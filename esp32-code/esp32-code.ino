@@ -26,7 +26,7 @@ int globalState;
 #define ssid "esp8266"
 #define password "forTheLoveOfEmbededSystem"
 
-const char* serverIP = "192.168.5.87"; //host subject to change always untill app is hosted
+const char* serverIP = "192.168.0.145"; //host subject to change always untill app is hosted
 const int serverPort = 5000;
 
 // Ping google.com to know if connected wifi has access to internet
