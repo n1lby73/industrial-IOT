@@ -41,8 +41,8 @@ class users(db.Model):
 # global variables
 
 espstate = 0
-last_accessed = {}
-timeout = 1
+startTime = 0
+timeout = 2
 
 @app.route('/')
 def index():
@@ -58,7 +58,7 @@ def query():
          
     query = esp32.query.filter_by(esp32pin='5').first()
     state = query.switchState
-
+    # socketio.start_background_task(target=confirmOnline)
     return jsonify(success = state)
 
 @app.route('/synchardchanges', methods=['POST', 'GET'])
@@ -117,32 +117,40 @@ def espOnline():
     if request.method != 'POST':
         return redirect(url_for('index'))
 
-    last_accessed['index'] = time.time()
+    global espstate, startTime
+
+    startTime = time.time()
 
     return "online"
 
-def espOffline(route_key):
+def confirmOnline():
+
+    global timeout, startTime, espstate
+
     
-    global timeout
+    currentTime = time.time()
 
-    last_time = last_accessed.get(route_key, None)
+    if currentTime - startTime > timeout:
 
-    if last_time is None or time() - last_time > timeout:
+        espstate = 0
+        socketio.emit('espOnlineState', {"value":0}, broadcast=True)
+        print("0")
 
-        return 0
-    
     else:
-
-        return 1
-
-
-def check_accessed_thread():
-
-    while True:
-
-        result = espOffline(espOnline)
-        socketio.emit('espOnlineState', {'value': result})
+        espstate = 1
+        socketio.emit('espOnlineState', {"value":1}, broadcast=True)
+        print("1")
+    # while currentTime - startTime < timeout:
+    #     espstate = 1
+    #     socketio.emit('espOnlineState', {"value":1}, broadcast=True)
+    #     break
+    #     print("1")
+    #     currentTime = time.time()
     
+    # while currentTime - startTime > timeout:
+    #     espstate = 0
+    #     socketio.emit('espOnlineState', {"value":0}, broadcast=True)
+    #     print("0")
 
 @socketio.on('disconnect')
 def handle_disconnect():
@@ -158,6 +166,12 @@ def websocket():
     current_status_from_db = {"success":state, "value":espstate}
     socketio.emit('message', current_status_from_db, json=True, broadcast=True)
     print("A new client connected")
+
+
+@socketio.on('espstatus')
+def espstatus():
+    while True:
+        socketio.start_background_task(target=confirmOnline)
 
 @socketio.on('update')
 def websocket(update):

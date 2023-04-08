@@ -3,9 +3,9 @@ const rotateImage = document.getElementById("rotate");
 const offlineMsg = document.getElementById("online");
 var socket = io.connect('http://127.0.0.1:5000/'); //url currently subject to change
 var onlineStatus;
-
+offlineMsg.style.display = "none";
 socket.emit("current_status")
-
+socket.emit("espstatus")
 
 // const socket = io.connect('http://localhost:5000'); 
 
@@ -55,7 +55,7 @@ const handleButtonClick = () => {
   
   else{
 
-    offlineMsg.classList.toggle("online");
+    offlineMsg.style.display = "inline";
     document.title = 'Offline';
 
     }
@@ -85,7 +85,7 @@ function handleOnLoad(value, onlineStatus){
 
   else{
 
-    offlineMsg.classList.toggle("online");
+    offlineMsg.style.display = "inline";
     document.title = 'Offline';
 
   }
