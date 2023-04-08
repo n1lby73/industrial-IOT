@@ -1,6 +1,9 @@
-from flask import Flask, render_template, url_for, request, redirect, jsonify
+from flask_login import LoginManager, login_required, current_user, login_user, logout_user
+from flask import Flask, render_template, url_for, request, redirect, jsonify, flash
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask_socketio import SocketIO, send, emit
 from flask_sqlalchemy import SQLAlchemy
+from signinForm import loginForm
 from dotenv import load_dotenv
 import threading
 import time
@@ -17,6 +20,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 socketio = SocketIO(app)
+login = LoginManager(app)
+login.login_view = 'login'
 
 class esp32(db.Model):
 
@@ -45,13 +50,42 @@ startTime = 0
 timeout = 2
 
 @app.route('/')
+@login_required
 def index():
 
     return render_template("index.html")
 
-@app.route('/login')
+@app.route('/login', methods=['POST', 'GET'])
 def login():
-    a=login
+
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    
+    form=loginForm()
+
+    if form.validate_on_submit():
+
+        email = request.form.get('email')
+        password = request.form.get('password')
+        
+        user = users.query.filter_by(email=email).first()
+        if not user or not check_password_hash(user.password, password):
+
+            flash('Please check your login details and try again.')
+
+            return render_template("signin.html", form=form)
+        
+        login_user(user)
+        return render_template("index.html")
+
+    return render_template("signin.html", form=form)
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
 @app.route('/query', methods=['POST', 'GET'])
 def query():
 
@@ -193,5 +227,5 @@ def page_not_found(e):
 
 if __name__ == '__main__':
 
-    socketio.run(app, host='0.0.0.0', debug=True)
+    socketio.run(app, host='0.0.0.0', debug=True, port=5432)
 
