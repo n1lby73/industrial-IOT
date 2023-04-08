@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, EmailField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length, Email, EqualTo
 
-class regForm (FlaskForm):
+class loginForm (FlaskForm):
     
     email = EmailField('Email', validators=[InputRequired(), Email('Input a valid email')]) 
 
