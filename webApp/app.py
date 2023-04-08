@@ -49,7 +49,9 @@ def index():
 
     return render_template("index.html")
 
-
+@app.route('/login')
+def login():
+    a=login
 @app.route('/query', methods=['POST', 'GET'])
 def query():
 
