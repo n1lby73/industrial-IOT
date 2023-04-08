@@ -127,7 +127,6 @@ def confirmOnline():
 
     global timeout, startTime, espstate
 
-    
     currentTime = time.time()
 
     if currentTime - startTime > timeout:
@@ -140,17 +139,6 @@ def confirmOnline():
         espstate = 1
         socketio.emit('espOnlineState', {"value":1}, broadcast=True)
         print("1")
-    # while currentTime - startTime < timeout:
-    #     espstate = 1
-    #     socketio.emit('espOnlineState', {"value":1}, broadcast=True)
-    #     break
-    #     print("1")
-    #     currentTime = time.time()
-    
-    # while currentTime - startTime > timeout:
-    #     espstate = 0
-    #     socketio.emit('espOnlineState', {"value":0}, broadcast=True)
-    #     print("0")
 
 @socketio.on('disconnect')
 def handle_disconnect():
@@ -172,6 +160,7 @@ def websocket():
 def espstatus():
     while True:
         socketio.start_background_task(target=confirmOnline)
+        time.sleep(0.1)
 
 @socketio.on('update')
 def websocket(update):
@@ -201,8 +190,6 @@ def page_not_found(e):
     return render_template('404.html')
 
 if __name__ == '__main__':
-    # t = threading.Thread(target=check_accessed_thread)
-    # t.daemon = True # set the thread as a daemon thread
-    # t.start()
+
     socketio.run(app, host='0.0.0.0', debug=True)
 

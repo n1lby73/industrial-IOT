@@ -116,5 +116,18 @@ socket.on('espOnlineState', function(msg){
   onlineStatus = JSON.parse(msg.value);
   console.log("under is the value");
   console.log(onlineStatus);
+
+  if (onlineStatus === 0){
+
+    offlineMsg.style.display = "inline";
+    document.title = 'Offline';
+
+  }
+
+  else{
+
+    offlineMsg.style.display = "none";
+    
+  }
 })
 button.addEventListener('click', handleButtonClick);
