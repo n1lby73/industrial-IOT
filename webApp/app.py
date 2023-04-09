@@ -1,10 +1,10 @@
 from flask_login import LoginManager, login_required, current_user, login_user, logout_user, UserMixin
 from flask import Flask, render_template, url_for, request, redirect, jsonify, flash
 from werkzeug.security import generate_password_hash, check_password_hash
+from form import loginForm, knownUserFp, unKnownUserFp
 from flask_socketio import SocketIO, send, emit
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.urls import url_parse
-from form import loginForm
 from dotenv import load_dotenv
 import threading
 import time
@@ -88,7 +88,7 @@ def login():
         
         login_user(user)
         return redirect(url_for('index'))
-
+    
     return render_template("signin.html", form=form)
 
 @app.route('/logout')
@@ -99,8 +99,15 @@ def logout():
 
 @app.route('/forgetPassword', methods=['POST', 'GET'])
 def forgetPassword():
+    
+    knownUserForm=knownUserFp()
+    unKnownUserForm=unKnownUserFp()
+
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+
+        if knownUserForm.validate_on_submit():
+                return "me"
+        return render_template("knownUserFp.html", form=knownUserForm)
 
 @app.route('/query', methods=['POST', 'GET'])
 def query():
