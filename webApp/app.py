@@ -108,6 +108,10 @@ def forgetPassword():
         if knownUserForm.validate_on_submit():
                 return "me"
         return render_template("knownUserFp.html", form=knownUserForm)
+    
+    if unKnownUserForm.validate_on_submit():
+        return "work"
+    return render_template("unKnownUserFp.html", form=unKnownUserForm)
 
 @app.route('/query', methods=['POST', 'GET'])
 def query():
