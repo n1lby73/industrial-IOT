@@ -25,7 +25,7 @@ login = LoginManager()
 login.login_view = 'login'
 login.init_app(app)
 
-class esp32(UserMixin, db.Model):
+class esp32(db.Model):
 
     __tablename__ = 'motor'
     id = db.Column(db.Integer, primary_key = True)
@@ -35,21 +35,21 @@ class esp32(UserMixin, db.Model):
     def __repr__(self):
         return f'<esp32 {self.esp32pin} {self.switchState}>'
 
-class users(db.Model):
+class users(UserMixin, db.Model):
 
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key = True)
     email = db.Column(db.String(150), nullable = False, unique = True)
     password = db.Column(db.String(150), nullable = False)
 
-    def is_active(self):
-        return True
+    # def is_active(self):
+    #     return True
     
-    def get_id(self):
-        return self.id
+    # def get_id(self):
+    #     return self.id
     
-    def is_authenticated(self):
-        return True
+    # def is_authenticated(self):
+    #     return True
     
     def __repr__(self):
         return f'<users {self.email} {self.password}>'
