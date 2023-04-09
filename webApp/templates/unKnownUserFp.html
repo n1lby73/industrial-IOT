@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{url_for('static', filename='/css/forgettenPassword.css') }}"/>
+    <title>Reset password</title>
+</head>
+<body>
+    <div class="register__con">
+        <div class="container">
+            <form id="form" method="post" action="">
+        
+                <h1 id="h1">Reset Password</h1>
+        
+                {{ form.csrf_token }}
+        
+                <div class="input-control">
+        
+                    <div class="text">
+        
+                        {{ form.email.label }}
+        
+                    </div>
+        
+                    {{ form.email }}
+        
+                </div>
+        
+                <div class="input-control">
+        
+                    <div class="text">
+        
+                        {{ form.newPassword.label }}
+        
+                    </div>
+        
+                    {{ form.newPassword }}
+        
+                </div>
+                {% for errors in form.newPassword.errors %}
+                {{ errors }}
+                {% endfor %}
+
+                {{ form.reset }}
+        
+            </form>
+        </div>
+    </div>
+</body>
+</html>
