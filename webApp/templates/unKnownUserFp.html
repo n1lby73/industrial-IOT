@@ -27,23 +27,8 @@
                     {{ form.email }}
         
                 </div>
-        
-                <div class="input-control">
-        
-                    <div class="text">
-        
-                        {{ form.newPassword.label }}
-        
-                    </div>
-        
-                    {{ form.newPassword }}
-        
-                </div>
-                {% for errors in form.newPassword.errors %}
-                {{ errors }}
-                {% endfor %}
 
-                {{ form.reset }}
+                {{ form.reset(class="signup") }}
         
             </form>
         </div>

@@ -33,7 +33,7 @@
             {% endfor %}
         </ul>
 
-        {{ form.reg }}
+        {{ form.reg(class="signup") }}
     </form>
     <a href="{{ url_for('register') }}" class="navbar-item">Signup</a>
     <a href="{{ url_for('forgetPassword') }}" class="navbar-item">reset password</a>
