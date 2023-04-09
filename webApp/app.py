@@ -1,8 +1,9 @@
-from flask_login import LoginManager, login_required, current_user, login_user, logout_user
+from flask_login import LoginManager, login_required, current_user, login_user, logout_user, UserMixin
 from flask import Flask, render_template, url_for, request, redirect, jsonify, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_socketio import SocketIO, send, emit
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.urls import url_parse
 from signinForm import loginForm
 from dotenv import load_dotenv
 import threading
@@ -20,8 +21,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 socketio = SocketIO(app)
-login = LoginManager(app)
+login = LoginManager()
 login.login_view = 'login'
+login.init_app(app)
 
 class esp32(db.Model):
 
@@ -33,7 +35,7 @@ class esp32(db.Model):
     def __repr__(self):
         return f'<esp32 {self.esp32pin} {self.switchState}>'
 
-class users(db.Model):
+class users(UserMixin, db.Model):
 
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key = True)
@@ -49,17 +51,21 @@ espstate = 0
 startTime = 0
 timeout = 2
 
+@login.user_loader
+def load_user(user_id):
+    return users.query.get(int(user_id))
+
 @app.route('/')
 @login_required
 def index():
-
+    
     return render_template("index.html")
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
 
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
+    # if current_user.is_authenticated:
+    #     return redirect(url_for('index'))
     
     form=loginForm()
 
@@ -69,14 +75,17 @@ def login():
         password = request.form.get('password')
         
         user = users.query.filter_by(email=email).first()
-        if not user or not check_password_hash(user.password, password):
+        if not user or not check_password_hash(user.password.data, password):
 
             flash('Please check your login details and try again.')
 
             return render_template("signin.html", form=form)
         
-        login_user(user)
-        return render_template("index.html")
+        # login_user(user)
+        # next_page = request.args.get('next')
+        # if not next_page or url_parse(next_page).netloc != '':
+        #     next_page = url_for('index')
+        return redirect(url_for('index'))
 
     return render_template("signin.html", form=form)
 
