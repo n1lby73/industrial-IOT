@@ -21,3 +21,9 @@ class  knownUserFp(FlaskForm):
     confirmPass = PasswordField("Confirm password", validators=[InputRequired(), EqualTo('newPassword', message="Password must be same")])
     
     reset = SubmitField("Reset")
+
+class unKnownUserFp(FlaskForm):
+
+    email = EmailField('Registered email', validators=[InputRequired(), Email('Input a valid email')])
+
+    reset = SubmitField("Reset")
