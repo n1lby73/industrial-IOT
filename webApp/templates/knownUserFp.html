@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css') }}"/>
+    <title>Sign up page</title>
+</head>
+<body>
+    <div class="register__con">
+        <div class="container">
+            <form id="form" method="post" action="">
+        
+                <h1 id="h1">Registration</h1>
+        
+                {{ form.csrf_token }}
+        
+                <div class="input-control">
+        
+                    <div class="text">
+        
+                        {{ form.username.label }}
+        
+                    </div>
+        
+                    {{ form.username }}
+        
+                </div>
+        
+                <div class="input-control">
+        
+                    <div class="text">
+        
+                        {{ form.email.label }}
+        
+                    </div>
+        
+                    {{ form.email }}
+        
+                </div>
+        
+                <div class="input-control">
+        
+                    <div class="text">
+        
+                        {{ form.password.label }}
+        
+                    </div>
+        
+                    {{ form.password }}
+        
+                </div>
+        
+                {% for errors in form.password.errors %}
+                {{ errors }}
+                {% endfor %}
+        
+                <div class="input-control">
+        
+                    <div class="text">
+        
+                        {{ form.confirmpass.label }}
+        
+                    </div>
+        
+                    {{ form.confirmpass }}
+        
+                </div>
+        
+                {% for errors in form.password.errors %}
+                {{ errors }}
+                {% endfor %}
+        
+                <!-- <div class="signup"> -->
+        
+                {{ form.reg(class="signup") }}
+        
+                <!-- </div> -->
+        
+            </form>
+        </div>
+    </div>
+</body>
+</html>
