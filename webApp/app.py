@@ -35,7 +35,7 @@ class esp32(db.Model):
     def __repr__(self):
         return f'<esp32 {self.esp32pin} {self.switchState}>'
 
-class users(UserMixin, db.Model):
+class users(db.Model):
 
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key = True)
@@ -58,14 +58,14 @@ def load_user(user_id):
 @app.route('/')
 @login_required
 def index():
-    
+
     return render_template("index.html")
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
-
-    # if current_user.is_authenticated:
-    #     return redirect(url_for('index'))
+    
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
     
     form=loginForm()
 
@@ -75,25 +75,23 @@ def login():
         password = request.form.get('password')
         
         user = users.query.filter_by(email=email).first()
-        if not user or not check_password_hash(user.password.data, password):
+        print(user.password)
+        print(password)
+        if not user or not check_password_hash(user.password, password):
 
             flash('Please check your login details and try again.')
 
             return render_template("signin.html", form=form)
-        
-        # login_user(user)
-        # next_page = request.args.get('next')
-        # if not next_page or url_parse(next_page).netloc != '':
-        #     next_page = url_for('index')
+        # login_user(user, remember=form.remember_me.data)
         return redirect(url_for('index'))
 
     return render_template("signin.html", form=form)
 
-@app.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for('login'))
+# @app.route('/logout')
+# @login_required
+# def logout():
+#     logout_user()
+#     return redirect(url_for('login'))
 
 @app.route('/query', methods=['POST', 'GET'])
 def query():
@@ -103,7 +101,6 @@ def query():
          
     query = esp32.query.filter_by(esp32pin='5').first()
     state = query.switchState
-    # socketio.start_background_task(target=confirmOnline)
     return jsonify(success = state)
 
 @app.route('/synchardchanges', methods=['POST', 'GET'])
@@ -235,6 +232,6 @@ def page_not_found(e):
     return render_template('404.html')
 
 if __name__ == '__main__':
-
-    socketio.run(app, host='0.0.0.0', debug=True, port=5432)
+    socketio.run(app, host='0.0.0.0', debug=True)
+    # socketio.run(app, host='0.0.0.0', debug=True, port=5432)
 
