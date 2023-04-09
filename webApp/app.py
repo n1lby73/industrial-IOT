@@ -41,15 +41,6 @@ class users(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key = True)
     email = db.Column(db.String(150), nullable = False, unique = True)
     password = db.Column(db.String(150), nullable = False)
-
-    # def is_active(self):
-    #     return True
-    
-    # def get_id(self):
-    #     return self.id
-    
-    # def is_authenticated(self):
-    #     return True
     
     def __repr__(self):
         return f'<users {self.email} {self.password}>'
@@ -84,8 +75,7 @@ def login():
         password = request.form.get('password')
         
         user = users.query.filter_by(email=email).first()
-        print(user.password)
-        print(password)
+
         if not user or not check_password_hash(user.password, password):
 
             flash('Please check your login details and try again.')
