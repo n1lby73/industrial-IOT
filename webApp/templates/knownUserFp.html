@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{url_for('static', filename='style.css') }}"/>
-    <title>Sign up page</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='/css/knownUserFp.css') }}"/>
+    <title>Reset password</title>
 </head>
 <body>
     <div class="register__con">
         <div class="container">
             <form id="form" method="post" action="">
         
-                <h1 id="h1">Registration</h1>
+                <h1 id="h1">Reset Password</h1>
         
                 {{ form.csrf_token }}
         
@@ -20,11 +20,11 @@
         
                     <div class="text">
         
-                        {{ form.username.label }}
+                        {{ form.currentPassword.label }}
         
                     </div>
         
-                    {{ form.username }}
+                    {{ form.currentPassword }}
         
                 </div>
         
@@ -32,27 +32,14 @@
         
                     <div class="text">
         
-                        {{ form.email.label }}
+                        {{ form.newPassword.label }}
         
                     </div>
         
-                    {{ form.email }}
+                    {{ form.newPassword }}
         
                 </div>
-        
-                <div class="input-control">
-        
-                    <div class="text">
-        
-                        {{ form.password.label }}
-        
-                    </div>
-        
-                    {{ form.password }}
-        
-                </div>
-        
-                {% for errors in form.password.errors %}
+                {% for errors in form.newPassword.errors %}
                 {{ errors }}
                 {% endfor %}
         
@@ -60,23 +47,18 @@
         
                     <div class="text">
         
-                        {{ form.confirmpass.label }}
+                        {{ form.confirmPass.label }}
         
                     </div>
         
-                    {{ form.confirmpass }}
+                    {{ form.confirmPass }}
         
                 </div>
-        
-                {% for errors in form.password.errors %}
+                {% for errors in form.confirmPass.errors %}
                 {{ errors }}
                 {% endfor %}
-        
-                <!-- <div class="signup"> -->
-        
-                {{ form.reg(class="signup") }}
-        
-                <!-- </div> -->
+
+                {{ form.reset }}
         
             </form>
         </div>
