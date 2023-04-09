@@ -25,7 +25,7 @@ login = LoginManager()
 login.login_view = 'login'
 login.init_app(app)
 
-class esp32(db.Model):
+class esp32(UserMixin, db.Model):
 
     __tablename__ = 'motor'
     id = db.Column(db.Integer, primary_key = True)
@@ -42,6 +42,15 @@ class users(db.Model):
     email = db.Column(db.String(150), nullable = False, unique = True)
     password = db.Column(db.String(150), nullable = False)
 
+    def is_active(self):
+        return True
+    
+    def get_id(self):
+        return self.id
+    
+    def is_authenticated(self):
+        return True
+    
     def __repr__(self):
         return f'<users {self.email} {self.password}>'
 
@@ -82,16 +91,17 @@ def login():
             flash('Please check your login details and try again.')
 
             return render_template("signin.html", form=form)
-        # login_user(user, remember=form.remember_me.data)
+        
+        login_user(user)
         return redirect(url_for('index'))
 
     return render_template("signin.html", form=form)
 
-# @app.route('/logout')
-# @login_required
-# def logout():
-#     logout_user()
-#     return redirect(url_for('login'))
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
 
 @app.route('/query', methods=['POST', 'GET'])
 def query():
