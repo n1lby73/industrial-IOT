@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_socketio import SocketIO, send, emit
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.urls import url_parse
-from signinForm import loginForm
+from form import loginForm
 from dotenv import load_dotenv
 import threading
 import time
@@ -61,6 +61,10 @@ def index():
 
     return render_template("index.html")
 
+@app.route('/register', methods=['POST', 'GET'])
+def register():
+    return "me"
+
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     
@@ -92,6 +96,11 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('login'))
+
+@app.route('/forgetPassword', methods=['POST', 'GET'])
+def forgetPassword():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
 
 @app.route('/query', methods=['POST', 'GET'])
 def query():
@@ -196,7 +205,6 @@ def websocket():
     current_status_from_db = {"success":state, "value":espstate}
     socketio.emit('message', current_status_from_db, json=True, broadcast=True)
     print("A new client connected")
-
 
 @socketio.on('espstatus')
 def espstatus():
