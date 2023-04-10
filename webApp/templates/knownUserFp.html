@@ -8,7 +8,7 @@
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 
     <title>Reset password</title>
-    
+
 </head>
 <body>
     <div class="register__con">
@@ -16,6 +16,14 @@
             <form id="form" method="post" action="">
         
                 <h1 id="h1">Reset Password</h1>
+
+                {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                {{message}}
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
         
                 {{ form.csrf_token }}
         
