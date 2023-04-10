@@ -116,8 +116,8 @@ def forgetPassword():
     
     return render_template("unKnownUserFp.html", form=unKnownUserForm)
 
-@app.route('/forgetPassEmail', methods=['POST', 'GET'])
-def forgetPassEmail():
+@app.route('/forgetPasswordEmail', methods=['POST', 'GET'])
+def forgetPasswordEmail():
     
     forgetPassEmailForm=forgetPassEmail()
 
