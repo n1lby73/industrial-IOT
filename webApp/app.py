@@ -125,8 +125,16 @@ def forgetPassword():
         return render_template("knownUserFp.html", form=knownUserForm)
     
     if unKnownUserForm.validate_on_submit():
-        
-        flash('A password reset link has been sent to the provided email')
+        email = request.form.get('email')
+
+        confirmEmail = users.query.filter_by(email=email).first()
+
+        if confirmEmail:
+
+            flash('A password reset link has been sent to the provided email')
+            return render_template("unKnownUserFp.html", form=unKnownUserForm)
+
+        flash('Invalid email, signup instead')
         return render_template("unKnownUserFp.html", form=unKnownUserForm)
     
     return render_template("unKnownUserFp.html", form=unKnownUserForm)
