@@ -32,10 +32,12 @@ app.config['MAIL_DEBUG'] = True
 
 mail = Mail(app)
 db = SQLAlchemy(app)
-socketio = SocketIO(app)
 login = LoginManager()
-login.login_view = 'login'
+socketio = SocketIO(app)
+
 login.init_app(app)
+login.login_view = 'login'
+login.login_message = "You're not logged in"
 
 class esp32(db.Model):
 
