@@ -1,7 +1,7 @@
 from flask_login import LoginManager, login_required, current_user, login_user, logout_user, UserMixin
 from flask import Flask, render_template, url_for, request, redirect, jsonify, flash
 from werkzeug.security import generate_password_hash, check_password_hash
-from form import loginForm, knownUserFp, unKnownUserFp
+from form import loginForm, knownUserFp, unKnownUserFp, forgetPassEmail
 from flask_socketio import SocketIO, send, emit
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.urls import url_parse
@@ -110,8 +110,20 @@ def forgetPassword():
         return render_template("knownUserFp.html", form=knownUserForm)
     
     if unKnownUserForm.validate_on_submit():
-        return "work"
+        
+        flash('A password reset link has been sent to the provided email')
+        return render_template("unKnownUserFp.html", form=unKnownUserForm)
+    
     return render_template("unKnownUserFp.html", form=unKnownUserForm)
+
+@app.route('/forgetPassEmail', methods=['POST', 'GET'])
+def forgetPassEmail():
+    
+    forgetPassEmailForm=forgetPassEmail()
+
+    if forgetPassEmailForm.validate_on_submit():
+        return "work"
+    return render_template("forgetPassEmail.html", form=forgetPassEmailForm)
 
 @app.route('/query', methods=['POST', 'GET'])
 def query():
