@@ -106,7 +106,22 @@ def forgetPassword():
     if current_user.is_authenticated:
 
         if knownUserForm.validate_on_submit():
-                return "me"
+                
+                oldpass = request.form.get('currentPassword')
+                newpass = request.form.get('newPassword')
+
+                email = users.query.filter_by(email=current_user.email).first()
+
+                if not check_password_hash(email.password, oldpass):
+
+                    flash("incorrect password")
+                    return render_template("knownUserFp.html", form=knownUserForm)
+                
+                email.password = generate_password_hash(newpass)
+                db.session.commit()
+
+                return redirect(url_for('index'))
+        
         return render_template("knownUserFp.html", form=knownUserForm)
     
     if unKnownUserForm.validate_on_submit():
