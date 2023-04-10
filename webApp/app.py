@@ -98,7 +98,13 @@ def login():
             return render_template("signin.html", form=form)
         
         login_user(user)
-        return redirect(url_for('index'))
+        next_page = request.args.get('next')
+
+        if not next_page or url_parse(next_page).netloc != '':
+
+            next_page = url_for('index')
+
+        return redirect(next_page)
     
     return render_template("signin.html", form=form)
 
