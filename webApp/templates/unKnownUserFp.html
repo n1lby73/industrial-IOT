@@ -5,7 +5,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{url_for('static', filename='/css/forgettenPassword.css') }}"/>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+
     <title>Reset password</title>
+    
 </head>
 <body>
     <div class="register__con">
@@ -13,7 +16,7 @@
             <form id="form" method="post" action="">
         
                 <h1 id="h1">Reset Password</h1>
-                
+
                 {% with messages = get_flashed_messages() %}
                     {% if messages %}
                         {% for message in messages %}
