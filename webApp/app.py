@@ -7,7 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
 from werkzeug.urls import url_parse
 from email.utils import formataddr
-from flask_migrate import Migrate
+# from flask_migrate import Migrate
 from dotenv import load_dotenv
 import threading
 import time
@@ -35,7 +35,7 @@ mail = Mail(app)
 db = SQLAlchemy(app)
 login = LoginManager()
 socketio = SocketIO(app)
-migrate = Migrate(app, db)
+# migrate = Migrate(app, db)
 
 login.init_app(app)
 login.login_view = 'login'
