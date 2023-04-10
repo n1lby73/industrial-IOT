@@ -7,6 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
 from werkzeug.urls import url_parse
 from email.utils import formataddr
+from flask_migrate import Migrate
 from dotenv import load_dotenv
 import threading
 import time
@@ -34,6 +35,7 @@ mail = Mail(app)
 db = SQLAlchemy(app)
 login = LoginManager()
 socketio = SocketIO(app)
+migrate = Migrate(app, db)
 
 login.init_app(app)
 login.login_view = 'login'
@@ -47,17 +49,19 @@ class esp32(db.Model):
     switchState = db.Column(db.String(2), nullable = False)
 
     def __repr__(self):
-        return f'<esp32 {self.esp32pin} {self.switchState}>'
+        return '<esp32 {} {}>'.format(self.esp32pin, self.switchState)
 
 class users(UserMixin, db.Model):
 
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key = True)
+    username = db.Column(db.String(150), nullable = False, unique = True)
     email = db.Column(db.String(150), nullable = False, unique = True)
+    # otp = db.Column(db.String(150), nullable = True, unique = True)
     password = db.Column(db.String(150), nullable = False)
     
     def __repr__(self):
-        return f'<users {self.email} {self.password}>'
+        return '<esp32 {} {}>'.format(self.email, self.password)
 
 # global variables
 
