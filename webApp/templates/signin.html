@@ -1,41 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/signin.css') }}"/>
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/forgettenPassword.css') }}"/>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 
-    <title>Login</title>
-</head>
-<body>
-    {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for message in messages %}
-                    {{message}}
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+        <title>Login</title>
+    </head>
+
+    <body>
         
-    <form method="post" action="">
-        {{ form.csrf_token }}
+        <div class="register__con">
+            <div class="container">
 
-        {{ form.email.label }}:<br>
-        {{ form.email }}<br><br>
+                <form id="form" method="post" action="">
 
-        {{ form.password.label }}:<br>
-        {{ form.password }}
+                    <h1 id="h1">Reset Password</h1>
+                    
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                {{message}}
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
 
-        <ul>
-            {% for errors in form.password.errors %}
-                <li style="color:red;">{{ errors }}</li>
-            {% endfor %}
-        </ul>
+                    {{ form.csrf_token }}
 
-        {{ form.reg(class="signup") }}
-    </form>
-    <a href="{{ url_for('register') }}" class="navbar-item">Signup</a>
-    <a href="{{ url_for('forgetPassword') }}" class="navbar-item">reset password</a>
-</body>
+                    <div class="input-control">
+
+                        <div class="text">
+
+                            {{ form.email.label }}:
+                        </div>
+
+                        {{ form.email }}
+                    </div>
+
+                    <div class="input-control">
+
+                        <div class="text">
+                            {{ form.password.label }}:
+                        </div>
+                        {{ form.password }}
+                    </div>
+
+                    <ul>
+                        {% for errors in form.password.errors %}
+                            <li style="color:red;">{{ errors }}</li>
+                        {% endfor %}
+                    </ul>
+
+                    {{ form.reg(class="signup") }}
+                </form>
+                <a href="{{ url_for('register') }}" class="navbar-item">Signup</a>
+                <a href="{{ url_for('forgetPassword') }}" class="navbar-item">reset password</a>
+            </div>
+        </div>
+    </body>
 </html>
