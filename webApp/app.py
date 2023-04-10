@@ -151,7 +151,7 @@ def forgetPassword():
 
         if confirmEmail:
 
-            msg = Message('Password Recovery', recipients=['axfdsxvypceibxelzr@bbitq.com'])
+            msg = Message('Password Recovery', recipients=[email])
             msg.body = 'did it work'
             mail.send(msg)
             flash('A password reset link has been sent to the provided email')
