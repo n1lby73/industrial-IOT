@@ -13,7 +13,15 @@
             <form id="form" method="post" action="">
         
                 <h1 id="h1">Reset Password</h1>
-        
+                
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            {{message}}
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
                 {{ form.csrf_token }}
         
                 <div class="input-control">
