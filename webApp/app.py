@@ -1,7 +1,7 @@
 from flask_login import LoginManager, login_required, current_user, login_user, logout_user, UserMixin
 from flask import Flask, render_template, url_for, request, redirect, jsonify, flash
+from form import loginForm, knownUserFp, unKnownUserFp, forgetPassEmail, regForm
 from werkzeug.security import generate_password_hash, check_password_hash
-from form import loginForm, knownUserFp, unKnownUserFp, forgetPassEmail
 from flask_socketio import SocketIO, send, emit
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
@@ -82,7 +82,20 @@ def index():
 
 @app.route('/register', methods=['POST', 'GET'])
 def register():
-    return "me"
+
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    
+    form=regForm()
+
+    if form.validate_on_submit():
+
+        email = request.form.get('email')
+        username = request.form.get('username') 
+        password = request.form.get('password')
+        
+        return render_template("confirmEmail.html", form=form)
+    return render_template("confirmEmail.html", form=form)
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
