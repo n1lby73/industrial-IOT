@@ -1,8 +1,9 @@
 #Fp = forgotten password
 
+from app import users
 from flask_wtf import FlaskForm
 from wtforms import StringField, EmailField, PasswordField, SubmitField
-from wtforms.validators import InputRequired, Length, Email, EqualTo
+from wtforms.validators import InputRequired, Length, Email, EqualTo, ValidationError
 
 class loginForm (FlaskForm):
     
@@ -23,6 +24,12 @@ class regForm (FlaskForm):
     confirmpass = PasswordField("Confirm password", validators=[InputRequired(), EqualTo('password', message="passwords must be same")])
 
     reg = SubmitField("sign up")
+
+    def validate_username(self, username):
+        existingUserName = users.query.filter_by(username=username.data).first()
+
+        if existingUserName:
+            raise ValidationError("Username is already taken")
 
 class  knownUserFp(FlaskForm):
     
