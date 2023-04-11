@@ -45,8 +45,7 @@ def register():
         password = request.form.get('password')
         
         return render_template("confirmEmail.html", form=emailForm)
-    return "work"
-    # return render_template("signup.html", form=form)
+    return render_template("signup.html", form=form)
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
