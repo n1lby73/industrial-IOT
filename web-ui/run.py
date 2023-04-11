@@ -3,16 +3,13 @@ from flask import Flask, render_template, url_for, request, redirect, jsonify, f
 from form import loginForm, knownUserFp, unKnownUserFp, forgetPassEmail, regForm
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_socketio import SocketIO, send, emit
-from flask_sqlalchemy import SQLAlchemy
+# from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
 from werkzeug.urls import url_parse
-# from email.utils import formataddr
 from models import users, esp32
-# from flask_migrate import Migrate
 from dotenv import load_dotenv
 import threading
 import time
-# import os
 from config import config
 
 load_dotenv()
@@ -23,7 +20,7 @@ app.app_context().push()
 app.config.from_object(config['development'])
 
 mail = Mail(app)
-db = SQLAlchemy(app)
+# db = SQLAlchemy(app)
 login = LoginManager()
 socketio = SocketIO(app)
 # migrate = Migrate(app, db)
