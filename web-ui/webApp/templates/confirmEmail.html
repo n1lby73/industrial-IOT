@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{url_for('static', filename='/css/forgettenPassword.css') }}"/>
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 
-    <title>Reset password</title>
+    <title>Email Verification</title>
     
 </head>
 <body>
@@ -15,7 +15,7 @@
         <div class="container">
             <form id="form" method="post" action="">
         
-                <h1 id="h1">Reset Password</h1>
+                <h1 id="h1">Verify Email Address</h1>
 
                 {% with messages = get_flashed_messages() %}
                     {% if messages %}
@@ -31,15 +31,15 @@
         
                     <div class="text">
         
-                        {{ form.email.label }}
+                        {{ form.emailOTP.label }}
         
                     </div>
         
-                    {{ form.email }}
+                    {{ form.emailOTP }}
         
                 </div>
 
-                {{ form.reset(class="signup") }}
+                {{ form.submit(class="signup") }}
         
             </form>
 

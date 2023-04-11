@@ -1,3 +1,4 @@
+from flask_mail import Mail
 from email.utils import formataddr
 import os
 

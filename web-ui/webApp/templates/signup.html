@@ -57,6 +57,12 @@
         
                 </div>
 
+                <ul>
+                    {% for errors in form.email.errors %}
+                        <li style="color:red;">{{ errors }}</li>
+                    {% endfor %}
+                </ul>
+
                 <div class="input-control">
         
                     <div class="text">

@@ -7,9 +7,10 @@
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
-from app import app
+from webApp import db
+# from app import app
 
-db = SQLAlchemy(app)
+# db = SQLAlchemy(app)
 class esp32(db.Model):
 
     __tablename__ = 'motor'
