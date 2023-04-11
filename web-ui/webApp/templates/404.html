@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, minimum-scale=1 initial-scale=1.0">
+        <title>page not found</title>
+        
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/404.css') }}"/>
+    </head>
+    <body>
+        <main id="error-container" role="main">
+        <a href="//">
+            <span></span>
+        </a>
+        <p>
+            <b>404.</b>
+            <ins>That's an error.</ins>
+        </p>    
+        <p>
+            "The server cannot process the request because 
+            <p>   it is unavailable"</p>
+            <ins>That's all we know.</ins>
+        </p>
+        </main>
+    </body>
+</html>

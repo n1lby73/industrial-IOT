@@ -1,0 +1,74 @@
+body {
+    width: 90%;
+    background: linear-gradient(to top, rgba(0,0,0,0.5), rgba(0,0,0,0.5) 50%), url('/static/images/background.jpg');
+    background-position: center;
+    background-size: cover;
+    height: 109vh;
+}
+
+#rotate-image {
+    transform-origin: center center;
+  }
+  
+  .rotate {
+    animation: rotation 1s infinite linear;
+    animation-delay: 0s;
+  }
+  
+  @keyframes rotation {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+.parentDiv {
+    display: contents;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 750px;
+    height: 3300px;
+    margin: 230px;
+    padding: 110px;
+    border-radius: 10px;
+    position: absolute;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.2);
+    border-radius: var(--border-radius);
+    background: #000000;
+    background: transparent;
+    box-sizing: content-box;
+}
+
+.btnn {
+    width: 80px;
+    height: 30px;
+    background: #ff7200;
+    border: none;
+    margin-top: 30px;
+    font-size: 15px; 
+    border-radius: 10px; 
+    cursor: pointer;
+    color: #fff;
+    transition: 0.5s ease;
+    justify-content: left;
+    margin-block-end: auto;
+}
+
+.btnn:hover {
+    background: rgb(1, 170, 94);
+    color: #ff9900;
+}
+
+.btnn a {
+    text-decoration: none;
+    color: #000;
+    font-weight: bold;
+}
+.form__button:active {
+    transform: scale(0.98);
+}
