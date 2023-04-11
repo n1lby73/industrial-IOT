@@ -1,16 +1,7 @@
-# from flask_sqlalchemy import SQLAlchemy
-# from flask import Flask
-# from flask_login import UserMixin
-
-# app = Flask(__name__)
-# db = SQLAlchemy(app)
-
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from webApp import db
-# from app import app
 
-# db = SQLAlchemy(app)
 class esp32(db.Model):
 
     __tablename__ = 'motor'

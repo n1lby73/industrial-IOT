@@ -1,6 +1,5 @@
 #Fp = forgotten password
 
-# from app import users
 from webApp.models import users
 from flask_wtf import FlaskForm
 from wtforms import StringField, EmailField, PasswordField, SubmitField
