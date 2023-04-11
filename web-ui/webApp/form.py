@@ -1,9 +1,9 @@
 #Fp = forgotten password
 
+from wtforms.validators import InputRequired, Length, Email, EqualTo, ValidationError
+from wtforms import StringField, EmailField, PasswordField, SubmitField
 from webApp.models import users
 from flask_wtf import FlaskForm
-from wtforms import StringField, EmailField, PasswordField, SubmitField
-from wtforms.validators import InputRequired, Length, Email, EqualTo, ValidationError
 
 class loginForm (FlaskForm):
     

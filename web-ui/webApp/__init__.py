@@ -1,12 +1,13 @@
-from flask import Flask
 from flask_socketio import SocketIO, send, emit
 from flask_sqlalchemy import SQLAlchemy
-from flask_mail import Mail
-from dotenv import load_dotenv
-# from webApp.config import config
 from flask_login import LoginManager
 from email.utils import formataddr
+from dotenv import load_dotenv
+from flask_mail import Mail
+from flask import Flask
 import os
+
+# from webApp.config import config
 
 load_dotenv()
 

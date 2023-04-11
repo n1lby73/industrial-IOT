@@ -1,5 +1,5 @@
-from flask_mail import Mail
 from email.utils import formataddr
+from flask_mail import Mail
 import os
 
 # app.config['MAIL_DEFAULT_SENDER'] = formataddr((os.getenv("mail_default_sender_name"), os.getenv("mail_default_sender_email")))

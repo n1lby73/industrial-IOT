@@ -1,12 +1,11 @@
-from flask import render_template, url_for, request, redirect, jsonify, flash
 from webApp.form import loginForm, knownUserFp, unKnownUserFp, forgetPassEmail, regForm, confirmEmail
-from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_required, current_user, login_user, logout_user, UserMixin
-from webApp.models import users, esp32
+from flask import render_template, url_for, request, redirect, jsonify, flash
+from werkzeug.security import generate_password_hash, check_password_hash
 from webApp import app, db, mail, login, socketio
-from flask_mail import Message
+from webApp.models import users, esp32
 from werkzeug.urls import url_parse
-import threading
+from flask_mail import Message
 import time
 
 
