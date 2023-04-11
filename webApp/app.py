@@ -6,30 +6,21 @@ from flask_socketio import SocketIO, send, emit
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
 from werkzeug.urls import url_parse
-from email.utils import formataddr
+# from email.utils import formataddr
+from models import users, esp32
 # from flask_migrate import Migrate
 from dotenv import load_dotenv
 import threading
 import time
-import os
+# import os
+from config import config
 
 load_dotenv()
 
 app = Flask(__name__)
 app.app_context().push()
 
-app.config['MAIL_DEFAULT_SENDER'] = formataddr((os.getenv("mail_default_sender_name"), os.getenv("mail_default_sender_email")))
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URI")
-app.config['MAIL_USERNAME'] = os.getenv("mail_username")
-app.config['MAIL_PASSWORD'] = os.getenv("mail_password")
-app.config['MAIL_USE_SSL'] = os.getenv("mail_use_ssl")
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['MAIL_SERVER'] = os.getenv("mail_server")
-app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
-app.config['MAIL_PORT'] = os.getenv("mail_port")
-app.config['MAIL_USE_TLS'] = False
-app.config['MAIL_DEBUG'] = True
-
+app.config.from_object(config['development'])
 
 mail = Mail(app)
 db = SQLAlchemy(app)
@@ -40,29 +31,6 @@ socketio = SocketIO(app)
 login.init_app(app)
 login.login_view = 'login'
 login.login_message = "You're not logged in"
-
-class esp32(db.Model):
-
-    __tablename__ = 'motor'
-    id = db.Column(db.Integer, primary_key = True)
-    esp32pin = db.Column(db.String(2), nullable = False, unique = True)
-    switchState = db.Column(db.String(2), nullable = False)
-
-    def __repr__(self):
-        return '<esp32 {} {}>'.format(self.esp32pin, self.switchState)
-
-class users(UserMixin, db.Model):
-
-    __tablename__ = 'users'
-    id = db.Column(db.Integer, primary_key = True)
-    username = db.Column(db.String(150), nullable = False, unique = True)
-    email = db.Column(db.String(150), nullable = False, unique = True)
-    otp = db.Column(db.String(150), nullable = True, unique = True)
-    role = db.Column(db.String(150), nullable = False, unique = True)
-    password = db.Column(db.String(150), nullable = False)
-    
-    def __repr__(self):
-        return '<esp32 {} {}>'.format(self.email, self.password)
 
 # global variables
 

@@ -1,6 +1,7 @@
 #Fp = forgotten password
 
-from app import users
+# from app import users
+from models import users
 from flask_wtf import FlaskForm
 from wtforms import StringField, EmailField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length, Email, EqualTo, ValidationError
