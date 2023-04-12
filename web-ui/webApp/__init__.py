@@ -1,10 +1,8 @@
 from flask_socketio import SocketIO, send, emit
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-# from email.utils import formataddr
 from flask_mail import Mail
 from flask import Flask
-import os
 
 app = Flask(__name__)
 app.app_context().push()
