@@ -54,7 +54,7 @@ def register():
 
         if not next_page or url_parse(next_page).netloc != '':
 
-            next_page = url_for('index')
+            next_page = url_for('login')
 
         return redirect(next_page)
 
