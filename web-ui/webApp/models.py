@@ -19,7 +19,7 @@ class users(UserMixin, db.Model):
     username = db.Column(db.String(150), nullable = False, unique = True)
     email = db.Column(db.String(150), nullable = False, unique = True)
     otp = db.Column(db.String(150), nullable = True, unique = True)
-    role = db.Column(db.String(150), nullable = False, unique = True)
+    role = db.Column(db.String(150), nullable = False)
     password = db.Column(db.String(150), nullable = False)
     
     def __repr__(self):
