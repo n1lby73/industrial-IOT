@@ -19,10 +19,10 @@ espstate = 0
 startTime = 0
 timeout = 2
 
-email = " "
-username = " " 
-password = " " 
-otp = " "
+# email = " "
+# username = " " 
+# password = " " 
+# otp = " "
 
 @login.user_loader
 def load_user(user_id):
@@ -40,7 +40,7 @@ def register():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     
-    global email, username, password, otp
+    # global email, username, password, otp
 
     form=regForm()
     emailForm = confirmEmail()
@@ -50,38 +50,53 @@ def register():
         email = request.form.get('email')
         username = request.form.get('username') 
         password = request.form.get('password')
-        otp = 123456
-        msg = Message('Email OTP verification', recipients=[email])
-        msg.body = render_template("emailVerification.txt", otp=otp)
-        mail.send(msg)
-        # return render_template("unKnownUserFp.html", form=unKnownUserForm)
-        return render_template("confirmEmail.html", form=emailForm)
+
+        new_user = users(email=email, username=username, role="user", password=generate_password_hash(password))
+
+        db.session.add(new_user)
+        db.session.commit()
+
+        login_user(new_user)
+
+        next_page = request.args.get('next')
+
+        if not next_page or url_parse(next_page).netloc != '':
+
+            next_page = url_for('index')
+        return redirect(next_page)
+
+    #     otp = 123456
+    #     msg = Message('Email OTP verification', recipients=[email])
+    #     msg.body = render_template("emailVerification.txt", otp=otp)
+    #     mail.send(msg)
+    #     # return render_template("unKnownUserFp.html", form=unKnownUserForm)
+    #     return render_template("confirmEmail.html", form=emailForm)
     
-    if emailForm.validate_on_submit:
+    # if emailForm.validate_on_submit:
 
-        confirmOTP = request.form.get('emailOTP')
-        print(confirmOTP)
-        if confirmOTP == otp:
-            print("gjyegwygyftwyukkfyufgewje")
-            new_user = users(email=email, password=generate_password_hash(password), username=username, role="user")
+    #     confirmOTP = request.form.get('emailOTP')
+    #     print(confirmOTP)
+    #     if confirmOTP == otp:
+    #         print("gjyegwygyftwyukkfyufgewje")
+    #         new_user = users(email=email, password=generate_password_hash(password), username=username, role="user")
 
-            db.session.add(new_user)
-            db.session.commit()
+    #         db.session.add(new_user)
+    #         db.session.commit()
 
-            login_user(new_user)
-            next_page = request.args.get('next')
+    #         login_user(new_user)
+    #         next_page = request.args.get('next')
 
-            if not next_page or url_parse(next_page).netloc != '':
+    #         if not next_page or url_parse(next_page).netloc != '':
 
-                next_page = url_for('index')
-                return redirect(next_page)
+    #             next_page = url_for('index')
+    #             return redirect(next_page)
             
-            return redirect(url_for('index'))
+    #         return redirect(url_for('index'))
 
-        else:
+    #     else:
 
-            flash("Invalid OTP")
-            return render_template("confirmEmail.html", form=emailForm)
+    #         flash("Invalid OTP")
+    #         return render_template("confirmEmail.html", form=emailForm)
 
     return render_template("signup.html", form=form)
 
