@@ -285,6 +285,11 @@ def websocket(update):
         current_status_from_db = {"success":state}
         socketio.emit('message', current_status_from_db, json=True, broadcast=True)
 
+
+@socketio.on('role')
+def role():
+    socketio.emit('storeRole',{"role":current_user.role}, json=True)
+
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html')
