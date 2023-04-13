@@ -48,3 +48,11 @@ else{
   document.querySelector('#users').style.display = "none";
 
 }
+
+const delRole = () => {
+
+  localStorage.clear();
+
+};
+
+document.querySelector('#logout').addEventListener('click', delRole);
