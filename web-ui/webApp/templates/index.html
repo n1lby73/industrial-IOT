@@ -7,29 +7,34 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <script defer src="{{ url_for('static', filename='scripts/index.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='scripts/role.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script> 
 
     <title>Halted</title>
 </head>
 <body>
+    <div id="loading-screen">Loading...</div>
 
-    <nav>
-        <a href="{{ url_for('logout') }}" class="navbar-item"> logout </a>
-        <a href="{{ url_for('forgetPassword') }}" class="navbar-item"> settings </a>
-    </nav>
-    
-    <div class="container ">
+        <div id="content" style="display:none;">
 
+
+        <nav>
+            <a href="{{ url_for('logout') }}" class="navbar-item"> logout </a>
+            <a href="{{ url_for('forgetPassword') }}" class="navbar-item"> settings </a>
+        </nav>
         
-        
-        <div class="parentDiv">
-            <div id="online">ESP32 IS OFFLINE</div>
-            <img src="{{ url_for('static', filename='images/fan.png') }}" id="rotate">
-        
-        </div>
+        <div class="container ">
 
-        <button class="btnn" id="toggleBtn">ON</button>
-    </div>   
+            
+            
+            <div class="parentDiv">
+                <div id="online">ESP32 IS OFFLINE</div>
+                <img src="{{ url_for('static', filename='images/fan.png') }}" id="rotate">
+            
+            </div>
 
+            <button class="btnn" id="toggleBtn">ON</button>
+        </div>   
+    </div>
 </body>
 </html>
