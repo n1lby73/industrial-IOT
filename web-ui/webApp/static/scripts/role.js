@@ -17,31 +17,34 @@ socket.on('storeRole', function(msg){
 
 priviledges = localStorage.getItem('role');
 
-// if (role === undefined ){
-
-//   // console.log("hdghncdghcgn ff");
-//   // return <div>loading</div>;
-//   var loadingDiv = document.createElement('div');
-//   loadingDiv.textContent = 'Loading...';
-//   document.body.appendChild(loadingDiv);
-//   console.log("hdghncdghcgn ff");
-
-// }
-// if (priviledges !== "owner"){
-//   console.log("what is happening")
-//   console.log(localStorage.getItem('role'))
-// }
-
-
 // Show the loading screen
 document.getElementById('loading-screen').style.display = 'block';
 
-// Use setInterval to check if the variable is assigned
 const interval = setInterval(function() {
   if (role) {
     // Hide the loading screen and show the content element
     document.getElementById('loading-screen').style.display = 'none';
     document.getElementById('content').style.display = 'block';
-    clearInterval(interval);
+    // clearInterval(interval);
   }
 });
+
+if (priviledges === "user"){
+
+  document.querySelector('#toggleBtn').style.display = "none";
+  document.querySelector('#users').style.display = "none";
+  
+}
+
+else if (priviledges === "admin"){
+
+  document.querySelector('#toggleBtn').style.display = "block";
+
+}
+
+else{
+
+  document.querySelector('#toggleBtn').style.display = "none";
+  document.querySelector('#users').style.display = "none";
+
+}
