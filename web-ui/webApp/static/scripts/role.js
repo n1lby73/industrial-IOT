@@ -31,6 +31,8 @@ const interval = setInterval(function() {
 
 if (priviledges === "user"){
 
+  console.log("users");
+
   document.querySelector('#toggleBtn').style.display = "none";
   document.querySelector('#users').style.display = "none";
   
@@ -38,15 +40,17 @@ if (priviledges === "user"){
 
 else if (priviledges === "admin"){
 
-  document.querySelector('#toggleBtn').style.display = "inline";
-  document.querySelector('#users').style.display = "none";
+  console.log("admin");
+  // document.querySelector('#toggleBtn').style.display = "inline";
+  // document.querySelector('#users').style.display = "none";
 
 }
 
 else{
 
-  document.querySelector('#toggleBtn').style.display = "inline";
-  document.querySelector('#users').style.display = "inline";
+  console.log("owner")
+  // document.querySelector('#toggleBtn').style.display = "inline";
+  // document.querySelector('#users').style.display = "inline";
 
 }
 
