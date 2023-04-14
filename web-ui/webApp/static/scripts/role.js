@@ -38,14 +38,15 @@ if (priviledges === "user"){
 
 else if (priviledges === "admin"){
 
-  document.querySelector('#toggleBtn').style.display = "block";
+  document.querySelector('#toggleBtn').style.display = "inline";
+  document.querySelector('#users').style.display = "none";
 
 }
 
 else{
 
-  document.querySelector('#toggleBtn').style.display = "none";
-  document.querySelector('#users').style.display = "none";
+  document.querySelector('#toggleBtn').style.display = "inline";
+  document.querySelector('#users').style.display = "inline";
 
 }
 
