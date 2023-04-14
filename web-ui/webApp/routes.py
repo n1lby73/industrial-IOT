@@ -152,6 +152,16 @@ def forgetPasswordEmail():
         return "work"
     return render_template("forgetPassEmail.html", form=forgetPassEmailForm)
 
+@app.route('/regUsers')
+@login_required
+def regUsers():
+
+    if current_user.role != "owner":
+        
+        return render_template('404.html')
+    
+    regUser = users.query.with_entities(users.id, users.username, users.email, users.role).all()
+
 @app.route('/query', methods=['POST', 'GET'])
 def query():
 
