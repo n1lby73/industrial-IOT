@@ -152,9 +152,9 @@ def forgetPasswordEmail():
         return "work"
     return render_template("forgetPassEmail.html", form=forgetPassEmailForm)
 
-@app.route('/regUsers')
+@app.route('/admin')
 @login_required
-def regUsers():
+def admin():
 
     if current_user.role != "owner":
         
