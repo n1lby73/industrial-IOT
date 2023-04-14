@@ -1,9 +1,8 @@
 var socket = io.connect('http://127.0.0.1:5000/'); //url currently subject to change
 
-var reloadFlag = true;
-var priviledges;
 var role;
 
+document.getElementById('loading-screen').style.display = 'block';
 
 
 socket.emit("role")
@@ -15,24 +14,53 @@ socket.on('storeRole', function(msg){
   console.log("from web socket");
   localStorage.setItem('role', role);
    
+  if(role === "user"){
+
+    document.querySelector('#toggleBtn').style.display = "none";
+    document.querySelector('#users').style.display = "none";
+
+  }
+
+  else if(role === "admin"){
+
+    document.querySelector('#toggleBtn').style.display = "inline-block";
+    document.querySelector('#users').style.display = "none";
+
+  }
+
+  else{
+
+    document.querySelector('#toggleBtn').style.display = "inline-block";
+    document.querySelector('#users').style.display = "inline-block";
+
+  }
+
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('content').style.display = 'block';
 
 });
 
+const delRole = () => {
 
+  localStorage.clear();
 
-if(localStorage.getItem('role')){
+};
 
-  console.log("no data yet");
-  document.getElementById('loading-screen').style.display = 'block';
+document.querySelector('#logout').addEventListener('click', delRole);
+
+// if(localStorage.getItem('role')){
+
+//   console.log("no data yet");
+//   document.getElementById('loading-screen').style.display = 'block';
   
   
-}
+// }
 
-if (!localStorage.getItem('role')){
+// if (!localStorage.getItem('role')){
 
-  console.log("Got Here again");
+//   console.log("Got Here again");
 
-}
+// }
 
 
 // else{
