@@ -1,13 +1,16 @@
 const button = document.querySelector('#toggleBtn');
 const rotateImage = document.getElementById("rotate");
 const offlineMsg = document.getElementById("online");
+
 var socket = io.connect('http://127.0.0.1:5000/'); //url currently subject to change
+
 var onlineStatus;
+
 offlineMsg.style.display = "none";
+
 socket.emit("current_status")
 socket.emit("espstatus")
 
-// const socket = io.connect('http://localhost:5000'); 
 
 const handleButtonClick = () => {
 
@@ -95,8 +98,7 @@ socket.on('message', function(msg){
 
   var value = JSON.parse(msg.success);
   onlineStatus = JSON.parse(msg.value);
-  console.log(onlineStatus)
-  console.log("here we are");
+
   handleOnLoad(value, onlineStatus);
   
 });
@@ -113,9 +115,9 @@ socket.on('localUpdate', function(msg){
 });
 
 socket.on('espOnlineState', function(msg){
+
   onlineStatus = JSON.parse(msg.value);
-  console.log("under is the value");
-  console.log(onlineStatus);
+  
 
   if (onlineStatus === 0){
 
@@ -130,4 +132,5 @@ socket.on('espOnlineState', function(msg){
     
   }
 })
+
 button.addEventListener('click', handleButtonClick);
