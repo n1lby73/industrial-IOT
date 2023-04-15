@@ -68,9 +68,11 @@
                                 <div class="dropdown">
                                     <button class="dropbtn">{{ user.role }}</button>
                                     <div class="dropdown-content">
-                                        <a href="#">Admin</a>
-                                        <a href="#">Moderator</a>
-                                        <a href="#">User</a>
+                                        {% if user.role == "admin" %}
+                                            <a href="#">Demote admin</a>
+                                        {% elif user.role == "user" %}
+                                            <a href="#">promote admin</a>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </td>
