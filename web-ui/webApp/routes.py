@@ -27,7 +27,9 @@ def load_user(user_id):
 @login_required
 def index():
 
-    return render_template("index.html")
+    regUser = users.query.with_entities(users.id, users.username, users.email, users.role).all()
+    print(regUser)
+    return render_template("index.html", form=regUser)
 
 @app.route('/register', methods=['POST', 'GET'])
 def register():
@@ -152,15 +154,15 @@ def forgetPasswordEmail():
         return "work"
     return render_template("forgetPassEmail.html", form=forgetPassEmailForm)
 
-@app.route('/admin')
-@login_required
-def admin():
+# @app.route('/admin')
+# @login_required
+# def admin():
 
-    if current_user.role != "owner":
+#     if current_user.role != "owner":
         
-        return render_template('404.html')
+#         return render_template('404.html')
     
-    regUser = users.query.with_entities(users.id, users.username, users.email, users.role).all()
+#     regUser = users.query.with_entities(users.id, users.username, users.email, users.role).all()
 
 @app.route('/query', methods=['POST', 'GET'])
 def query():
