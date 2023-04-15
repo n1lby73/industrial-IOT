@@ -1,89 +1,3 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-    <script defer src="{{ url_for('static', filename='scripts/index.js') }}"></script>
-    <script defer src="{{ url_for('static', filename='scripts/role.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script> 
-
-    <title>Halted</title>
-</head>
-<body>
-    <div id="loading-screen">Loading...</div>
-
-        <div id="content" style="display:none;">
-
-
-        <nav>
-            <a href="{{ url_for('logout') }}" class="navbar-item" id="logout"> logout </a>
-            <a href="{{ url_for('forgetPassword') }}" class="navbar-item"> settings </a>
-            <a href="" class="navbar-item" id="users"> users </a>
-        </nav>
-        
-        <div class="container ">
-
-            
-            
-            <div class="parentDiv">
-                <div id="online">ESP32 IS OFFLINE</div>
-                <img src="{{ url_for('static', filename='images/fan.png') }}" id="rotate">
-            
-            </div>
-
-            <button class="btnn" id="toggleBtn">ON</button>
-        </div>   
-    </div>
-</body>
-</html> -->
-
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-    <script defer src="{{ url_for('static', filename='scripts/index.js') }}"></script>
-    <script defer src="{{ url_for('static', filename='scripts/role.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script> 
-
-    <title>Halted</title>
-</head>
-<body>
-    <div id="loading-screen">
-        <div class="spinner"></div>
-        <div class="loading-text">Loading...</div>
-    </div>
-
-    <div id="content" style="display:none;">
-        <header>
-            <nav>
-                <a href="{{ url_for('logout') }}" class="navbar-item" id="logout">Logout</a>
-                <a href="{{ url_for('forgetPassword') }}" class="navbar-item">Settings</a>
-                <a href="" class="navbar-item" id="users">Users</a>
-            </nav>
-        </header>
-
-        <div class="container">
-            <div class="parentDiv">
-                <div id="online">ESP32 IS OFFLINE</div>
-                <img src="{{ url_for('static', filename='images/fan.png') }}" class="rotate" id="rotate-image">
-            </div>
-
-            <div class="btn-container">
-                <button class="btn btn-on"id="toggleBtn">ON</button>
-                <button class="btn btn-off" id="toggleBtn">OFF</button>
-            </div>
-        </div>
-    </div>
-</body>
-</html> -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -91,9 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modal.css') }}"/>
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <script defer src="{{ url_for('static', filename='scripts/index.js') }}"></script>
     <script defer src="{{ url_for('static', filename='scripts/role.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='scripts/modal.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script> 
 
     <title>Halted</title>
@@ -120,10 +36,47 @@
             </div>
 
             <div class="btn-container">
-                <button class="btn" id="toggleBtn">TURN ON/OFF</button>
+                <button class="btn" id="toggleBtn">TURN ON</button>
             </div>
         </div>
     </div>
+
+    <div id="user-modal" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2>Registered Users</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for user in form %}
+              <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>
+                    <div class="dropdown">
+
+                        <button class="dropbtn">{{ user.role }}</button>
+                            <div class="dropdown-content">
+                            <a href="#">Admin</a>
+                            <a href="#">Moderator</a>
+                            <a href="#">User</a>
+                            </div>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>          
+        </div>
+    </div>
+      
 </body>
 </html>
-
