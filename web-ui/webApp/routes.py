@@ -27,8 +27,12 @@ def load_user(user_id):
 @login_required
 def index():
 
+    if current_user.role != "owner":
+        
+        return render_template('index.html')
+
     regUser = users.query.with_entities(users.id, users.username, users.email, users.role).all()
-    print(regUser)
+    
     return render_template("index.html", form=regUser)
 
 @app.route('/register', methods=['POST', 'GET'])
