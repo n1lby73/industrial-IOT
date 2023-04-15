@@ -69,9 +69,9 @@
                                     <button class="dropbtn">{{ user.role }}</button>
                                     <div class="dropdown-content">
                                         {% if user.role == "admin" %}
-                                            <a href="#">Demote admin</a>
+                                            <a href="#" class="message">Demote admin</a>
                                         {% elif user.role == "user" %}
-                                            <a href="#">promote admin</a>
+                                            <a href="#" class="message">promote admin</a>
                                         {% endif %}
                                     </div>
                                 </div>
@@ -80,6 +80,19 @@
                         {% endfor %}
                     </tbody>
                 </table>          
+            </div>
+        </div>
+
+
+        <!-- Confirmation modal -->
+        <div id="confirmModal" class="modal">
+            <div class="modal-content">
+            <span class="close">&times;</span>
+            <!-- Confirmation modal content here -->
+            <h2>Confirmation Modal</h2>
+            <p>Do you want to continue?</p>
+            <button class="cancel-button">Cancel</button>
+            <button class="save-button">Save</button>
             </div>
         </div>
       
