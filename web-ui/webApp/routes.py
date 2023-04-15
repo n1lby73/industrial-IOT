@@ -32,7 +32,7 @@ def index():
         return render_template('index.html')
 
     regUser = users.query.with_entities(users.id, users.username, users.email, users.role).all()
-    
+
     return render_template("index.html", form=regUser)
 
 @app.route('/register', methods=['POST', 'GET'])
