@@ -43,6 +43,127 @@
 
     <div id="user-modal" class="modal">
         <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Registered Users</h2>
+            <div class="search-container">
+                <i class="fa fa-search search-icon"></i>
+                <input type="text" placeholder="Search for users..." id="user-search">
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in form %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            <div class="dropdown">
+                                <button class="dropbtn">{{ user.role }}</button>
+                                <div class="dropdown-content">
+                                    <a href="#">Admin</a>
+                                    <a href="#">Moderator</a>
+                                    <a href="#">User</a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>          
+        </div>
+    </div>
+    
+
+    
+    <!-- <script>
+        const searchInput = document.getElementById("user-search");
+        const rows = document.querySelectorAll("tbody tr");
+    
+        searchInput.addEventListener("keyup", function(event) {
+            const query = event.target.value.toLowerCase();
+    
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+    
+                if (text.includes(query)) {
+                    row.style.display = "table-row";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        });
+    </script> -->
+    
+    <!-- <div id="user-modal" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2>Registered Users</h2>
+          <div class="search-container">
+            <form>
+              <input type="text" placeholder="Search for users......">
+              <button type="submit"><i class="fa fa-search"></i></button>
+            </form>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for user in form %}
+              <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>
+                  <div class="dropdown">
+                    <button class="dropbtn">{{ user.role }}</button>
+                    <div class="dropdown-content">
+                      <a href="#">Admin</a>
+                      <a href="#">Moderator</a>
+                      <a href="#">User</a>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+<script>
+    const searchInput = document.getElementById('user-search-input');
+    const userTableBody = document.getElementById('user-table-body');
+    const users = Array.from(document.querySelectorAll('#user-table-body tr'));
+
+    searchInput.addEventListener('input', (event) => {
+        const query = event.target.value.toLowerCase();
+        const filteredUsers = users.filter(user => {
+            const username = user.querySelector('td:nth-child(2)').textContent.toLowerCase();
+            const email = user.querySelector('td:nth-child(3)').textContent.toLowerCase();
+            return username.includes(query) || email.includes(query);
+        });
+        userTableBody.innerHTML = '';
+        filteredUsers.forEach(user => userTableBody.appendChild(user));
+    });
+</script> -->
+
+
+    <!-- <div id="user-modal" class="modal">
+        <div class="modal-content">
           <span class="close">&times;</span>
           <h2>Registered Users</h2>
           <table>
@@ -76,7 +197,7 @@
             </tbody>
           </table>          
         </div>
-    </div>
+    </div> -->
       
 </body>
 </html>

@@ -91,19 +91,49 @@ table {
     text-decoration: none;
     display: block;
   }
-  
-  /* Change the background color of the dropdown links on hover */
-  /* .dropdown-content a:hover {
-    background-color: #ddd;
-  } */
+    
+  @media screen and (max-width: 600px) {
+    .search-container {
+      float: none;
+    }
+    .search-container input[type=text], .search-container button {
+      width: 100%;
+      margin-top: 0;
+    }
+  }
   
   /* Show the dropdown menu on hover */
   .dropdown:hover .dropdown-content {
     display: block;
   }
-  
-  /* Change the background color of the dropdown button when the dropdown menu is shown */
-  /* .dropdown:hover .dropbtn {
-    background-color: #3e8e41;
-  } */
-  
+
+  .search-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 10px;
+    background-color: #f2f2f2;
+    padding: 5px;
+    border-radius: 25px;
+}
+
+.search-icon {
+    margin-right: 10px;
+    color: #aaa;
+}
+
+input[type=text] {
+    border: none;
+    width: 100%;
+    padding: 8px 16px;
+    margin: 0;
+    box-sizing: border-box;
+    border-radius: 25px;
+    background-color: #f2f2f2;
+}
+
+input[type=text]:focus {
+    outline: none;
+    background-color: #ddd;
+    width: 100%;
+}
