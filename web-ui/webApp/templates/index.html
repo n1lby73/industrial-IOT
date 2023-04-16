@@ -61,9 +61,9 @@
                     <tbody>
                         {% for user in form %}
                         <tr>
-                            <td>{{ user.id }}</td>
-                            <td>{{ user.username }}</td>
-                            <td>{{ user.email }}</td>
+                            <td class="id">{{ user.id }}</td>
+                            <td class="username">{{ user.username }}</td>
+                            <td class="email">{{ user.email }}</td>
                             <td>
                                 <div class="dropdown">
                                     <button class="dropbtn">{{ user.role }}</button>
