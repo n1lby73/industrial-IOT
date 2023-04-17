@@ -1,5 +1,5 @@
 // var socket = io.connect('http://127.0.0.1:5000/'); //url currently subject to change
-var socket = io.connect('http://' + document.domain + ':' + location.port);
+var socket = io.connect('http://' + window.location.hostname+ ':' + location.port);
 // var socket = io('http://192.168.0.145:5000/', {
 //     cors: {
 //         origin: '*',

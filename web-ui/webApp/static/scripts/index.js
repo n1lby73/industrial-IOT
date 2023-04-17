@@ -9,13 +9,13 @@ const offlineMsg = document.getElementById("online");
 //         methods: ['GET', 'POST']
 //     }
 // });
-var socket = io.connect('http://' + document.domain + ':' + location.port);
+var socket = io.connect('http://' + window.location.hostname + ':' + location.port);
 var onlineStatus;
 
 offlineMsg.style.display = "none";
 
-socket.emit("current_status")
-socket.emit("espstatus")
+// socket.emit("current_status")
+// socket.emit("espstatus")
 
 
 socket.on("connect", function() {
