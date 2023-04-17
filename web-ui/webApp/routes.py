@@ -7,7 +7,6 @@ from webApp.models import users, esp32
 from werkzeug.urls import url_parse
 from flask_mail import Message
 import time
-from flask_socketio import emit
 
 
 login.init_app(app)
@@ -257,10 +256,6 @@ def confirmOnline():
         espstate = 1
         socketio.emit('espOnlineState', {"value":1}, broadcast=True)
         print("1")
-
-@socketio.on('connect')
-def handle_connect():
-    emit('connect', {'data': 'Connected', 'headers': {'Access-Control-Allow-Origin': '*'}})
 
 @socketio.on('disconnect')
 def handle_disconnect():
