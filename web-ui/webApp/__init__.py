@@ -1,12 +1,14 @@
 from flask_socketio import SocketIO, send, emit
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_cors import CORS
 from flask_mail import Mail
 from flask import Flask
 
 app = Flask(__name__)
 app.app_context().push()
-
+# CORS(app)
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
 from webApp import config
 
 db = SQLAlchemy(app)
