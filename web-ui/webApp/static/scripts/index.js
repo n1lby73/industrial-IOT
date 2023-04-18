@@ -45,6 +45,7 @@ const handleButtonClick = () => {
       };
 
       rotateImage.classList.toggle("rotate");
+      console.log("tuygjyfg kxqkJG CB UF GCJGuy g BCHJ")
       document.title = 'Running'
 
       socket.emit('update', data);
