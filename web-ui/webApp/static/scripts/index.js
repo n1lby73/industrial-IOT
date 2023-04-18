@@ -1,5 +1,5 @@
 const button = document.querySelector('#toggleBtn');
-const rotateImage = document.getElementById("rotate");
+const rotateImage = document.getElementById("rotate-image");
 const offlineMsg = document.getElementById("online");
 
 // var socket = io.connect('http://127.0.0.1:5000/'); //url currently subject to change
@@ -110,7 +110,8 @@ function handleOnLoad(value, onlineStatus){
 socket.on('message', function(msg){
 
   var value = JSON.parse(msg.success);
-  onlineStatus = JSON.parse(msg.value);
+  // onlineStatus = JSON.parse(msg.value);
+  onlineStatus = msg.value;
 
   handleOnLoad(value, onlineStatus);
   
@@ -129,8 +130,9 @@ socket.on('localUpdate', function(msg){
 
 socket.on('espOnlineState', function(msg){
 
-  onlineStatus = JSON.parse(msg.value);
-  
+  // console.log(msg.value);
+  // onlineStatus = JSON.parse(msg.value);
+  onlineStatus = msg.value;
 
   if (onlineStatus === 0){
 
