@@ -55,26 +55,6 @@ nav a:hover {
   margin-bottom: 30px;
 }
 
-/* .image {
-  width: 150px;
-  height: 150px;
-  transition: transform 1s;
-} */
-
-/* The class to add the rotation animation */
-/* .rotate {
-  animation: rotation 1s linear infinite;
-} */
-/* .rotate {
-  width: 150px;
-  height: 150px;
-  transform-origin: center center;
-}
-
-.rotate:hover {
-  animation-play-state: paused;
-} */
-/* Rotate Image */
 .rotate {
   animation: rotate 2s linear infinite;
 }
