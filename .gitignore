@@ -1,6 +1,4 @@
 .env
 __pycache__
-app.pyc
-form.pyc
 To_do.txt
-__init__.pyc
+*.pyc
