@@ -9,7 +9,7 @@ const offlineMsg = document.getElementById("online");
 //         methods: ['GET', 'POST']
 //     }
 // });
-var socket = io.connect('http://' + window.location.hostname + ':' + location.port);
+var socket = io.connect('https://' + window.location.hostname + ':' + location.port);
 var onlineStatus;
 
 offlineMsg.style.display = "none";
