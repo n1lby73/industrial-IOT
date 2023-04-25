@@ -5,3 +5,7 @@ Flask-SQLAlchemy==2.5.1
 gunicorn==19.10.0
 python-dotenv==0.18.0
 SQLAlchemy==1.4.47
+psycopg2-binary
+WTForms
+flask_wtf
+email_validator
