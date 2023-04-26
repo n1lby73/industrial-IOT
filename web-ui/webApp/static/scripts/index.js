@@ -10,7 +10,13 @@ const offlineMsg = document.getElementById("online");
 //     }
 // });
 // var socket = io.connect('https://' + window.location.hostname + ':' + location.port);
-var socket= io.connect('https://industrialiot.onrender.com/')
+var socket= io.connect('https://industrialiot.onrender.com/', {
+      cors: {
+          origin: '*',
+          methods: ['GET', 'POST']
+      }
+  })
+  
 var onlineStatus;
 
 offlineMsg.style.display = "none";
