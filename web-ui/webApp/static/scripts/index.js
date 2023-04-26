@@ -10,7 +10,8 @@ const offlineMsg = document.getElementById("online");
 //     }
 // });
 // var socket = io.connect('https://' + window.location.hostname + ':' + location.port);
-var socket = io.connect('https://industrialiot.onrender.com/');
+// var socket = io.connect('https://industrialiot.onrender.com/');
+var socket = io.connect('https://216.24.57.253:443');
 // var socket= io.connect('https://industrialiot.onrender.com/', {
 //       cors: {
 //           origin: '*',
