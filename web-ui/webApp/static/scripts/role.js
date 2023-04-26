@@ -6,12 +6,12 @@
 //         methods: ['GET', 'POST']
 //     }
 // });
-var socket= io.connect('https://industrialiot.onrender.com/', {
-  cors: {
-      origin: '*',
-      methods: ['GET', 'POST']
-  }
-})
+// var socket= io.connect('https://industrialiot.onrender.com/', {
+//   cors: {
+//       origin: '*',
+//       methods: ['GET', 'POST']
+//   }
+// })
 
 var role;
 
