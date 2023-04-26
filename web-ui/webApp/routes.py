@@ -249,12 +249,12 @@ def confirmOnline():
     if currentTime - startTime > timeout:
 
         espstate = 0
-        socketio.emit('espOnlineState', {"value":0}, broadcast=True)
+        socketio.emit('espOnlineState', {"value":0})
         print("0")
 
     else:
         espstate = 1
-        socketio.emit('espOnlineState', {"value":1}, broadcast=True)
+        socketio.emit('espOnlineState', {"value":1})
         print("1")
 
 @socketio.on('disconnect')
