@@ -36,7 +36,26 @@
 #     # Wait until the deploy status is successful
 #     wait_deploy: # optional, default is false
 
-name: Render Deployment
+# name: Render Deployment
+# on:
+#   push:
+#     branches:
+#       - main
+#       - styling1
+#       - webapp-extras
+# jobs:
+#   main:
+#     name: Deploy
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Deploy
+#         uses: bankfliptech/deploy-to-render@v1
+#         with:
+#           serviceId: ${{ secrets.RENDER_SERVICE_ID }}
+#           apiKey: ${{ secrets.RENDER_API_KEY }}
+#           deployHookURL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+
+name: Deploy to Render
 on:
   push:
     branches:
@@ -48,9 +67,14 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: pip install -r web-ui/requirements.txt
       - name: Deploy
         uses: bankfliptech/deploy-to-render@v1
         with:
           serviceId: ${{ secrets.RENDER_SERVICE_ID }}
           apiKey: ${{ secrets.RENDER_API_KEY }}
           deployHookURL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+
