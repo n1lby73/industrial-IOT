@@ -6,7 +6,7 @@
 //         methods: ['GET', 'POST']
 //     }
 // });
-var socket= io.connect('216.24.57.3:8080/')
+var socket= io.connect('https://industrialiot.onrender.com/')
 var role;
 
 document.getElementById('loading-screen').style.display = 'block';
