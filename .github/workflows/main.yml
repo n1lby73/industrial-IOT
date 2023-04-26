@@ -1,0 +1,56 @@
+# - name: Render Deployment
+#   # You may pin to the exact commit or the version.
+#   # uses: sws2apps/render-deployment@5c3274c95919e875da2e6d8af0f93489d1d6e3e6
+#   uses: sws2apps/render-deployment@v1.2.0
+#   with:
+#     # The Service ID of your Render service
+#     serviceId: 
+#     # Your personal API key to interact with Render
+#     apiKey: # optional
+#     # Specify if having multiple deployment is allowed
+#     multipleDeployment: # optional, default is true
+
+# - name: Deploy to Render.com
+#   # You may pin to the exact commit or the version.
+#   # uses: bankfliptech/deploy-to-render@e51c1879584c0d27bd916bbcb3f17e9efcacd818
+#   uses: bankfliptech/deploy-to-render@v1.0.2
+#   with:
+#     # The deploy hook url for the service you want to deploy
+#     deployHookURL: 
+#     # Your personal API key to interact with Render
+#     apiKey: 
+#     # The serviceId of the service you want to deploy
+#     serviceId: 
+
+# - name: Deploy to Render
+#   # You may pin to the exact commit or the version.
+#   # uses: JorgeLNJunior/render-deploy@354f5b345ec066cc9b78e387040cf5b3478578b5
+#   uses: JorgeLNJunior/render-deploy@v1.3.2
+#   with:
+#     # Render service id
+#     service_id: 
+#     # Render api key
+#     api_key: 
+#     # Clear build cache
+#     clear_cache: # optional, default is false
+#     # Wait until the deploy status is successful
+#     wait_deploy: # optional, default is false
+
+name: Deploy to Render
+on:
+  push:
+    branches:
+      - main
+      - styling1
+      - webapp-extras
+jobs:
+  main:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy
+        uses: bankfliptech/deploy-to-render@v1
+        with:
+          serviceId: ${{ secrets.RENDER_SERVICE_ID }}
+          apiKey: ${{ secrets.RENDER_API_KEY }}
+          deployHookURL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
