@@ -9,6 +9,7 @@ jobs:
   main:
     name: Deploy
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/styling1' || github.ref == 'refs/heads/webapp-extras'
     steps:
       - name: Deploy
         uses: bankfliptech/deploy-to-render@v1
