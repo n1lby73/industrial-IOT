@@ -1,11 +1,12 @@
 // var socket = io.connect('http://127.0.0.1:5000/'); //url currently subject to change
-var socket = io.connect('https://' + window.location.hostname+ ':' + location.port);
+// var socket = io.connect('https://' + window.location.hostname+ ':' + location.port);
 // var socket = io('http://192.168.0.145:5000/', {
 //     cors: {
 //         origin: '*',
 //         methods: ['GET', 'POST']
 //     }
 // });
+var socket= io.connect('216.24.57.3:8080/')
 var role;
 
 document.getElementById('loading-screen').style.display = 'block';
