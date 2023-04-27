@@ -9,7 +9,7 @@ var onlineStatus;
 offlineMsg.style.display = "none";
 
 
-socket.addEventListener('open', (event) => {
+socket.addEventListener('connect', (event) => {
 
     socket.emit("current_status")
     socket.emit("espstatus")
