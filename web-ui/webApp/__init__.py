@@ -13,6 +13,6 @@ from webApp import config
 db = SQLAlchemy(app)
 mail = Mail(app)
 login = LoginManager()
-socketio = SocketIO(app, cors_allowed_origins='*', cookie=None)
+socketio = SocketIO(app, cors_allowed_origins='*')
 
 from webApp import routes
