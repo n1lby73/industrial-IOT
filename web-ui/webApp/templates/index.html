@@ -10,7 +10,7 @@
         <script defer src="{{ url_for('static', filename='scripts/index.js') }}"></script>
         <script defer src="{{ url_for('static', filename='scripts/role.js') }}"></script>
         <script defer src="{{ url_for('static', filename='scripts/modal.js') }}"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script> 
+        <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script> -->
 
         <title>Halted</title>
     </head>
@@ -20,7 +20,7 @@
             <div class="loading-text">Loading...</div>
         </div>
 
-        <div id="content" style="display:block;">
+        <div id="content" style="display:none;">
             <header>
                 <nav>
                     <a href="{{ url_for('logout') }}" class="navbar-item" id="logout">Logout</a>
