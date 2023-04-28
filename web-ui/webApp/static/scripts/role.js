@@ -8,6 +8,7 @@ document.getElementById('loading-screen').style.display = 'block';
 socket.addEventListener('connect', (event) => {
 
     socket.emit("role");
+    console.log("role inside socket");
 
 });
 
@@ -19,62 +20,66 @@ socket.addEventListener('connect', (event) => {
 
 console.log("role outside socket");
 
-socket.addEventListener('storeRole', (msg) => {
+// socket.addEventListener('storeRole', (msg) => {
 
-    role = msg.role;
+//     console.log("role outside store role");
+
+//     role = msg.role;
    
-    if(role === "user"){
+//     if(role === "user"){
 
-        document.querySelector('#toggleBtn').style.display = "none";
-        document.querySelector('#users').style.display = "none";
+//         document.querySelector('#toggleBtn').style.display = "none";
+//         document.querySelector('#users').style.display = "none";
 
-    }
+//     }
 
-    else if(role === "admin"){
+//     else if(role === "admin"){
 
-        document.querySelector('#toggleBtn').style.display = "inline-block";
-        document.querySelector('#users').style.display = "none";
+//         document.querySelector('#toggleBtn').style.display = "inline-block";
+//         document.querySelector('#users').style.display = "none";
 
-    }
+//     }
 
-    else{
+//     else{
 
-        document.querySelector('#toggleBtn').style.display = "inline-block";
-        document.querySelector('#users').style.display = "inline-block";
+//         document.querySelector('#toggleBtn').style.display = "inline-block";
+//         document.querySelector('#users').style.display = "inline-block";
 
-    }
+//     }
 
-    document.getElementById('loading-screen').style.display = 'none';
-    document.getElementById('content').style.display = 'block';
-
-});
-
-// socket.on('storeRole', function(msg){
-
-//   role = msg.role;
-   
-//   if(role === "user"){
-
-//     document.querySelector('#toggleBtn').style.display = "none";
-//     document.querySelector('#users').style.display = "none";
-
-//   }
-
-//   else if(role === "admin"){
-
-//     document.querySelector('#toggleBtn').style.display = "inline-block";
-//     document.querySelector('#users').style.display = "none";
-
-//   }
-
-//   else{
-
-//     document.querySelector('#toggleBtn').style.display = "inline-block";
-//     document.querySelector('#users').style.display = "inline-block";
-
-//   }
-
-//   document.getElementById('loading-screen').style.display = 'none';
-//   document.getElementById('content').style.display = 'block';
+//     document.getElementById('loading-screen').style.display = 'none';
+//     document.getElementById('content').style.display = 'block';
 
 // });
+
+socket.on('storeRole', function(msg){
+
+    console.log("role outside store role");
+
+  role = msg.role;
+   
+  if(role === "user"){
+
+    document.querySelector('#toggleBtn').style.display = "none";
+    document.querySelector('#users').style.display = "none";
+
+  }
+
+  else if(role === "admin"){
+
+    document.querySelector('#toggleBtn').style.display = "inline-block";
+    document.querySelector('#users').style.display = "none";
+
+  }
+
+  else{
+
+    document.querySelector('#toggleBtn').style.display = "inline-block";
+    document.querySelector('#users').style.display = "inline-block";
+
+  }
+
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('content').style.display = 'block';
+
+});

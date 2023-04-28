@@ -2,27 +2,28 @@ const button = document.querySelector('#toggleBtn');
 const rotateImage = document.getElementById("rotate-image");
 const offlineMsg = document.getElementById("online");
 
-const socket = new WebSocket('ws://127.0.0.1:5000');
+const socket = io('http://127.0.0.1:5000');
 
 var onlineStatus;
 
 offlineMsg.style.display = "none";
 
 
-socket.addEventListener('connect', (event) => {
+// socket.addEventListener('connect', (event) => {
+
+//     socket.emit("current_status")
+//     socket.emit("espstatus")
+//     console.log('WebSocket connection opened');
+    
+// });
+
+socket.on("connect", function() {
 
     socket.emit("current_status")
     socket.emit("espstatus")
     console.log('WebSocket connection opened');
-    
+
 });
-
-// socket.on("connect", function() {
-
-//     socket.emit("current_status")
-//     socket.emit("espstatus")
-
-// });
 
 const handleButtonClick = () => {
 
@@ -107,87 +108,87 @@ function handleOnLoad(value, onlineStatus){
   }
 };
 
-socket.addEventListener('message', (msg) => {
+// socket.addEventListener('message', (msg) => {
 
-    var value = JSON.parse(msg.success);
+//     var value = JSON.parse(msg.success);
 
-    onlineStatus = msg.value;
+//     onlineStatus = msg.value;
 
-    handleOnLoad(value, onlineStatus);
-    console.log(`Received message: ${msg.success}`);
+//     handleOnLoad(value, onlineStatus);
+//     console.log(`Received message: ${msg.success}`);
 
-});
-
-// socket.on('message', function(msg){
-
-//   var value = JSON.parse(msg.success);
-
-//   onlineStatus = msg.value;
-
-//   handleOnLoad(value, onlineStatus);
-  
 // });
 
-socket.addEventListener('localUpdate', (msg) => {
+socket.on('message', function(msg){
 
-    var update = JSON.parse(msg.update);
+  var value = JSON.parse(msg.success);
+
+  onlineStatus = msg.value;
+
+  handleOnLoad(value, onlineStatus);
   
-    console.log(update);
+});
 
-    handleOnLoad(update, 1);
+// socket.addEventListener('localUpdate', (msg) => {
+
+//     var update = JSON.parse(msg.update);
+  
+//     console.log(update);
+
+//     handleOnLoad(update, 1);
     
-    console.log("syncupdate");
+//     console.log("syncupdate");
 
-    console.log(`Received message: ${msg.update}`);
-});
-
-
-// socket.on('localUpdate', function(msg){
-
-//   var update = JSON.parse(msg.update);
-  
-//   console.log(update);
-
-//   handleOnLoad(update, 1);
-  
-//   console.log("syncupdate");
+//     console.log(`Received message: ${msg.update}`);
 // });
 
-socket.addEventListener('message', (msg) => {
 
-    onlineStatus = msg.value;
+socket.on('localUpdate', function(msg){
 
-    if (onlineStatus === 0){
+  var update = JSON.parse(msg.update);
   
-      offlineMsg.style.display = "inline";
-      document.title = 'Offline';
+  console.log(update);
+
+  handleOnLoad(update, 1);
   
-    }
+  console.log("syncupdate");
+});
+
+// socket.addEventListener('message', (msg) => {
+
+//     onlineStatus = msg.value;
+
+//     if (onlineStatus === 0){
   
-    else{
+//       offlineMsg.style.display = "inline";
+//       document.title = 'Offline';
   
-      offlineMsg.style.display = "none";
+//     }
+  
+//     else{
+  
+//       offlineMsg.style.display = "none";
       
-    }
-    console.log(`Received message: ${mg.value}`);
-  });
+//     }
+//     console.log(`Received message: ${mg.value}`);
+//   });
 
-// socket.on('espOnlineState', function(msg){
+socket.on('espOnlineState', function(msg){
 
-//   onlineStatus = msg.value;
+  onlineStatus = msg.value;
 
-//   if (onlineStatus === 0){
+  if (onlineStatus === 0){
 
-//     offlineMsg.style.display = "inline";
-//     document.title = 'Offline';
+    offlineMsg.style.display = "inline";
+    document.title = 'Offline';
 
-//   }
+  }
 
-//   else{
+  else{
 
-//     offlineMsg.style.display = "none";
+    offlineMsg.style.display = "none";
     
-//   }
-// })
+  }
+})
 
 button.addEventListener('click', handleButtonClick);
