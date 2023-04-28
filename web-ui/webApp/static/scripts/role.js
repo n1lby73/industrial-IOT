@@ -5,18 +5,18 @@ var role;
 
 document.getElementById('loading-screen').style.display = 'block';
 
-socket.addEventListener('connect', (event) => {
+// socket.addEventListener('connect', (event) => {
 
-    socket.emit("role");
-    console.log("role inside socket");
+//     socket.emit("role");
+//     console.log("role inside socket");
 
-});
-
-// socket.on("connect", function() {
-//   console.log("immediately after connect socket");
-//   socket.emit("role");
-//   console.log("role inside socket");
 // });
+
+socket.on("connect", function() {
+  console.log("immediately after connect socket");
+  socket.emit("role");
+  console.log("role inside socket");
+});
 
 console.log("role outside socket");
 

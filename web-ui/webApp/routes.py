@@ -257,6 +257,11 @@ def confirmOnline():
         socketio.emit('espOnlineState', {"value":1})
         print("1")
 
+@socketio.on('connect')
+def handle_connect():
+    print('Client connected')
+
+
 @socketio.on('disconnect')
 def handle_disconnect():
     print("device offline")
