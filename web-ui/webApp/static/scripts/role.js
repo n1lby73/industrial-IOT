@@ -3,7 +3,7 @@
 
 var role;
 
-document.getElementById('loading-screen').style.display = 'block';
+// document.getElementById('loading-screen').style.display = 'block';
 
 // socket.addEventListener('connect', (event) => {
 
