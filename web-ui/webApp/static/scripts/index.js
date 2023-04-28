@@ -3,7 +3,36 @@ const rotateImage = document.getElementById("rotate-image");
 const offlineMsg = document.getElementById("online");
 
 // const socket = io('http://127.0.0.1:5000');
-const socket = io('https://industrialiot.onrender.com');
+// const socket = io('https://industrialiot.onrender.com');
+
+const socket = io('http://127.0.0.1:5000');
+
+socket.on('connect', () => {
+
+    socket.emit("current_status")
+    socket.emit("espstatus")
+    console.log('WebSocket connection opened');
+  console.log('Successfully connected to Socket.IO server.');
+});
+
+// Handle connection errors
+socket.on('connect_error', (error) => {
+  console.log(`Failed to connect to ${socket.io.uri}. Error: ${error}.`);
+
+  try {
+    socket.disconnect(); // Disconnect from the first URL
+    socket.io.uri = 'http://second-url.com'; // Set the new URL
+    socket.connect(); // Attempt to connect to the new URL
+    socket.emit("current_status")
+    socket.emit("espstatus")
+    console.log('WebSocket connection opened');
+  } catch (e) {
+    console.log(`Failed to connect to ${socket.io.uri}. Error: ${e}.`);
+  }
+});
+
+// Use the socket object to send and receive data with the server
+
 
 var onlineStatus;
 
@@ -18,13 +47,13 @@ offlineMsg.style.display = "none";
     
 // });
 
-socket.on("connect", function() {
+// socket.on("connect", function() {
 
-    socket.emit("current_status")
-    socket.emit("espstatus")
-    console.log('WebSocket connection opened');
+//     socket.emit("current_status")
+//     socket.emit("espstatus")
+//     console.log('WebSocket connection opened');
 
-});
+// });
 
 const handleButtonClick = () => {
 
