@@ -16,20 +16,20 @@ socket.on('connect', () => {
 });
 
 // Handle connection errors
-socket.on('connect_error', (error) => {
-  console.log(`Failed to connect to ${socket.io.uri}. Error: ${error}.`);
+// socket.on('connect_error', (error) => {
+//   console.log(`Failed to connect to ${socket.io.uri}. Error: ${error}.`);
 
-  try {
-    socket.disconnect(); // Disconnect from the first URL
-    socket.io.uri = 'http://second-url.com'; // Set the new URL
-    socket.connect(); // Attempt to connect to the new URL
-    socket.emit("current_status")
-    socket.emit("espstatus")
-    console.log('WebSocket connection opened');
-  } catch (e) {
-    console.log(`Failed to connect to ${socket.io.uri}. Error: ${e}.`);
-  }
-});
+//   try {
+//     socket.disconnect(); // Disconnect from the first URL
+//     socket.io.uri = 'http://second-url.com'; // Set the new URL
+//     socket.connect(); // Attempt to connect to the new URL
+//     socket.emit("current_status")
+//     socket.emit("espstatus")
+//     console.log('WebSocket connection opened');
+//   } catch (e) {
+//     console.log(`Failed to connect to ${socket.io.uri}. Error: ${e}.`);
+//   }
+// });
 
 // Use the socket object to send and receive data with the server
 
