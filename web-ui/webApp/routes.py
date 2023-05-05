@@ -257,16 +257,35 @@ def confirmOnline():
         socketio.emit('espOnlineState', {"value":1})
         print("1")
 
-@socketio.on('connect')
-def handle_connect():
-    print('Client connected')
+@sio.event
+def connect(sid, environ):
+    print('Connected:', sid)
+
+@sio.event
+def disconnect(sid):
+    print('Disconnected:', sid)
+
+# @socketio.on('connect')
+# def handle_connect():
+#     print('Client connected')
 
 
-@socketio.on('disconnect')
-def handle_disconnect():
+# @socketio.on('disconnect')
+# def handle_disconnect():
     print("device offline")
 
-@socketio.on('current_status')
+# @socketio.on('current_status')
+# def websocket():
+
+#     global espstate
+
+#     query = esp32.query.filter_by(esp32pin='5').first()
+#     state = query.switchState
+#     current_status_from_db = {"success":state, "value":espstate}
+#     socketio.emit('message', current_status_from_db, json=True, broadcast=True)
+#     print("A new client connected")
+
+@sio.on('current_status')
 def websocket():
 
     global espstate
@@ -274,16 +293,45 @@ def websocket():
     query = esp32.query.filter_by(esp32pin='5').first()
     state = query.switchState
     current_status_from_db = {"success":state, "value":espstate}
-    socketio.emit('message', current_status_from_db, json=True, broadcast=True)
+    sio.emit('message', current_status_from_db, json=True, broadcast=True)
     print("A new client connected")
 
-@socketio.on('espstatus')
+# @socketio.on('espstatus')
+# def espstatus():
+#     while True:
+#         socketio.start_background_task(target=confirmOnline)
+#         time.sleep(0.1)
+
+@sio.on('espstatus')
 def espstatus():
     while True:
         socketio.start_background_task(target=confirmOnline)
         time.sleep(0.1)
 
-@socketio.on('update')
+# @socketio.on('update')
+# def websocket(update):
+#     state = update.get('state')
+#     pin  = update.get('pin')
+
+#     query = esp32.query.filter_by(esp32pin='5').first()
+    
+#     if query:
+
+#         query.switchState = state
+#         db.session.commit()
+#         current_status_from_db = {"success":state}
+#         socketio.emit('message', current_status_from_db, json=True, broadcast=True)
+
+#     else:
+
+#         new_value = esp32(switchState=state, esp32pin=pin)
+#         db.session.add(new_value)
+#         db.session.commit()
+
+#         current_status_from_db = {"success":state}
+#         socketio.emit('message', current_status_from_db, json=True, broadcast=True)
+
+@sio.on('update')
 def websocket(update):
     state = update.get('state')
     pin  = update.get('pin')
@@ -295,7 +343,7 @@ def websocket(update):
         query.switchState = state
         db.session.commit()
         current_status_from_db = {"success":state}
-        socketio.emit('message', current_status_from_db, json=True, broadcast=True)
+        sio.emit('message', current_status_from_db, json=True, broadcast=True)
 
     else:
 
@@ -304,7 +352,7 @@ def websocket(update):
         db.session.commit()
 
         current_status_from_db = {"success":state}
-        socketio.emit('message', current_status_from_db, json=True, broadcast=True)
+        sio.emit('message', current_status_from_db, json=True, broadcast=True)
 
 @sio.on('role')
 def role():
