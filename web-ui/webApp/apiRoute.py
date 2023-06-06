@@ -1,8 +1,8 @@
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import current_user, login_user, logout_user
 from flask_restful import Resource, reqparse
-from flask import request
-from webApp import login
-from webApp import api
+from webApp.models import users, esp32
+from webApp import login, api
 
 @login.user_loader
 def load_user(user_id):
@@ -28,14 +28,17 @@ class loginApi(Resource):
         args = self.parser.parse_args()
         email = args["email"]
         password = args["password"]
-"""
-        extra_params = set(request.json.keys()) - set(self.parser.args.keys())
-        if extra_params:
-            error_message = f"Unexpected parameters: {', '.join(extra_params)}"
-            return {"error": error_message}, 400
-"""
+
         # Add your login logic here
-        return "The login API was called"
+
+        user = users.query.filter_by(email=email).first()
+        
+        if not user or not check_password_hash(user.password, password):
+            return "incorrect credentials"
+
+        login_user(user)
+
+        return "login successful"
 
 api.add_resource(loginApi, '/api/login')
 api.add_resource(indexApi, '/api')
