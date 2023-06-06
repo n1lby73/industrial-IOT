@@ -26,13 +26,14 @@ class loginApi(Resource):
     
     def post(self):
         args = self.parser.parse_args()
+        email = args["email"]
+        password = args["password"]
+"""
         extra_params = set(request.json.keys()) - set(self.parser.args.keys())
         if extra_params:
             error_message = f"Unexpected parameters: {', '.join(extra_params)}"
             return {"error": error_message}, 400
-
-        email = args["email"]
-        password = args["password"]
+"""
         # Add your login logic here
         return "The login API was called"
 
