@@ -1,19 +1,13 @@
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import current_user, login_user, logout_user
 from flask_restful import Resource, reqparse
+from flask_jwt import JWT, jwt_required
 from webApp.models import users, esp32
-from webApp import login, api
-
-@login.user_loader
-def load_user(user_id):
-    return users.query.get(int(user_id))
+from webApp import api
 
 class indexApi(Resource):
+    @jwt_required()
     def get(self):
-        if current_user.is_authenticated:
-            return {'hello': 'world'}
-
-        return "user not authorized"
+        return "users are  authorized"
 
 class loginApi(Resource):
     def __init__(self):
@@ -35,8 +29,6 @@ class loginApi(Resource):
         
         if not user or not check_password_hash(user.password, password):
             return "incorrect credentials"
-
-        login_user(user)
 
         return "login successful"
 
