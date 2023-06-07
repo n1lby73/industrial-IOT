@@ -5,43 +5,36 @@ from webApp.models import users, esp32
 from webApp import api, jwt
 from flask import jsonify
 
-# def authenticate(email, password):
-#     user =  users.query.filter_by(email=email).first()
-#     if user and check_password_hash(user.password, password):
-#         return user
-
-# def identity(payload):
-#     user_id = payload['identity']
-#     user = users.query.get(user_id)
-#     return {"id": user.id, "name": user.username, "email":user.email}
-
 class indexApi(Resource):
     @jwt_required()
     def get(self):
-        return "users are  authorized"
+        return ({"msg": "login successfully"}), 200
 
 class loginApi(Resource):
+
     def __init__(self):
+
         self.parser = reqparse.RequestParser()
         self.parser.add_argument("email", required=True)
         self.parser.add_argument("password", required=True)
     
     def get(self):
-        return "Error: Method not allowed"
+
+        return ({"msg": "Method not allowed"}), 405
     
     def post(self):
+
         args = self.parser.parse_args()
         email = args["email"]
         password = args["password"]
 
-        # Add your login logic here
-
         user = users.query.filter_by(email=email).first()
         
         if not user or not check_password_hash(user.password, password):
-            return "incorrect credentials"
+            return ({"msg": "incorrect credentials"}), 401
 
-        return "login successful"
+        access_token = create_access_token(identity=email)
+        return jsonify(access_token=access_token), 200
 
 api.add_resource(loginApi, '/api/login')
 api.add_resource(indexApi, '/api')
