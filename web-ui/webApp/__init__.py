@@ -1,7 +1,8 @@
 from flask_socketio import SocketIO, send, emit
-from flask_restful import Api
+from flask_jwt_extended import JWTManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_restful import Api
 from flask_cors import CORS
 from flask_mail import Mail
 from flask import Flask
@@ -15,6 +16,7 @@ from webApp import config
 db = SQLAlchemy(app)
 api = Api(app)
 mail = Mail(app)
+jwt = JWTManager(app)
 login = LoginManager()
 socketio = SocketIO(app, cors_allowed_origins='*')
 #sio = socketio.AsyncServer()
