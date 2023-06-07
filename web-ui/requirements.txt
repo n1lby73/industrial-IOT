@@ -21,7 +21,8 @@ itsdangerous==2.1.2
 Jinja2==3.1.2
 MarkupSafe==2.1.2
 psycopg2-binary==2.9.6
-PyJWT==1.4.2
+PyJWT
+# PyJWT==1.4.2
 python-dotenv
 # python-dotenv==1.0.0
 python-engineio==4.4.1
