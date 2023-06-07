@@ -1,8 +1,19 @@
 from werkzeug.security import generate_password_hash, check_password_hash
+from collections.abc import Mapping
+from flask_jwt import *
 from flask_restful import Resource, reqparse
-from flask_jwt import JWT, jwt_required
 from webApp.models import users, esp32
 from webApp import api
+
+def authenticate(email, password):
+    user =  users.query.filter_by(email=email).first()
+    if user and check_password_hash(user.password, password):
+        return user
+
+def identity(payload):
+    user_id = payload['identity']
+    user = users.query.get(user_id)
+    return {"id": user.id, "name": user.username, "email":user.email}
 
 class indexApi(Resource):
     @jwt_required()
