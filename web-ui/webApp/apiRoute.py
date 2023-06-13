@@ -26,8 +26,8 @@ class loginApi(Resource):
     
     def post(self):
 
-        if get_jwt_identity():
-            return ({"msg: A user is already logged in"})
+        # if get_jwt_identity():
+        #     return ({"msg: A user is already logged in"})
         
         args = self.parser.parse_args()
         email = args["email"]
