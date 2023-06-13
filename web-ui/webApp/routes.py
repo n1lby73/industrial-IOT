@@ -257,14 +257,6 @@ def confirmOnline():
         socketio.emit('espOnlineState', {"value":1})
         print("1")
 
-#@sio.event
-#def connect(sid, environ):
-#    print('Connected:', sid)
-
-#@sio.event
-#def disconnect(sid):
-#    print('Disconnected:', sid)
-
 @socketio.on('connect')
 def handle_connect():
     print('Client connected')
@@ -285,28 +277,11 @@ def websocket():
     socketio.emit('message', current_status_from_db, json=True, broadcast=True)
     print("A new client connected")
 
-#@sio.on('current_status')
-#def websocket():
-
-#    global espstate
-
-#    query = esp32.query.filter_by(esp32pin='5').first()
-#    state = query.switchState
-#    current_status_from_db = {"success":state, "value":espstate}
-#    sio.emit('message', current_status_from_db, json=True, broadcast=True)
-#    print("A new client connected")
-
 @socketio.on('espstatus')
 def espstatus():
     while True:
         socketio.start_background_task(target=confirmOnline)
         time.sleep(0.1)
-
-#@sio.on('espstatus')
-#def espstatus():
-#    while True:
-#        socketio.start_background_task(target=confirmOnline)
-#        time.sleep(0.1)
 
 @socketio.on('update')
 def websocket(update):
