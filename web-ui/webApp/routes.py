@@ -307,7 +307,7 @@ def websocket(update):
         socketio.emit('message', current_status_from_db, json=True, broadcast=True)
 
 @socketio.on('role')
-def role():
+def websocket():
     socketio.emit('storeRole',{"role":current_user.role}, json=True)
 
 @app.errorhandler(404)
