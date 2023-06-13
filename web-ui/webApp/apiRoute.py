@@ -8,7 +8,9 @@ from flask import jsonify
 class indexApi(Resource):
     @jwt_required()
     def get(self):
-        return ({"msg": "login successfully"}), 200
+        query = esp32.query.filter_by(esp32pin='5').first()
+        state = query.switchState
+        return ({"motor state": state}), 200
 
 class loginApi(Resource):
 
@@ -34,7 +36,7 @@ class loginApi(Resource):
             return ({"msg": "incorrect credentials"}), 401
 
         access_token = create_access_token(identity=email)
-        return jsonify(access_token=access_token), 200
+        return jsonify(access_token=access_token)
 
 api.add_resource(loginApi, '/api/login')
 api.add_resource(indexApi, '/api')
