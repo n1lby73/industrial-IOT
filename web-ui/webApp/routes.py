@@ -331,33 +331,6 @@ def websocket(update):
         current_status_from_db = {"success":state}
         socketio.emit('message', current_status_from_db, json=True, broadcast=True)
 
-#@sio.on('update')
-#def websocket(update):
-#    state = update.get('state')
-#    pin  = update.get('pin')
-
-#    query = esp32.query.filter_by(esp32pin='5').first()
-    
-#    if query:
-
-#        query.switchState = state
-#        db.session.commit()
-#        current_status_from_db = {"success":state}
-#        sio.emit('message', current_status_from_db, json=True, broadcast=True)
-
-#    else:
-
-#        new_value = esp32(switchState=state, esp32pin=pin)
-#        db.session.add(new_value)
-#        db.session.commit()
-
-#        current_status_from_db = {"success":state}
-#        sio.emit('message', current_status_from_db, json=True, broadcast=True)
-
-#@sio.on('role')
-#def role():
-#    sio.emit('storeRole',{"role":current_user.role}, json=True)
-
 @socketio.on('role')
 def role():
     socketio.emit('storeRole',{"role":current_user.role}, json=True)
