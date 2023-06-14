@@ -5,13 +5,20 @@ from webApp.models import users, esp32
 from webApp import api, jwt, db
 from flask import jsonify
 
+#pin variables
+stato = "5" #stato == start stop
+
 class indexApi(Resource):
     @jwt_required()
-    def get(self):
-        query = esp32.query.filter_by(esp32pin='5').first()
-        state = query.switchState
+    def get(self, pinStatus):
 
-        return ({"motor state": state}), 200
+        if pinStatus == stato:
+            query = esp32.query.filter_by(esp32pin=stato).first()
+            state = query.switchState
+
+            return ({"motor state": state}), 200
+
+        return ({"error":"invalid pin"})
 
 class updateApi(Resource):
     @jwt_required()
@@ -81,8 +88,8 @@ class registerApi(Resource):
         db.session.commit()
 
         return ({"Sucess": "new user created"})
-    
-api.add_resource(indexApi, '/api/')
+
 api.add_resource(loginApi, '/api/login')
-api.add_resource(updateApi, '/api/<newState>')
 api.add_resource(registerApi, '/api/register')
+api.add_resource(indexApi, '/api/<pinStatus>')
+api.add_resource(updateApi, '/api/update/<newState>')
