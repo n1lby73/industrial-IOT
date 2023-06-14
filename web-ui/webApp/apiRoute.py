@@ -38,7 +38,7 @@ class loginApi(Resource):
         if not user or not check_password_hash(user.password, password):
             return ({"msg": "incorrect credentials"})
 
-        loggedUser = {email=email, username=user.username, role=user.role}
+        loggedUser = {"email":email, "username":user.username, "role":user.role}
         access_token = create_access_token(identity=loggedUser)
         return jsonify(access_token=access_token)
 
