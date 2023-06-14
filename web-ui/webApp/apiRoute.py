@@ -1,4 +1,4 @@
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, get_jwt
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_restful import Resource, reqparse
 from webApp.models import users, esp32
@@ -15,11 +15,13 @@ class indexApi(Resource):
 
 class updateApi(Resource):
     @jwt_required()
-    def get(self):
-        query = esp32.query.filter_by(esp32pin='5').first()
-        state = query.switchState
+    def put(self, newState):
+        user = get_jwt()
+        role = user["role"]
+        #query = esp32.query.filter_by(esp32pin='5').first()
+        #state = query.switchState
 
-        return ({"motor state": state}), 200
+        return ({"role":role}), 200
 
 class loginApi(Resource):
 
@@ -79,7 +81,7 @@ class registerApi(Resource):
 
         return ({"Sucess": "new user created"})
     
-api.add_resource(indexApi, '/api/<newState>')
+api.add_resource(indexApi, '/api/')
 api.add_resource(loginApi, '/api/login')
+api.add_resource(updateApi, '/api/<newState>')
 api.add_resource(registerApi, '/api/register')
-
