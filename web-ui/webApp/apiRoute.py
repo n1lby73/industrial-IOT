@@ -50,8 +50,7 @@ class registerApi(Resource):
         self.parser.add_argument("email", required=True)
         self.parser.add_argument("username", required=True)
         self.parser.add_argument("password", required=True)
-        self.parser.add_argument("confirmPassword", required=True)
-    
+
     def get(self):
 
         return ({"msg": "Method not allowed"}), 405
@@ -64,7 +63,7 @@ class registerApi(Resource):
         password = args["password"]
 
         existingUserName = users.query.filter_by(username=username).first()
-        existingMail = users.query.filter_by(email=email.data).first()
+        existingMail = users.query.filter_by(email=email).first()
 
         if existingUserName:
             return {"Error: Username is already taken"}
