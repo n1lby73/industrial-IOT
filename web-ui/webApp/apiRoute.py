@@ -7,14 +7,19 @@ from flask import jsonify
 
 class indexApi(Resource):
     @jwt_required()
-    def get(self, newState):
+    def get(self):
         query = esp32.query.filter_by(esp32pin='5').first()
         state = query.switchState
 
         return ({"motor state": state}), 200
 
-    def patch(self, newState):
-        return ("test")
+class updateApi(Resource):
+    @jwt_required()
+    def get(self):
+        query = esp32.query.filter_by(esp32pin='5').first()
+        state = query.switchState
+
+        return ({"motor state": state}), 200
 
 class loginApi(Resource):
 
@@ -23,11 +28,7 @@ class loginApi(Resource):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument("email", required=True)
         self.parser.add_argument("password", required=True)
-    
-    def get(self):
 
-        return ({"msg": "Method not allowed"}), 405
-    
     def post(self):
 
         # if get_jwt_identity():
@@ -55,10 +56,6 @@ class registerApi(Resource):
         self.parser.add_argument("username", required=True)
         self.parser.add_argument("password", required=True)
 
-    def get(self):
-
-        return ({"msg": "Method not allowed"}), 405
-    
     def post(self):
 
         args = self.parser.parse_args()
