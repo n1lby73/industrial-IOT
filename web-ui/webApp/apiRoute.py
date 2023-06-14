@@ -66,17 +66,17 @@ class registerApi(Resource):
         existingMail = users.query.filter_by(email=email).first()
 
         if existingUserName:
-            return {"Error: Username is already taken"}
+            return ({"Error": "Username is already taken"})
         
         if existingMail:
-            return {"Error: Email already exit"}
+            return ({"Error": "Email already exit"})
 
         new_user = users(email=email, username=username, role="user", password=generate_password_hash(password))
 
         db.session.add(new_user)
         db.session.commit()
 
-        return {"Sucess: new user created"}
+        return ({"Sucess": "new user created"})
     
 api.add_resource(indexApi, '/api')
 api.add_resource(loginApi, '/api/login')
