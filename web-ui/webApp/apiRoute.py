@@ -7,10 +7,14 @@ from flask import jsonify
 
 class indexApi(Resource):
     @jwt_required()
-    def get(self):
+    def get(self, newState):
         query = esp32.query.filter_by(esp32pin='5').first()
         state = query.switchState
+
         return ({"motor state": state}), 200
+
+    def patch(self, newState):
+        return ("test")
 
 class loginApi(Resource):
 
@@ -78,7 +82,7 @@ class registerApi(Resource):
 
         return ({"Sucess": "new user created"})
     
-api.add_resource(indexApi, '/api')
+api.add_resource(indexApi, '/api/<newState>')
 api.add_resource(loginApi, '/api/login')
 api.add_resource(registerApi, '/api/register')
 
