@@ -12,13 +12,29 @@ class indexApi(Resource):
     @jwt_required()
     def get(self, pinStatus):
 
-        if pinStatus == stato:
-            query = esp32.query.filter_by(esp32pin=stato).first()
-            state = query.switchState
+        match pinStatus:
 
-            return ({"motor state": state}), 200
+            case " ":
 
-        return ({"error":"invalid pin"})
+                return {"error":"no parameter to query"}
+                        
+            case stato:
+
+                query = esp32.query.filter_by(esp32pin=stato).first()
+                state = query.switchState
+
+                return ({"motor state": state}), 200
+            
+            case _:
+
+                return ({"error":"invalid pin"})
+        # if pinStatus == stato:
+        #     query = esp32.query.filter_by(esp32pin=stato).first()
+        #     state = query.switchState
+
+        #     return ({"motor state": state}), 200
+        
+        # return ({"error":"invalid pin"})
 
 class updateApi(Resource):
     @jwt_required()
