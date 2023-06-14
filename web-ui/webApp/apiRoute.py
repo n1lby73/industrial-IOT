@@ -1,4 +1,4 @@
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, get_jwt
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_restful import Resource, reqparse
 from webApp.models import users, esp32
