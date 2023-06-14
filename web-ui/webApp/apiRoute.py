@@ -18,8 +18,9 @@ class updateApi(Resource):
     def put(self, newState):
         user = get_jwt_identity()
         role = user["role"]
-        #query = esp32.query.filter_by(esp32pin='5').first()
-        #state = query.switchState
+
+        if role == "user":
+            return {"error":"not authorized"}
 
         return ({"role":role}), 200
 
