@@ -62,7 +62,6 @@ class registerApi(Resource):
         email = args["email"]
         username = args["username"]
         password = args["password"]
-        password2 = args["confirmPassword"]
 
         existingUserName = users.query.filter_by(username=username).first()
         existingMail = users.query.filter_by(email=email.data).first()
@@ -72,10 +71,7 @@ class registerApi(Resource):
         
         if existingMail:
             return {"Error: Email already exit"}
-        
-        if password != password2:
-            return {"error: password do not match"}
-        
+
         new_user = users(email=email, username=username, role="user", password=generate_password_hash(password))
 
         db.session.add(new_user)
