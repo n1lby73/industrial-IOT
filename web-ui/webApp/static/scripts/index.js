@@ -2,10 +2,10 @@ const button = document.querySelector('#toggleBtn');
 const rotateImage = document.getElementById("rotate-image");
 const offlineMsg = document.getElementById("online");
 
-const socket = io('http://127.0.0.1:5000'); 
+// const socket = io('http://127.0.0.1:5000'); 
 // const socket = io.connect( {cookie: false}, 'https://industrialiot.onrender.com');
 
-// const socket = io('https://industrialiot.onrender.com');
+const socket = io('https://industrialiot.onrender.com');
 
 socket.on('connect', () => {
 
