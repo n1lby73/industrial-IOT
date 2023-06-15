@@ -26,6 +26,7 @@ int globalState;
 #define ssid "esp8266"
 #define password "forTheLoveOfEmbededSystem"
 
+const char* serverID = "https://industrialiot.onrender.com";
 const char* serverIP = "192.168.0.145"; //host subject to change always untill app is hosted
 const int serverPort = 5000;
 
@@ -76,7 +77,7 @@ void syncHardChanges(){
   String jsonString;
   serializeJson(doc, jsonString);
 
-  String url = "http://" + String(serverIP) + ":" + String(serverPort) + "/synchardchanges";
+  String url = "http://" + String(serverID) + "/synchardchanges";
 
   http.begin(client, url);
   http.addHeader("Content-Type", "application/json");
@@ -133,7 +134,7 @@ void internetAccess() {
 
 void onlineStatus(){
 
-  String url = "http://" + String(serverIP) + ":" + String(serverPort) + "/espOnline";
+  String url = "http://" + String(serverID) + "/espOnline";
 
   http.begin(client, url);
   http.addHeader("Content-Type", "application/json");
@@ -190,7 +191,7 @@ void loop() {
     internetAccess();
     onlineStatus();
 
-    String url = "http://" + String(serverIP) + ":" + String(serverPort) + "/query";
+    String url = "http://" + String(serverID) + "/query";
 
     http.begin(client, url);
     http.addHeader("Content-Type", "application/json");
