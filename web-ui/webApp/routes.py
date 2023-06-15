@@ -212,7 +212,7 @@ def btn():
     pin = data['pin']
 
     try:
-        query = esp32.query.filter_by(esp32pin='5').first()
+        query = esp32.query.filter_by(esp32pin=pin).first()
         
         if query:
 
