@@ -1,6 +1,6 @@
 from webApp.form import loginForm, knownUserFp, unKnownUserFp, forgetPassEmail, regForm, confirmEmail
 from flask_login import login_required, current_user, login_user, logout_user, UserMixin
-from flask import render_template, url_for, request, redirect, jsonify, flash
+from flask import render_template, url_for, request, redirect, jsonify, flash, current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from webApp import app, db, mail, login, socketio
 from webApp.models import users, esp32
@@ -241,27 +241,27 @@ def espOnline():
     return "online"
 
 def confirmOnline():
+    with app.app_context():
+        global timeout, startTime, espstate
 
-    global timeout, startTime, espstate
+        currentTime = time.time()
 
-    currentTime = time.time()
+        if currentTime - startTime > timeout:
 
-    if currentTime - startTime > timeout:
+            espstate = 0
+            socketio.emit('espOnlineState', {"value":0})
+            query = esp32.query.filter_by(pinName='onlineStatus').first()
+            query.switchState = str(espstate)
+            db.session.commit()
+            print("0")
 
-        espstate = 0
-        socketio.emit('espOnlineState', {"value":0})
-        query = esp32.query.filter_by(pinName='onlineStatus').first()
-        # query.switchState = str(espstate)
-        # db.session.commit()
-        print("0")
-
-    else:
-        espstate = 1
-        socketio.emit('espOnlineState', {"value":1})
-        query = esp32.query.filter_by(pinName='onlineStatus').first()
-        query.switchState = str(espstate)
-        db.session.commit()
-        print("1")
+        else:
+            espstate = 1
+            socketio.emit('espOnlineState', {"value":1})
+            query = esp32.query.filter_by(pinName='onlineStatus').first()
+            query.switchState = str(espstate)
+            db.session.commit()
+            print("1")
 
 @socketio.on('connect')
 def handle_connect():
@@ -285,9 +285,10 @@ def websocket():
 
 @socketio.on('espstatus')
 def espstatus():
-    while True:
-        socketio.start_background_task(target=confirmOnline)
-        time.sleep(0.1)
+    with current_app.app_context():
+        while True:
+            socketio.start_background_task(target=confirmOnline)
+            time.sleep(0.1)
 
 @socketio.on('update')
 def websocket(update):
