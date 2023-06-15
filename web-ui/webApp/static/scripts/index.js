@@ -104,17 +104,6 @@ function handleOnLoad(value, onlineStatus){
   }
 };
 
-// socket.addEventListener('message', (msg) => {
-
-//     var value = JSON.parse(msg.success);
-
-//     onlineStatus = msg.value;
-
-//     handleOnLoad(value, onlineStatus);
-//     console.log(`Received message: ${msg.success}`);
-
-// });
-
 socket.on('message', function(msg){
 
   var value = msg.success;
@@ -123,20 +112,6 @@ socket.on('message', function(msg){
   handleOnLoad(value, onlineStatus);
   
 });
-
-// socket.addEventListener('localUpdate', (msg) => {
-
-//     var update = JSON.parse(msg.update);
-  
-//     console.log(update);
-
-//     handleOnLoad(update, 1);
-    
-//     console.log("syncupdate");
-
-//     console.log(`Received message: ${msg.update}`);
-// });
-
 
 socket.on('localUpdate', function(msg){
 
@@ -148,25 +123,6 @@ socket.on('localUpdate', function(msg){
   
   console.log("syncupdate");
 });
-
-// socket.addEventListener('message', (msg) => {
-
-//     onlineStatus = msg.value;
-
-//     if (onlineStatus === 0){
-  
-//       offlineMsg.style.display = "inline";
-//       document.title = 'Offline';
-  
-//     }
-  
-//     else{
-  
-//       offlineMsg.style.display = "none";
-      
-//     }
-//     console.log(`Received message: ${mg.value}`);
-//   });
 
 socket.on('espOnlineState', function(msg){
 
