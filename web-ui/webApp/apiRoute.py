@@ -21,15 +21,28 @@ class indexApi(Resource):
         
         return ({"error":"invalid pin"})
 
+# pnon ==> pin name or number
 class updateApi(Resource):
     @jwt_required()
-    def put(self, newState):
+    def put(self, pnon, newState):
+        
         user = get_jwt_identity()
         role = user["role"]
 
         if role == "user":
             return {"error":"not authorized"}
 
+        try:
+
+            query = esp32.query.filter_by(pinName=pnon).first()
+
+        except AttributeError:
+
+            query = esp32.query.filter_by(esp32pin=pnon).first()
+
+        else:
+            return {"error":"invalid pin name or number"}
+        
         if newState != "1" and newState != "0":
             return {"error":"invalid update msg"}
         
@@ -39,10 +52,18 @@ class updateApi(Resource):
         if status == "0":
             return {"Alert":"Esp is offline, can't update"}
         
-        query = esp32.query.filter_by(pinName='stato').first()
-        query.switchState = newState
-        db.session.commit()
-        
+        try:
+
+            query = esp32.query.filter_by(pinName=pnon).first()
+            query.switchState = newState
+            db.session.commit()
+
+        except:
+
+            query = esp32.query.filter_by(esp32pin=pnon).first()
+            query.switchState = newState
+            db.session.commit()
+
         return ({"status":"success"}), 200
 
 class loginApi(Resource):
@@ -103,4 +124,4 @@ class registerApi(Resource):
 api.add_resource(loginApi, '/api/login')
 api.add_resource(registerApi, '/api/register')
 api.add_resource(indexApi, '/api/<pinStatus>')
-api.add_resource(updateApi, '/api/update/<newState>')
+api.add_resource(updateApi, '/api/update/<pnon>/<newState>')
