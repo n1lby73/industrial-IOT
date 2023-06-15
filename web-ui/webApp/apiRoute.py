@@ -30,7 +30,20 @@ class updateApi(Resource):
         if role == "user":
             return {"error":"not authorized"}
 
-        return ({"role":role}), 200
+        if newState != "1" and newState != "0":
+            return {"error":"invalid update msg"}
+        
+        query = esp32.query.filter_by(pinName='onlineStatus').first()
+        status = query.switchState
+
+        if status == "0":
+            return {"Alert":"Esp is offline, can't update"}
+        
+        query = esp32.query.filter_by(pinName='stato').first()
+        query.switchState = newState
+        db.session.commit()
+        
+        return ({"status":"success"}), 200
 
 class loginApi(Resource):
 
