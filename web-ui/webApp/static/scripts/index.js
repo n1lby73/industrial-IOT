@@ -68,6 +68,7 @@ const handleButtonClick = () => {
 
     offlineMsg.style.display = "inline";
     document.title = 'Offline';
+    rotateImage.style.display = 'none';
 
     }
 };
@@ -95,7 +96,8 @@ function handleOnLoad(value, onlineStatus){
   }
 
   else{
-
+    
+    rotateImage.style.display = 'none';
     offlineMsg.style.display = "inline";
     document.title = 'Offline';
 
@@ -115,8 +117,7 @@ function handleOnLoad(value, onlineStatus){
 
 socket.on('message', function(msg){
 
-  var value = JSON.parse(msg.success);
-
+  var value = msg.success;
   onlineStatus = msg.value;
 
   handleOnLoad(value, onlineStatus);
