@@ -10,7 +10,7 @@ from flask import Flask
 import socketio
 
 app = Flask(__name__)
-app.app_context().push()
+# app.app_context().push()
 
 from webApp import config
 
