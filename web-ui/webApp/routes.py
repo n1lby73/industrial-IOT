@@ -315,7 +315,7 @@ def websocket(update):
 
 @socketio.on('role')
 def websocket():
-    socketio.emit('storeRole',{"role":current_user.role}, json=True)
+    socketio.emit('storeRole',{"role":current_user.role})
 
 @app.errorhandler(404)
 def page_not_found(e):
