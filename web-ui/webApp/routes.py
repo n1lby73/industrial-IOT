@@ -1,6 +1,6 @@
 from webApp.form import loginForm, knownUserFp, unKnownUserFp, forgetPassEmail, regForm, confirmEmail
+from flask import render_template, url_for, request, redirect, jsonify, flash, current_app
 from flask_login import login_required, current_user, login_user, logout_user, UserMixin
-from flask import render_template, url_for, request, redirect, jsonify, flash, current_app, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from webApp import app, db, mail, login, socketio
 from webApp.models import users, esp32
@@ -94,12 +94,7 @@ def login():
 
             next_page = url_for('index')
 
-        session['user_id'] = current_user.id
-        response = redirect(next_page)
-        # response = app.make_response('Logged in')
-        response.set_cookie('session', secure=True, samesite='None')
-        return response
-        # return redirect(next_page)
+        return redirect(next_page)
     
     return render_template("signin.html", form=form)
 
