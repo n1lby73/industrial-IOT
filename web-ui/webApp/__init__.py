@@ -20,7 +20,7 @@ mail = Mail(app)
 jwt = JWTManager(app)
 login = LoginManager()
 migrate = Migrate(app, db)
-socketio = SocketIO(app, cors_allowed_origins='*')
+socketio = SocketIO(app, cors_allowed_origins='*',  transports=['websocket', 'xhr-polling'])
 # socketio = SocketIO(app, cors_allowed_origins='127.0.0.1:5000')
 #sio = socketio.AsyncServer()
 
