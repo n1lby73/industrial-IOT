@@ -251,8 +251,8 @@ def confirmOnline():
         espstate = 0
         socketio.emit('espOnlineState', {"value":0})
         query = esp32.query.filter_by(pinName='onlineStatus').first()
-        query.switchState = str(espstate)
-        db.session.commit()
+        # query.switchState = str(espstate)
+        # db.session.commit()
         print("0")
 
     else:
