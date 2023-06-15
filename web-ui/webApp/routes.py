@@ -249,7 +249,7 @@ def confirmOnline():
         if currentTime - startTime > timeout:
 
             espstate = 0
-            # socketio.emit('espOnlineState', {"value":0})
+            socketio.emit('espOnlineState', {"value":0})
             # query = esp32.query.filter_by(pinName='onlineStatus').first()
             # query.switchState = str(espstate)
             # db.session.commit()
