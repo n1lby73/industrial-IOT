@@ -279,8 +279,9 @@ def websocket():
 
     query = esp32.query.filter_by(esp32pin='5').first()
     state = query.switchState
-    current_status_from_db = {"success":state, "value":espstate}
-    socketio.emit('message', current_status_from_db, json=True, broadcast=True)
+    
+    socketio.emit('message', {"success":state, "value":espstate})
+
     print("A new client connected")
 
 @socketio.on('espstatus')
