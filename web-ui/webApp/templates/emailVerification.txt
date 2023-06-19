@@ -1,6 +1,6 @@
 Below is your one time passcode that you need to use to complete your authentication. 
 
-The verification code will be valid for 30 minutes. Please do not share this code with anyone.
+The verification code will be valid for 2 minutes. Please do not share this code with anyone.
 
 {{ otp }}
 
