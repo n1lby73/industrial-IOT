@@ -143,6 +143,9 @@ def forgetPassword():
             loggedUser = {"email":email, "username":confirmEmail.username, "role":confirmEmail.role}
             access_token = create_access_token(identity=loggedUser, expires_delta=timedelta(seconds=120))
 
+            confirmEmail.token = access_token
+            db.session.commit()
+
             msg = Message('Password Recovery', recipients=[email])
             msg.html = render_template("resetLink.html", username=confirmEmail.username, link=access_token)
             mail.send(msg)
@@ -168,6 +171,10 @@ def forgetPasswordEmail(token):
         email = payload['email']
 
         verifyEmail = users.query.filter_by(email=email).first()
+
+        if verifyEmail.token != token:
+            
+            return render_template("404.html")
     
     except:
 
@@ -179,7 +186,7 @@ def forgetPasswordEmail(token):
             
             newpass = request.form.get('confirmPass')
             verifyEmail.password = generate_password_hash(newpass)
-
+            verifyEmail.token = " "
             db.session.commit()
 
             flash("Password updated successfully, please log in")
