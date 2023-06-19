@@ -14,7 +14,7 @@ Flask-Mail==0.9.1
 Flask-Migrate==4.0.4
 Flask-Principal==0.4.0
 Flask-RESTful==0.3.9
-Flask-Security-Too
+Flask-Security-Too #render build used 5.1.2 local build used 5.2.0 
 #Flask-Security-Too==5.2.0
 Flask-SocketIO==5.3.3
 Flask-SQLAlchemy==3.0.3
