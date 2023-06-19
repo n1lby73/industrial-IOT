@@ -68,6 +68,11 @@ def register():
 
     return render_template("signup.html", form=form)
 
+@app.route('/email', methods=['POST', 'GET'])
+def email():
+
+
+
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     
