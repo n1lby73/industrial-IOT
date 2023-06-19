@@ -57,8 +57,6 @@ class unKnownUserFp(FlaskForm):
 
 class forgetPassEmail(FlaskForm):
 
-    emailOTP = PasswordField("OTP from email", validators=[InputRequired(), Length(min=6, max=6, message='OTP must contain 6 characters')]) 
-
     newPassword = PasswordField("New Password", validators=[InputRequired(), Length(min=8, max=20, message='Password must be  between 8-20 characters')])
 
     confirmPass = PasswordField("Confirm password", validators=[InputRequired(), EqualTo('newPassword', message="Password must be same")])

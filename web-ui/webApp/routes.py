@@ -1,11 +1,13 @@
 from webApp.form import loginForm, knownUserFp, unKnownUserFp, forgetPassEmail, regForm, confirmEmail
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, decode_token
 from flask import render_template, url_for, request, redirect, jsonify, flash, current_app
 from flask_login import login_required, current_user, login_user, logout_user, UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-from webApp import app, db, mail, login, socketio
+from webApp import app, db, mail, login, socketio, jwt
 from webApp.models import users, esp32
 from werkzeug.urls import url_parse
 from flask_mail import Message
+from datetime import timedelta
 import time
 
 
@@ -138,8 +140,11 @@ def forgetPassword():
 
         if confirmEmail:
 
+            loggedUser = {"email":email, "username":confirmEmail.username, "role":confirmEmail.role}
+            access_token = create_access_token(identity=loggedUser, expires_delta=timedelta(seconds=120))
+
             msg = Message('Password Recovery', recipients=[email])
-            msg.body = 'did it work'
+            msg.html = render_template("resetLink.html", username=confirmEmail.username, link=access_token)
             mail.send(msg)
             flash('A password reset link has been sent to the provided email')
             return render_template("unKnownUserFp.html", form=unKnownUserForm)
@@ -149,13 +154,42 @@ def forgetPassword():
     
     return render_template("unKnownUserFp.html", form=unKnownUserForm)
 
-@app.route('/forgetPasswordEmail', methods=['POST', 'GET'])
-def forgetPasswordEmail():
+@app.route('/forgetPasswordEmail/<token>', methods=['POST', 'GET'])
+def forgetPasswordEmail(token):
     
     forgetPassEmailForm=forgetPassEmail()
 
+    try:
+
+        decoded_token = decode_token(token)
+
+        payload = decoded_token.get("loggedUser")
+
+        email = payload['email']
+
+        verifyEmail = users.query.filter_by(email=email).first()
+
+        print(decoded_token)
+        print (email)
+        print (verifyEmail)
+
+        if verifyEmail:
+
+            return render_template("forgetPassEmail.html", form=forgetPassEmailForm)
+        
+    except:
+
+        return render_template("404.html")
+    
     if forgetPassEmailForm.validate_on_submit():
-        return "work"
+        
+        newpass = request.form.get('confirmPass')
+        verifyEmail.password = generate_password_hash(newpass)
+
+        db.session.commit()
+
+        return redirect(url_for('login'))
+    
     return render_template("forgetPassEmail.html", form=forgetPassEmailForm)
 
 # @app.route('/admin')
