@@ -8,6 +8,7 @@ from webApp.models import users, esp32
 from werkzeug.urls import url_parse
 from flask_mail import Message
 from datetime import timedelta
+import random
 import time
 
 
@@ -29,6 +30,11 @@ def load_user(user_id):
 @login_required
 def index():
 
+    if current_user.verifiedEmail != "True":
+
+        flash("Check regisered email for OTP")
+        return redirect(url_for('email'))
+    
     if current_user.role != "owner":
         
         return render_template('index.html')
@@ -71,7 +77,42 @@ def register():
 @app.route('/email', methods=['POST', 'GET'])
 def email():
 
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    
+    verify=confirmEmail()
 
+    email = current_user.email
+
+    otp = genOTP()
+    
+    current_user.otp = str(otp)
+    
+    db.session.commit()
+
+    msg = Message('Email Verification', recipients=[email])
+    msg.html = render_template("emailVerification.txt", otp=otp, form=verify)
+    mail.send(msg)
+
+
+    if verify.validate_on_submit():
+
+        collectedOtp = str(request.form.get('emailOTP'))
+
+        print(current_user.otp)
+        if current_user.otp != collectedOtp:
+
+            flash ("incorrect otp entered")
+            return render_template("confirmEmail.html", otp=otp, form=verify)
+        
+        current_user.otp = " "
+        current_user.verifiedEmail = "True"
+
+        db.session.commit()
+
+        return redirect(url_for("index"))
+    
+    return render_template("confirmEmail.html", otp=otp, form=verify)
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -303,6 +344,13 @@ def confirmOnline():
             # query.switchState = str(espstate)
             # db.session.commit()
             # print("1")
+
+def genOTP():
+    
+    random.seed(time.time())
+    otp = random.randint(100000, 999999)
+
+    return (otp)
 
 @socketio.on('connect')
 def handle_connect():
