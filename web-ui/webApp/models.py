@@ -23,6 +23,8 @@ class users(UserMixin, db.Model):
     role = db.Column(db.String(150), nullable = False)
     password = db.Column(db.String(150), nullable = False)
     token = db.Column(db.String(5000), nullable = True)
+    otp = db.Column(db.String(6), nullable = True)
+    verifiedEmail = db.Column(db.String(5), nullable = True, default = "False")
     
     def __repr__(self):
         return '<esp32 {} {}>'.format(self.email, self.password)
