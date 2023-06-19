@@ -82,19 +82,6 @@ def email():
     
     verify=confirmEmail()
 
-    email = current_user.email
-
-    otp = genOTP()
-    
-    current_user.otp = str(otp)
-    
-    db.session.commit()
-
-    msg = Message('Email Verification', recipients=[email])
-    msg.html = render_template("emailVerification.txt", otp=otp, form=verify)
-    mail.send(msg)
-
-
     if verify.validate_on_submit():
 
         collectedOtp = str(request.form.get('emailOTP'))
@@ -112,6 +99,18 @@ def email():
 
         return redirect(url_for("index"))
     
+    email = current_user.email
+
+    otp = genOTP()
+    
+    current_user.otp = str(otp)
+    
+    db.session.commit()
+
+    msg = Message('Email Verification', recipients=[email])
+    msg.html = render_template("emailVerification.txt", otp=otp, form=verify)
+    mail.send(msg)
+
     return render_template("confirmEmail.html", otp=otp, form=verify)
 
 @app.route('/login', methods=['POST', 'GET'])
