@@ -1,7 +1,7 @@
 #Fp = forgotten password
 
 from wtforms.validators import InputRequired, Length, Email, EqualTo, ValidationError
-from wtforms import StringField, EmailField, PasswordField, SubmitField, IntegerField
+from wtforms import StringField, EmailField, PasswordField, SubmitField
 from webApp.models import users
 from flask_wtf import FlaskForm
 
@@ -65,6 +65,6 @@ class forgetPassEmail(FlaskForm):
 
 class confirmEmail(FlaskForm):
 
-    emailOTP = IntegerField("OTP from email",  validators=[InputRequired(), Length(min=6, max=6, message='Input a valid otp')])
+    emailOTP = StringField("Input OTP",  validators=[InputRequired(), Length(min=6, max=6, message='Input a valid otp')])
 
     submit = SubmitField("Verify")
