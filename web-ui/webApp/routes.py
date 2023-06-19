@@ -1,5 +1,5 @@
 from webApp.form import loginForm, knownUserFp, unKnownUserFp, forgetPassEmail, regForm, confirmEmail
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, decode_token
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, decode_token, jwt_manager
 from flask import render_template, url_for, request, redirect, jsonify, flash, current_app
 from flask_login import login_required, current_user, login_user, logout_user, UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -163,33 +163,28 @@ def forgetPasswordEmail(token):
 
         decoded_token = decode_token(token)
 
-        payload = decoded_token.get("loggedUser")
+        payload = decoded_token['sub']
 
         email = payload['email']
 
         verifyEmail = users.query.filter_by(email=email).first()
-
-        print(decoded_token)
-        print (email)
-        print (verifyEmail)
-
-        if verifyEmail:
-
-            return render_template("forgetPassEmail.html", form=forgetPassEmailForm)
-        
+    
     except:
 
         return render_template("404.html")
     
-    if forgetPassEmailForm.validate_on_submit():
+    if verifyEmail:
+
+        if forgetPassEmailForm.validate_on_submit():
+            
+            newpass = request.form.get('confirmPass')
+            verifyEmail.password = generate_password_hash(newpass)
+
+            db.session.commit()
+
+            flash("Password updated successfully, please log in")
+            return redirect(url_for('login'))
         
-        newpass = request.form.get('confirmPass')
-        verifyEmail.password = generate_password_hash(newpass)
-
-        db.session.commit()
-
-        return redirect(url_for('login'))
-    
     return render_template("forgetPassEmail.html", form=forgetPassEmailForm)
 
 # @app.route('/admin')
