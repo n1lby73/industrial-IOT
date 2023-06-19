@@ -12,22 +12,17 @@ Flask-JWT-Extended==4.5.2
 Flask-Login==0.6.2
 Flask-Mail==0.9.1
 Flask-Migrate==4.0.4
-Flask-Principal==0.4.0
 Flask-RESTful==0.3.9
-Flask-Security-Too #render build used 5.1.2 local build used 5.2.0 
-#Flask-Security-Too==5.2.0
 Flask-SocketIO==5.3.3
 Flask-SQLAlchemy==3.0.3
 Flask-WTF==1.1.1
 greenlet==2.0.2
 gunicorn==20.1.0
 idna==3.4
-importlib-resources==5.12.0
 itsdangerous==2.1.2
 Jinja2==3.1.2
 Mako==1.2.4
 MarkupSafe==2.1.2
-passlib==1.7.4
 psycopg2-binary==2.9.6
 PyJWT
 # PyJWT==1.4.2
