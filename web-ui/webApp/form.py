@@ -68,3 +68,16 @@ class confirmEmail(FlaskForm):
     emailOTP = StringField("Input OTP",  validators=[InputRequired(), Length(min=6, max=6, message='Input a valid otp')])
 
     submit = SubmitField("Verify")
+
+class validEmail(FlaskForm):
+
+    email = EmailField('New email', validators=[InputRequired(), Email('Input a valid email')])
+
+    reset = SubmitField("Send OTP")
+
+    def validate_email(self, email):
+
+        existingMail = users.query.filter_by(email=email.data).first()
+
+        if existingMail:
+            raise ValidationError("Email already exit")

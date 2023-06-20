@@ -1,4 +1,4 @@
-from webApp.form import loginForm, knownUserFp, unKnownUserFp, forgetPassEmail, regForm, confirmEmail
+from webApp.form import loginForm, knownUserFp, unKnownUserFp, forgetPassEmail, regForm, confirmEmail, validEmail
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, decode_token, jwt_manager
 from flask import render_template, url_for, request, redirect, jsonify, flash, current_app
 from flask_login import login_required, current_user, login_user, logout_user, UserMixin
@@ -98,12 +98,12 @@ def email():
             db.session.commit()
 
             flash ("Expired otp, request for a new one")
-            return render_template("confirmEmail.html", form=verify)
+            return render_template("confirmEmail.html", form=verify, email=email)
         
         if current_user.otp != collectedOtp:
 
             flash ("invalid otp entered")
-            return render_template("confirmEmail.html", form=verify)
+            return render_template("confirmEmail.html", form=verify, email=email)
         
         current_user.otp = " "
         current_user.verifiedEmail = "True"
@@ -124,10 +124,33 @@ def email():
     db.session.commit()
 
     msg = Message('Email Verification', recipients=[email])
-    msg.html = render_template("emailVerification.txt", otp=otp, form=verify)
+    msg.html = render_template("emailVerification.txt", otp=otp)
     mail.send(msg)
 
-    return render_template("confirmEmail.html", form=verify)
+    flash("check your email "+ email +" for your otp to complete registration")
+
+    return render_template("confirmEmail.html", form=verify, email=email)
+
+@app.route('/typoEmail', methods=['POST', 'GET'])
+def typoEmail():
+
+    if not current_user.is_authenticated or current_user.verifiedEmail == "True":
+
+        return render_template('404.html')
+    
+    newEmail = validEmail()
+
+    if newEmail.validate_on_submit():
+
+        email = request.form.get('email')
+
+        current_user.email = email
+
+        db.session.commit()
+
+        return redirect(url_for('email'))
+    
+    return render_template("typoEmail.html", form=newEmail)
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():

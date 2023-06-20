@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{url_for('static', filename='/css/forgettenPassword.css') }}"/>
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 
-    <title>Email Verification</title>
+    <title>Change Email</title>
     
 </head>
 <body>
@@ -15,7 +15,7 @@
         <div class="container">
             <form id="form" method="post" action="">
         
-                <h1 id="h1">Verify Email Address</h1>
+                <h1 id="h1">Valid Email</h1>
 
                 {% with messages = get_flashed_messages() %}
                     {% if messages %}
@@ -31,20 +31,29 @@
         
                     <div class="text">
         
-                        {{ form.emailOTP.label }}
+                        {{ form.email.label }}
         
                     </div>
         
-                    {{ form.emailOTP }}
-
-                    <a href="{{ url_for('email') }}">Request otp</a>
-                    Not {{ email }}, click <a href="{{ url_for('typoEmail') }}">here</a>
+                    {{ form.email }}
+        
                 </div>
 
-                {{ form.submit(class="signup") }}
+                <ul>
+
+                    {% for errors in form.email.errors %}
+
+                        <li style="color:red;">{{ errors }}</li>
+                        
+                    {% endfor %}
+
+                </ul>
+                {{ form.reset(class="signup") }}
         
             </form>
 
+            <a href="{{ url_for('register') }}" class="navbar-item">Create account</a>
+            <a href="{{ url_for('login') }}" class="navbar-item">login</a>
         </div>
     </div>
 </body>
