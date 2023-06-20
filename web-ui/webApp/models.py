@@ -22,7 +22,7 @@ class users(UserMixin, db.Model):
     email = db.Column(db.String(150), nullable = False, unique = True)
     role = db.Column(db.String(150), nullable = False)
     password = db.Column(db.String(150), nullable = False)
-    token = db.Column(db.String(300), nullable = True)
+    token = db.Column(db.String(5000), nullable = True)
     
     def __repr__(self):
         return '<esp32 {} {}>'.format(self.email, self.password)
