@@ -86,11 +86,23 @@ def email():
 
     if verify.validate_on_submit():
 
+        global otpStartTime, otpTimeout
+
         collectedOtp = str(request.form.get('emailOTP'))
-  
+
+        currentTime = time.time()
+
+        if currentTime - otpStartTime > otpTimeout:
+
+            current_user.otp = " "
+            db.session.commit()
+            
+            flash ("Expired otp, check email for a new otp")
+            return redirect(url_for("email"))
+        
         if current_user.otp != collectedOtp:
 
-            flash ("incorrect otp entered")
+            flash ("invalid otp entered")
             return render_template("confirmEmail.html", form=verify)
         
         current_user.otp = " "
@@ -327,6 +339,7 @@ def espOnline():
 
 def confirmOnline():
     with app.app_context():
+
         global espOnlineTimeout, startTime, espstate
 
         currentTime = time.time()
@@ -353,6 +366,7 @@ def genOTP():
     global otpStartTime
 
     otpStartTime = time.time()
+
     random.seed(time.time())
     otp = random.randint(100000, 999999)
 
