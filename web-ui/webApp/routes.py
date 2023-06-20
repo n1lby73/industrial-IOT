@@ -96,9 +96,9 @@ def email():
 
             current_user.otp = " "
             db.session.commit()
-            
-            flash ("Expired otp, check email for a new otp")
-            return redirect(url_for("email"))
+
+            flash ("Expired otp, request for a new one")
+            return render_template("confirmEmail.html", form=verify)
         
         if current_user.otp != collectedOtp:
 
