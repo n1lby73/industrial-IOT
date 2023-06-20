@@ -70,7 +70,7 @@ def register():
 
         if not next_page or url_parse(next_page).netloc != '':
 
-            next_page = url_for('login')
+            next_page = url_for('email')
 
         return redirect(next_page)
 
@@ -98,7 +98,10 @@ def email():
 
         db.session.commit()
 
-        return redirect(url_for("index"))
+        logout_user()
+
+        flash ("Verification Successful, login now")
+        return redirect(url_for("login"))
     
     email = current_user.email
 
