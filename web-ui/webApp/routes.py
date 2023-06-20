@@ -20,7 +20,9 @@ login.login_message = "You're not logged in"
 
 espstate = 0
 startTime = 0
-timeout = 2
+otpTimeout = 120
+otpStartTime = 0
+espOnlineTimeout = 2
 
 @login.user_loader
 def load_user(user_id):
@@ -85,12 +87,11 @@ def email():
     if verify.validate_on_submit():
 
         collectedOtp = str(request.form.get('emailOTP'))
-
-        print(current_user.otp)
+  
         if current_user.otp != collectedOtp:
 
             flash ("incorrect otp entered")
-            return render_template("confirmEmail.html", otp=otp, form=verify)
+            return render_template("confirmEmail.html", form=verify)
         
         current_user.otp = " "
         current_user.verifiedEmail = "True"
@@ -111,7 +112,7 @@ def email():
     msg.html = render_template("emailVerification.txt", otp=otp, form=verify)
     mail.send(msg)
 
-    return render_template("confirmEmail.html", otp=otp, form=verify)
+    return render_template("confirmEmail.html", form=verify)
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -323,11 +324,11 @@ def espOnline():
 
 def confirmOnline():
     with app.app_context():
-        global timeout, startTime, espstate
+        global espOnlineTimeout, startTime, espstate
 
         currentTime = time.time()
 
-        if currentTime - startTime > timeout:
+        if currentTime - startTime > espOnlineTimeout:
 
             espstate = 0
             socketio.emit('espOnlineState', {"value":0})
@@ -346,6 +347,9 @@ def confirmOnline():
 
 def genOTP():
     
+    global otpStartTime
+
+    otpStartTime = time.time()
     random.seed(time.time())
     otp = random.randint(100000, 999999)
 
