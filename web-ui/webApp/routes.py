@@ -1,9 +1,11 @@
 from webApp.form import loginForm, knownUserFp, unKnownUserFp, forgetPassEmail, regForm, confirmEmail, validEmail
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, decode_token, jwt_manager
+from webApp.globalVar import espOnlineTimeout, espStartTime, espstate, otpTimeout 
 from flask import render_template, url_for, request, redirect, jsonify, flash, current_app
 from flask_login import login_required, current_user, login_user, logout_user, UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from webApp import app, db, mail, login, socketio, jwt
+from webApp.function import confirmOnline, genOTP
 from webApp.models import users, esp32
 from werkzeug.urls import url_parse
 from flask_mail import Message
@@ -18,11 +20,11 @@ login.login_message = "You're not logged in"
 
 # global variables
 
-espstate = 0
-startTime = 0
-otpTimeout = 120
-otpStartTime = 0
-espOnlineTimeout = 2
+# espstate = 0
+# espStartTime = 0
+# otpTimeout = 120
+# otpStartTime = 0
+# espOnlineTimeout = 2
 
 @login.user_loader
 def load_user(user_id):
@@ -92,18 +94,18 @@ def email():
 
         currentTime = time.time()
 
-        if currentTime - otpStartTime > otpTimeout:
+        if (currentTime - otpStartTime) > otpTimeout:
 
             current_user.otp = " "
             db.session.commit()
 
             flash ("Expired otp, request for a new one")
-            return render_template("confirmEmail.html", form=verify, email=email)
+            return render_template("confirmEmail.html", form=verify, email=current_user.email)
         
         if current_user.otp != collectedOtp:
 
             flash ("invalid otp entered")
-            return render_template("confirmEmail.html", form=verify, email=email)
+            return render_template("confirmEmail.html", form=verify, email=current_user.email)
         
         current_user.otp = " "
         current_user.verifiedEmail = "True"
@@ -117,7 +119,7 @@ def email():
     
     email = current_user.email
 
-    otp = genOTP()
+    otp, otpStartTime = genOTP()
     
     current_user.otp = str(otp)
     
@@ -354,46 +356,46 @@ def espOnline():
     if request.method != 'POST':
         return redirect(url_for('index'))
 
-    global espstate, startTime
+    global espStartTime
 
-    startTime = time.time()
+    espStartTime = time.time()
 
     return "online"
 
-def confirmOnline():
-    with app.app_context():
+# def confirmOnline():
+#     with app.app_context():
 
-        global espOnlineTimeout, startTime, espstate
+#         global espOnlineTimeout, espStartTime, espstate
 
-        currentTime = time.time()
+#         currentTime = time.time()
 
-        if currentTime - startTime > espOnlineTimeout:
+#         if currentTime - espStartTime > espOnlineTimeout:
 
-            espstate = 0
-            socketio.emit('espOnlineState', {"value":0})
-            # query = esp32.query.filter_by(pinName='onlineStatus').first()
-            # query.switchState = str(espstate)
-            # db.session.commit()
-            # print("0")
+#             espstate = 0
+#             socketio.emit('espOnlineState', {"value":0})
+#             # query = esp32.query.filter_by(pinName='onlineStatus').first()
+#             # query.switchState = str(espstate)
+#             # db.session.commit()
+#             # print("0")
 
-        else:
-            espstate = 1
-            socketio.emit('espOnlineState', {"value":1})
-            # query = esp32.query.filter_by(pinName='onlineStatus').first()
-            # query.switchState = str(espstate)
-            # db.session.commit()
-            # print("1")
+#         else:
+#             espstate = 1
+#             socketio.emit('espOnlineState', {"value":1})
+#             # query = esp32.query.filter_by(pinName='onlineStatus').first()
+#             # query.switchState = str(espstate)
+#             # db.session.commit()
+#             # print("1")
 
-def genOTP():
+# def genOTP():
     
-    global otpStartTime
+#     global otpStartTime
 
-    otpStartTime = time.time()
+#     otpStartTime = time.time()
 
-    random.seed(time.time())
-    otp = random.randint(100000, 999999)
+#     random.seed(time.time())
+#     otp = random.randint(100000, 999999)
 
-    return (otp)
+#     return (otp)
 
 @socketio.on('connect')
 def handle_connect():
@@ -420,7 +422,7 @@ def websocket():
 def espstatus():
     with current_app.app_context():
         while True:
-            socketio.start_background_task(target=confirmOnline)
+            socketio.start_background_task(target=confirmOnline())
             time.sleep(0.1)
 
 @socketio.on('update')
