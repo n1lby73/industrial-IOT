@@ -211,9 +211,9 @@ class genOtpApi(Resource):
         
 
 
-api.add_resource(loginApi, '/api/login')
-api.add_resource(genOtpApi, '/api/genotp')
-api.add_resource(registerApi, '/api/register')
-api.add_resource(indexApi, '/api/<pinStatus>')
-api.add_resource(updateApi, '/api/update/<pnon>/<newState>')
-api.add_resource(verifyEmailApi, '/api/verifyemail/<user_otp>')
+api.add_resource(loginApi, '/api/login', '/api/login/')
+api.add_resource(genOtpApi, '/api/genotp', '/api/genotp/')
+api.add_resource(registerApi, '/api/register', '/api/register/')
+api.add_resource(indexApi, '/api/<pinStatus>', '/api/<pinStatus>/')
+api.add_resource(updateApi, '/api/update/<pnon>/<newState>', '/api/update/<pnon>/<newState>/')
+api.add_resource(verifyEmailApi, '/api/verifyemail/<user_otp>', '/api/verifyemail/<user_otp>/')
