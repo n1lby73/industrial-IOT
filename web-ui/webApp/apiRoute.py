@@ -184,7 +184,7 @@ class genOtpApi(Resource):
     def put(self):
 
         user = get_jwt_identity()
-        email = user["verifiedEmail"]
+        email = user["email"]
 
         logged_user = users.query.filter_by(email=email).first()
 
@@ -192,7 +192,7 @@ class genOtpApi(Resource):
 
             return {"Msg":"email verification already completed"}
         
-        otp, otpStartTime = genOTP
+        otp, otpStartTime = genOTP()
 
         genOtpStartTime = otpStartTime
 
