@@ -18,13 +18,6 @@ login.init_app(app)
 login.login_view = 'login'
 login.login_message = "You're not logged in"
 
-# global variables
-
-# espstate = 0
-# espStartTime = 0
-# otpTimeout = 120
-# otpStartTime = 0
-# espOnlineTimeout = 2
 
 @login.user_loader
 def load_user(user_id):
@@ -280,16 +273,6 @@ def forgetPasswordEmail(token):
         
     return render_template("forgetPassEmail.html", form=forgetPassEmailForm)
 
-# @app.route('/admin')
-# @login_required
-# def admin():
-
-#     if current_user.role != "owner":
-        
-#         return render_template('404.html')
-    
-#     regUser = users.query.with_entities(users.id, users.username, users.email, users.role).all()
-
 @app.route('/query', methods=['POST', 'GET'])
 def query():
 
@@ -361,41 +344,6 @@ def espOnline():
     espStartTime = time.time()
 
     return "online"
-
-# def confirmOnline():
-#     with app.app_context():
-
-#         global espOnlineTimeout, espStartTime, espstate
-
-#         currentTime = time.time()
-
-#         if currentTime - espStartTime > espOnlineTimeout:
-
-#             espstate = 0
-#             socketio.emit('espOnlineState', {"value":0})
-#             # query = esp32.query.filter_by(pinName='onlineStatus').first()
-#             # query.switchState = str(espstate)
-#             # db.session.commit()
-#             # print("0")
-
-#         else:
-#             espstate = 1
-#             socketio.emit('espOnlineState', {"value":1})
-#             # query = esp32.query.filter_by(pinName='onlineStatus').first()
-#             # query.switchState = str(espstate)
-#             # db.session.commit()
-#             # print("1")
-
-# def genOTP():
-    
-#     global otpStartTime
-
-#     otpStartTime = time.time()
-
-#     random.seed(time.time())
-#     otp = random.randint(100000, 999999)
-
-#     return (otp)
 
 @socketio.on('connect')
 def handle_connect():
