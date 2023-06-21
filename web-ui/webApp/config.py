@@ -6,6 +6,8 @@ load_dotenv()
 
 app.config['MAIL_DEFAULT_SENDER'] = os.getenv('mail_default_sender')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
+app.config['CACHE_DEFAULT_TIMEOUT'] = os.getenv("CACHE_DEFAULT_TIMEOUT")
+app.config['CACHE_TYPE'] = os.getenv("CACHE_TYPE")
 app.config['MAIL_USERNAME'] = os.getenv("mail_username")
 app.config['MAIL_PASSWORD'] = os.getenv("mail_password")
 app.config['MAIL_USE_SSL'] = os.getenv("mail_use_ssl")

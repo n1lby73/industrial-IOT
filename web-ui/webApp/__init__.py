@@ -3,6 +3,7 @@ from flask_jwt_extended import JWTManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
+from flask_caching import Cache
 from flask_restful import Api
 from flask_cors import CORS
 from flask_mail import Mail
@@ -17,6 +18,7 @@ from webApp import config
 db = SQLAlchemy(app)
 api = Api(app)
 mail = Mail(app)
+cache = Cache(app)
 jwt = JWTManager(app)
 login = LoginManager()
 migrate = Migrate(app, db)
