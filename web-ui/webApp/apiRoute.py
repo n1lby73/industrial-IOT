@@ -1,16 +1,30 @@
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 from werkzeug.security import generate_password_hash, check_password_hash
+from webApp.globalVar import otpTimeout
+from webApp.function import genOTP
 from flask_restful import Resource, reqparse
 from webApp.models import users, esp32
 from webApp import api, jwt, db
-from flask import jsonify
+from flask import jsonify, request
+import time, random
 
 #pin variables
 stato = "5" #stato == start stop
 
+genOtpStartTime = 0
+
 class indexApi(Resource):
     @jwt_required()
     def get(self, pinStatus):
+
+        user = get_jwt_identity()
+        email = user["email"]
+
+        logged_user = users.query.filter_by(email=email).first()
+
+        if logged_user.verifiedEmail != "True":
+
+            return {"error":"email verification not completed"}
 
         if pinStatus == stato:
             
@@ -28,6 +42,13 @@ class updateApi(Resource):
         
         user = get_jwt_identity()
         role = user["role"]
+        email = user["email"]
+
+        logged_user = users.query.filter_by(email=email).first()
+
+        if logged_user.verifiedEmail != "True":
+
+            return {"error":"email verification not completed"}
 
         if role == "user":
             return {"error":"not authorized"}
@@ -114,14 +135,85 @@ class registerApi(Resource):
         if existingMail:
             return ({"Error": "Email already exit"})
 
-        new_user = users(email=email, username=username, role="user", password=generate_password_hash(password))
+        otp, otpStartTime = genOTP()
+
+        genOtpStartTime = otpStartTime
+
+        new_user = users(email=email, username=username, role="user", password=generate_password_hash(password), otp=otp)
 
         db.session.add(new_user)
         db.session.commit()
 
-        return ({"Sucess": "new user created"})
+        return ({"Sucess": "new user created", "OTP": otp})
+
+class verifyEmailApi(Resource):
+    @jwt_required()
+    def put(self, user_otp):
+
+        user = get_jwt_identity()
+        email = user["email"]
+
+        logged_user = users.query.filter_by(email=email).first()
+
+        if logged_user.verifiedEmail == "True":
+
+            return {"Msg":"email verification already completed"}
+
+        if logged_user.otp != user_otp:
+
+            return ({"Error": "Invalid otp entered"})
+        
+        currentTime = time.time()
+
+        if (currentTime - genOtpStartTime) > otpTimeout:
+
+            logged_user.otp = " "
+            db.session.commit()
+
+            return ({"error": "Expired otp, request for a new one"})
+        
+        logged_user.otp = " "
+        logged_user.verifiedEmail = "True"
+
+        db.session.commit()
+
+        return ({"Success": "Email verified successfully"})
+
+class genOtpApi(Resource):
+    @jwt_required
+    def put(self):
+
+        user = get_jwt_identity()
+        email = user["verifiedEmail"]
+
+        logged_user = users.query.filter_by(email=email).first()
+
+        if logged_user.verifiedEmail == "True":
+
+            return {"Msg":"email verification already completed"}
+        
+        genOtpStartTime = time.time()
+
+        random.seed(time.time())
+        otp = random.randint(100000, 999999)
+        
+        # otp, otpStartTime = json.dumps(str(genOTP))
+
+        # genOtpStartTime = otpStartTime
+
+        # genOtp = otp
+
+        logged_user.otp = otp
+
+        db.session.commit()
+
+        return ({"New OTP": otp})
+        
+
 
 api.add_resource(loginApi, '/api/login')
+api.add_resource(genOtpApi, '/api/genotp')
 api.add_resource(registerApi, '/api/register')
 api.add_resource(indexApi, '/api/<pinStatus>')
 api.add_resource(updateApi, '/api/update/<pnon>/<newState>')
+api.add_resource(verifyEmailApi, '/api/verifyemail/<user_otp>')
