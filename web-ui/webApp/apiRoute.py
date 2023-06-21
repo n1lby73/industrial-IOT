@@ -6,7 +6,7 @@ from webApp.globalVar import otpTimeout
 from webApp.function import genOTP
 from flask_restful import Resource, reqparse
 from webApp.models import users, esp32
-from webApp import api, jwt, db
+from webApp import api, jwt, db, cache
 from flask import jsonify, request, render_template
 from datetime import timedelta
 import time, random
@@ -22,6 +22,10 @@ class indexApi(Resource):
 
         user = get_jwt_identity()
         email = user["email"]
+        
+        if not cache.get(email):
+
+            return ({"Error":"User not logged in"})
 
         logged_user = users.query.filter_by(email=email).first()
 
@@ -46,6 +50,10 @@ class updateApi(Resource):
         user = get_jwt_identity()
         role = user["role"]
         email = user["email"]
+
+        if not cache.get(email):
+
+            return ({"Error":"User not logged in"})
 
         logged_user = users.query.filter_by(email=email).first()
 
@@ -111,6 +119,9 @@ class loginApi(Resource):
 
         loggedUser = {"email":email, "username":user.username, "role":user.role}
         access_token = create_access_token(identity=loggedUser)
+
+        cache.set(email, access_token)
+
         return jsonify(access_token=access_token)
 
 class registerApi(Resource):
@@ -164,6 +175,10 @@ class verifyEmailApi(Resource):
         user = get_jwt_identity()
         email = user["email"]
 
+        if not cache.get(email):
+
+            return ({"Error":"User not logged in"})
+
         logged_user = users.query.filter_by(email=email).first()
 
         if logged_user.verifiedEmail == "True":
@@ -199,6 +214,10 @@ class genOtpApi(Resource):
         user = get_jwt_identity()
         email = user["email"]
 
+        if not cache.get(email):
+
+            return ({"Error":"User not logged in"})
+        
         logged_user = users.query.filter_by(email=email).first()
 
         if logged_user.verifiedEmail == "True":
@@ -236,6 +255,10 @@ class resetInApi(Resource):
         user = get_jwt_identity()
         email = user["email"]
 
+        if not cache.get(email):
+
+            return ({"Error":"User not logged in"})
+
         logged_user = users.query.filter_by(email=email).first()
 
         if not check_password_hash(logged_user.password, oldPass):
@@ -258,6 +281,10 @@ class resetOutApi(Resource):
         
         args = self.parser.parse_args()
         email = args["email"]
+
+        if cache.get(email):
+
+            return ({"Error": "User is already logged in. Please use a different route."})
 
         logged_user = users.query.filter_by(email=email).first()
 
@@ -312,7 +339,16 @@ class resetOutTokenApi(Resource):
 
         return ({"Success":"Password updated successfully"})
     
+class logOutApi(Resource):
+    @jwt_required()
+    def post(self):
+
+        cache.clear()
+
+        return ({"Msg":"Logged out successfully"})
+    
 api.add_resource(loginApi, '/api/login', '/api/login/')
+api.add_resource(logOutApi, '/api/logout', '/api/logout/')
 api.add_resource(genOtpApi, '/api/genotp', '/api/genotp/')
 api.add_resource(resetInApi, '/api/resetin', '/api/resetin/')
 api.add_resource(resetOutApi, '/api/resetout', '/api/resetout/')
