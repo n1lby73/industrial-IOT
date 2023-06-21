@@ -180,7 +180,7 @@ class verifyEmailApi(Resource):
         return ({"Success": "Email verified successfully"})
 
 class genOtpApi(Resource):
-    @jwt_required
+    @jwt_required()
     def put(self):
 
         user = get_jwt_identity()
@@ -192,16 +192,9 @@ class genOtpApi(Resource):
 
             return {"Msg":"email verification already completed"}
         
-        genOtpStartTime = time.time()
+        otp, otpStartTime = genOTP
 
-        random.seed(time.time())
-        otp = random.randint(100000, 999999)
-        
-        # otp, otpStartTime = json.dumps(str(genOTP))
-
-        # genOtpStartTime = otpStartTime
-
-        # genOtp = otp
+        genOtpStartTime = otpStartTime
 
         logged_user.otp = otp
 
