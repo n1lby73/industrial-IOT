@@ -1,14 +1,13 @@
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, decode_token, jwt_manager
 from werkzeug.security import generate_password_hash, check_password_hash
-from webApp import mail
-from flask_mail import Message
-from webApp.globalVar import otpTimeout
-from webApp.function import genOTP
-from flask_restful import Resource, reqparse
-from webApp.models import users, esp32
-from webApp import api, jwt, db, cache
 from flask import jsonify, request, render_template
+from flask_restful import Resource, reqparse
+from webApp import api, jwt, db, cache, mail
+from webApp.globalVar import otpTimeout
+from webApp.models import users, esp32
+from webApp.function import genOTP
 from datetime import timedelta
+from flask_mail import Message
 import time, random
 
 #pin variables
@@ -18,11 +17,19 @@ genOtpStartTime = 0
 
 class indexApi(Resource):
     @jwt_required()
-    def get(self, pinStatus):
+    def __init__(self):
+
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument("pin", required=True)
+
+    def get(self):
 
         user = get_jwt_identity()
         email = user["email"]
         
+        args = self.parser.parse_args()
+        status = args["pin"]
+
         if not cache.get(email):
 
             return ({"Error":"User not logged in"})
@@ -33,7 +40,7 @@ class indexApi(Resource):
 
             return {"error":"email verification not completed"}
 
-        if pinStatus == stato:
+        if status == stato:
             
             query = esp32.query.filter_by(esp32pin=stato).first()
             state = query.switchState
@@ -397,13 +404,13 @@ class updateRoleApi(Resource):
 
         return ({"Msg": userEmail + " role, has been updated successfully"})
 
+api.add_resource(indexApi, '/api', '/api/')
 api.add_resource(loginApi, '/api/login', '/api/login/')
 api.add_resource(logOutApi, '/api/logout', '/api/logout/')
 api.add_resource(genOtpApi, '/api/genotp', '/api/genotp/')
 api.add_resource(resetInApi, '/api/resetin', '/api/resetin/')
 api.add_resource(resetOutApi, '/api/resetout', '/api/resetout/')
 api.add_resource(registerApi, '/api/register', '/api/register/')
-api.add_resource(indexApi, '/api/<pinStatus>', '/api/<pinStatus>/')
 api.add_resource(updateRoleApi, '/api/updaterole', '/api/updaterole/')
 api.add_resource(updatePinApi, '/api/updatepin/<pnon>/<newState>', '/api/updatepin/<pnon>/<newState>/')
 api.add_resource(verifyEmailApi, '/api/verifyemail/<user_otp>', '/api/verifyemail/<user_otp>/')
