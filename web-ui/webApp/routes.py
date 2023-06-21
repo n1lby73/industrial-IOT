@@ -240,6 +240,7 @@ def forgetPassword():
 def forgetPasswordEmail(token):
     
     forgetPassEmailForm=forgetPassEmail()
+    unKnownUserForm=unKnownUserFp()
 
     try:
 
@@ -255,6 +256,11 @@ def forgetPasswordEmail(token):
             
             return render_template("404.html")
     
+    except jwt.exceptions.ExpiredSignatureError:
+
+        flash ("expired link")
+        return render_template("unKnownUserFp.html", form=unKnownUserForm)
+
     except:
 
         return render_template("404.html")
