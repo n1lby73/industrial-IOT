@@ -1,8 +1,8 @@
 from webApp.form import loginForm, knownUserFp, unKnownUserFp, forgetPassEmail, regForm, confirmEmail, validEmail
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, decode_token, jwt_manager
-from webApp.globalVar import espOnlineTimeout, espStartTime, espstate, otpTimeout 
 from flask import render_template, url_for, request, redirect, jsonify, flash, current_app
 from flask_login import login_required, current_user, login_user, logout_user, UserMixin
+from webApp.globalVar import espOnlineTimeout, espStartTime, espstate, otpTimeout 
 from werkzeug.security import generate_password_hash, check_password_hash
 from webApp import app, db, mail, login, socketio, jwt
 from webApp.function import confirmOnline, genOTP
@@ -10,8 +10,7 @@ from webApp.models import users, esp32
 from werkzeug.urls import url_parse
 from flask_mail import Message
 from datetime import timedelta
-import random
-import time
+import random, time
 
 
 login.init_app(app)
