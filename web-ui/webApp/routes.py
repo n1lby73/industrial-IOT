@@ -340,9 +340,10 @@ def espOnline():
         return redirect(url_for('index'))
 
     global espStartTime
-
+    print("-----------------------------from route----------------")
+    
     espStartTime = time.time()
-
+    print (espStartTime)
     return "online"
 
 @socketio.on('connect')

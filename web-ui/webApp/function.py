@@ -11,6 +11,9 @@ def confirmOnline():
 
         currentTime = time.time()
 
+        print("----------------------from function-------------------")
+        print(espStartTime)
+        
         if currentTime - espStartTime > espOnlineTimeout:
 
             espstate = 0
