@@ -150,6 +150,8 @@ class verifyEmailApi(Resource):
     @jwt_required()
     def put(self, user_otp):
 
+        global genOtpStartTime
+        
         user = get_jwt_identity()
         email = user["email"]
 
@@ -181,7 +183,9 @@ class verifyEmailApi(Resource):
 
 class genOtpApi(Resource):
     @jwt_required()
-    def put(self):
+    def get(self):
+
+        global genOtpStartTime
 
         user = get_jwt_identity()
         email = user["email"]
