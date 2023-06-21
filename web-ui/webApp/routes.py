@@ -119,7 +119,7 @@ def email():
     db.session.commit()
 
     msg = Message('Email Verification', recipients=[email])
-    msg.html = render_template("emailVerification.txt", otp=otp)
+    msg.html = render_template("emailVerification.html", otp=otp)
     mail.send(msg)
 
     flash("check your email "+ email +" for your otp to complete registration")
