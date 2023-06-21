@@ -254,8 +254,8 @@ class resetOutApi(Resource):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument("email", required=True)
 
-    def put(self):
-
+    def get(self):
+        
         args = self.parser.parse_args()
         email = args["email"]
 
@@ -268,13 +268,15 @@ class resetOutApi(Resource):
         loggedUser = {"email":email, "username":logged_user.username, "role":logged_user.role}
         access_token = create_access_token(identity=loggedUser, expires_delta=timedelta(seconds=120))
 
+        logged_user.token = access_token
+
         db.session.commit()
 
         msg = Message('Api Password reset', recipients=[email])
-        msg.html = render_template("apiResetOtp.html", otp=access_token, username=logged_user.username)
+        msg.html = render_template("apiResetToken.html", token=access_token, username=logged_user.username)
         mail.send(msg)
 
-        return ({"Msg": "OTP sent to email"})
+        return ({"Msg": "Token sent to email"})
     
 class resetOutTokenApi(Resource):
 
@@ -298,7 +300,7 @@ class resetOutTokenApi(Resource):
             if verifyEmail.token != token:
                 
                 return ({"Error":"Invalid Token"})
-            
+                             
         except:
 
             return ({"Error":"Expired token"})
@@ -308,6 +310,8 @@ class resetOutTokenApi(Resource):
 
         db.session.commit()
 
+        return ({"Success":"Password updated successfully"})
+    
 api.add_resource(loginApi, '/api/login', '/api/login/')
 api.add_resource(genOtpApi, '/api/genotp', '/api/genotp/')
 api.add_resource(resetInApi, '/api/resetin', '/api/resetin/')
