@@ -378,7 +378,11 @@ class updateRoleApi(Resource):
 
         if not update_user:
 
-            return ({"Error": "Invalid EMail"})
+            return ({"Error": "Invalid Email"})
+        
+        if update_user.verifiedEmail != "True":
+
+            return ({"Error": "User has not verified thier email"})
         
         if newRole != "user" and newRole != "admin":
 
@@ -391,7 +395,7 @@ class updateRoleApi(Resource):
         update_user.role = newRole
         db.session.commit()
 
-        return ({"Msg": userEmail + "role, has been updated successfully"})
+        return ({"Msg": userEmail + " role, has been updated successfully"})
 
 api.add_resource(loginApi, '/api/login', '/api/login/')
 api.add_resource(logOutApi, '/api/logout', '/api/logout/')
@@ -400,6 +404,7 @@ api.add_resource(resetInApi, '/api/resetin', '/api/resetin/')
 api.add_resource(resetOutApi, '/api/resetout', '/api/resetout/')
 api.add_resource(registerApi, '/api/register', '/api/register/')
 api.add_resource(indexApi, '/api/<pinStatus>', '/api/<pinStatus>/')
-api.add_resource(updatePinApi, '/api/update/<pnon>/<newState>', '/api/update/<pnon>/<newState>/')
+api.add_resource(updateRoleApi, '/api/updaterole', '/api/updaterole/')
+api.add_resource(updatePinApi, '/api/updatepin/<pnon>/<newState>', '/api/updatepin/<pnon>/<newState>/')
 api.add_resource(verifyEmailApi, '/api/verifyemail/<user_otp>', '/api/verifyemail/<user_otp>/')
 api.add_resource(resetOutTokenApi, '/api/resetouttoken/<token>/<newPass>', '/api/resetouttoken/<token>/<newPass>/')
