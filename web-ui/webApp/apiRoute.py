@@ -43,7 +43,7 @@ class indexApi(Resource):
         return ({"error":"invalid pin"})
 
 # pnon ==> pin name or number
-class updateApi(Resource):
+class updatePinApi(Resource):
     @jwt_required()
     def put(self, pnon, newState):
         
@@ -346,7 +346,53 @@ class logOutApi(Resource):
         cache.clear()
 
         return ({"Msg":"Logged out successfully"})
-    
+
+class updateRoleApi(Resource):
+    @jwt_required()
+    def __init__(self):
+
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument("email", required=True)
+        self.parser.add_argument("role", required=True)
+
+    def put(self):
+
+        args = self.parser.parse_args()
+        userEmail = args["email"]
+        newRole = args["role"]
+
+        user = get_jwt_identity()
+        email = user["email"]
+        role = user["role"]
+
+        if not cache.get(email):
+
+            return ({"Error":"User not logged in"})
+        
+        
+        if role != "owner":
+
+            return ({"Error":"not authorized"})
+        
+        update_user = users.query.filter_by(email=userEmail).first()
+
+        if not update_user:
+
+            return ({"Error": "Invalid EMail"})
+        
+        if newRole != "user" and newRole != "admin":
+
+            return ({"Error": "Unknown role"})
+        
+        if update_user.role == newRole:
+
+            return ({"Msg": "Role not updated but same"})
+        
+        update_user.role = newRole
+        db.session.commit()
+
+        return ({"Msg": userEmail + "role, has been updated successfully"})
+
 api.add_resource(loginApi, '/api/login', '/api/login/')
 api.add_resource(logOutApi, '/api/logout', '/api/logout/')
 api.add_resource(genOtpApi, '/api/genotp', '/api/genotp/')
@@ -354,6 +400,6 @@ api.add_resource(resetInApi, '/api/resetin', '/api/resetin/')
 api.add_resource(resetOutApi, '/api/resetout', '/api/resetout/')
 api.add_resource(registerApi, '/api/register', '/api/register/')
 api.add_resource(indexApi, '/api/<pinStatus>', '/api/<pinStatus>/')
-api.add_resource(updateApi, '/api/update/<pnon>/<newState>', '/api/update/<pnon>/<newState>/')
+api.add_resource(updatePinApi, '/api/update/<pnon>/<newState>', '/api/update/<pnon>/<newState>/')
 api.add_resource(verifyEmailApi, '/api/verifyemail/<user_otp>', '/api/verifyemail/<user_otp>/')
 api.add_resource(resetOutTokenApi, '/api/resetouttoken/<token>/<newPass>', '/api/resetouttoken/<token>/<newPass>/')
