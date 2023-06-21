@@ -1,11 +1,13 @@
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 from werkzeug.security import generate_password_hash, check_password_hash
+from webApp import mail
+from flask_mail import Message
 from webApp.globalVar import otpTimeout
 from webApp.function import genOTP
 from flask_restful import Resource, reqparse
 from webApp.models import users, esp32
 from webApp import api, jwt, db
-from flask import jsonify, request
+from flask import jsonify, request, render_template
 import time, random
 
 #pin variables
@@ -112,6 +114,8 @@ class loginApi(Resource):
 
 class registerApi(Resource):
 
+    global genOtpStartTime
+    
     def __init__(self):
 
         self.parser = reqparse.RequestParser()
@@ -139,12 +143,16 @@ class registerApi(Resource):
 
         genOtpStartTime = otpStartTime
 
+        msg = Message('Api email Verification', recipients=[email])
+        msg.html = render_template("emailVerification.html", otp=otp)
+        mail.send(msg)
+
         new_user = users(email=email, username=username, role="user", password=generate_password_hash(password), otp=otp)
 
         db.session.add(new_user)
         db.session.commit()
 
-        return ({"Sucess": "new user created", "OTP": otp})
+        return ({"Sucess": "new user created and otp sent to mail"})
 
 class verifyEmailApi(Resource):
     @jwt_required()
@@ -200,11 +208,15 @@ class genOtpApi(Resource):
 
         genOtpStartTime = otpStartTime
 
+        msg = Message('Api email Verification', recipients=[email])
+        msg.html = render_template("emailVerification.html", otp=otp)
+        mail.send(msg)
+
         logged_user.otp = otp
 
         db.session.commit()
 
-        return ({"New OTP": otp})
+        return ({"status": "otp sent to mail"})
         
 
 
