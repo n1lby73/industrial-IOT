@@ -1,4 +1,4 @@
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, decode_token, jwt_manager
 from werkzeug.security import generate_password_hash, check_password_hash
 from webApp import mail
 from flask_mail import Message
@@ -8,6 +8,7 @@ from flask_restful import Resource, reqparse
 from webApp.models import users, esp32
 from webApp import api, jwt, db
 from flask import jsonify, request, render_template
+from datetime import timedelta
 import time, random
 
 #pin variables
@@ -115,7 +116,7 @@ class loginApi(Resource):
 class registerApi(Resource):
 
     global genOtpStartTime
-    
+
     def __init__(self):
 
         self.parser = reqparse.RequestParser()
@@ -218,11 +219,101 @@ class genOtpApi(Resource):
 
         return ({"status": "otp sent to mail"})
         
+class resetInApi(Resource):
+    @jwt_required()
+    def __init__(self):
 
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument("oldpass", required=True)
+        self.parser.add_argument("newpass", required=True)
+
+    def put(self):
+
+        args = self.parser.parse_args()
+        oldPass = args["oldpass"]
+        newPass = args["newpass"]
+
+        user = get_jwt_identity()
+        email = user["email"]
+
+        logged_user = users.query.filter_by(email=email).first()
+
+        if not check_password_hash(logged_user.password, oldPass):
+
+            return ({"Error":"Incorrect old password, logout to reset password or try again"})
+        
+        logged_user.password = generate_password_hash(newPass)
+        db.session.commit()
+
+        return ({"Msg": "Password updated successfully"})
+
+class resetOutApi(Resource):
+
+    def __init__(self):
+
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument("email", required=True)
+
+    def put(self):
+
+        args = self.parser.parse_args()
+        email = args["email"]
+
+        logged_user = users.query.filter_by(email=email).first()
+
+        if not logged_user:
+
+            return ({"Error":"Incorrect email"})
+        
+        loggedUser = {"email":email, "username":logged_user.username, "role":logged_user.role}
+        access_token = create_access_token(identity=loggedUser, expires_delta=timedelta(seconds=120))
+
+        db.session.commit()
+
+        msg = Message('Api Password reset', recipients=[email])
+        msg.html = render_template("apiResetOtp.html", otp=access_token, username=logged_user.username)
+        mail.send(msg)
+
+        return ({"Msg": "OTP sent to email"})
+    
+class resetOutTokenApi(Resource):
+
+    def __init__(self):
+
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument("token", required=True)
+
+    def put(self, token, newPass):
+
+        try:
+
+            decoded_token = decode_token(token)
+
+            payload = decoded_token['sub']
+
+            email = payload['email']
+
+            verifyEmail = users.query.filter_by(email=email).first()
+
+            if verifyEmail.token != token:
+                
+                return ({"Error":"Invalid Token"})
+            
+        except:
+
+            return ({"Error":"Expired token"})
+        
+        verifyEmail.password = generate_password_hash(newPass)
+        verifyEmail.token = " "
+
+        db.session.commit()
 
 api.add_resource(loginApi, '/api/login', '/api/login/')
 api.add_resource(genOtpApi, '/api/genotp', '/api/genotp/')
+api.add_resource(resetInApi, '/api/resetin', '/api/resetin/')
+api.add_resource(resetOutApi, '/api/resetout', '/api/resetout/')
 api.add_resource(registerApi, '/api/register', '/api/register/')
 api.add_resource(indexApi, '/api/<pinStatus>', '/api/<pinStatus>/')
 api.add_resource(updateApi, '/api/update/<pnon>/<newState>', '/api/update/<pnon>/<newState>/')
 api.add_resource(verifyEmailApi, '/api/verifyemail/<user_otp>', '/api/verifyemail/<user_otp>/')
+api.add_resource(resetOutTokenApi, '/api/resetouttoken/<token>/<newPass>', '/api/resetouttoken/<token>/<newPass>/')
