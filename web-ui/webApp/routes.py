@@ -1,23 +1,22 @@
-from webApp.form import loginForm, knownUserFp, unKnownUserFp, forgetPassEmail, regForm, confirmEmail
+from webApp.form import loginForm, knownUserFp, unKnownUserFp, forgetPassEmail, regForm, confirmEmail, validEmail
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, decode_token, jwt_manager
+from flask import render_template, url_for, request, redirect, jsonify, flash, current_app
 from flask_login import login_required, current_user, login_user, logout_user, UserMixin
-from flask import render_template, url_for, request, redirect, jsonify, flash
+from webApp.globalVar import espOnlineTimeout, espStartTime, espstate, otpTimeout 
 from werkzeug.security import generate_password_hash, check_password_hash
-from webApp import app, db, mail, login, socketio
+from webApp import app, db, mail, login, socketio, jwt
+from webApp.function import confirmOnline, genOTP
 from webApp.models import users, esp32
 from werkzeug.urls import url_parse
 from flask_mail import Message
-import time
+from datetime import timedelta
+import random, time
 
 
 login.init_app(app)
 login.login_view = 'login'
 login.login_message = "You're not logged in"
 
-# global variables
-
-espstate = 0
-startTime = 0
-timeout = 2
 
 @login.user_loader
 def load_user(user_id):
@@ -27,6 +26,11 @@ def load_user(user_id):
 @login_required
 def index():
 
+    if current_user.verifiedEmail != "True":
+
+        flash("Check regisered email for OTP")
+        return redirect(url_for('email'))
+    
     if current_user.role != "owner":
         
         return render_template('index.html')
@@ -60,11 +64,87 @@ def register():
 
         if not next_page or url_parse(next_page).netloc != '':
 
-            next_page = url_for('login')
+            next_page = url_for('email')
 
         return redirect(next_page)
 
     return render_template("signup.html", form=form)
+
+@app.route('/email', methods=['POST', 'GET'])
+def email():
+
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    
+    verify=confirmEmail()
+
+    if verify.validate_on_submit():
+
+        global otpStartTime, otpTimeout
+
+        collectedOtp = str(request.form.get('emailOTP'))
+
+        currentTime = time.time()
+
+        if (currentTime - otpStartTime) > otpTimeout:
+
+            current_user.otp = " "
+            db.session.commit()
+
+            flash ("Expired otp, request for a new one")
+            return render_template("confirmEmail.html", form=verify, email=current_user.email)
+        
+        if current_user.otp != collectedOtp:
+
+            flash ("invalid otp entered")
+            return render_template("confirmEmail.html", form=verify, email=current_user.email)
+        
+        current_user.otp = " "
+        current_user.verifiedEmail = "True"
+
+        db.session.commit()
+
+        logout_user()
+
+        flash ("Verification Successful, login now")
+        return redirect(url_for("login"))
+    
+    email = current_user.email
+
+    otp, otpStartTime = genOTP()
+    
+    current_user.otp = str(otp)
+    
+    db.session.commit()
+
+    msg = Message('Email Verification', recipients=[email])
+    msg.html = render_template("emailVerification.html", otp=otp)
+    mail.send(msg)
+
+    flash("check your email "+ email +" for your otp to complete registration")
+
+    return render_template("confirmEmail.html", form=verify, email=email)
+
+@app.route('/typoEmail', methods=['POST', 'GET'])
+def typoEmail():
+
+    if not current_user.is_authenticated or current_user.verifiedEmail == "True":
+
+        return render_template('404.html')
+    
+    newEmail = validEmail()
+
+    if newEmail.validate_on_submit():
+
+        email = request.form.get('email')
+
+        current_user.email = email
+
+        db.session.commit()
+
+        return redirect(url_for('email'))
+    
+    return render_template("typoEmail.html", form=newEmail)
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -138,8 +218,14 @@ def forgetPassword():
 
         if confirmEmail:
 
+            loggedUser = {"email":email, "username":confirmEmail.username, "role":confirmEmail.role}
+            access_token = create_access_token(identity=loggedUser, expires_delta=timedelta(seconds=120))
+
+            confirmEmail.token = access_token
+            db.session.commit()
+
             msg = Message('Password Recovery', recipients=[email])
-            msg.body = 'did it work'
+            msg.html = render_template("resetLink.html", username=confirmEmail.username, link=access_token)
             mail.send(msg)
             flash('A password reset link has been sent to the provided email')
             return render_template("unKnownUserFp.html", form=unKnownUserForm)
@@ -149,24 +235,43 @@ def forgetPassword():
     
     return render_template("unKnownUserFp.html", form=unKnownUserForm)
 
-@app.route('/forgetPasswordEmail', methods=['POST', 'GET'])
-def forgetPasswordEmail():
+@app.route('/forgetPasswordEmail/<token>', methods=['POST', 'GET'])
+def forgetPasswordEmail(token):
     
     forgetPassEmailForm=forgetPassEmail()
+    unKnownUserForm=unKnownUserFp()
 
-    if forgetPassEmailForm.validate_on_submit():
-        return "work"
-    return render_template("forgetPassEmail.html", form=forgetPassEmailForm)
+    try:
 
-# @app.route('/admin')
-# @login_required
-# def admin():
+        decoded_token = decode_token(token)
 
-#     if current_user.role != "owner":
-        
-#         return render_template('404.html')
+        payload = decoded_token['sub']
+
+        email = payload['email']
+
+        verifyEmail = users.query.filter_by(email=email).first()
+
+        if verifyEmail.token != token:
+            
+            return render_template("404.html")
     
-#     regUser = users.query.with_entities(users.id, users.username, users.email, users.role).all()
+    except:
+
+        return render_template("404.html")
+    
+    if verifyEmail:
+
+        if forgetPassEmailForm.validate_on_submit():
+            
+            newpass = request.form.get('confirmPass')
+            verifyEmail.password = generate_password_hash(newpass)
+            verifyEmail.token = " "
+            db.session.commit()
+
+            flash("Password updated successfully, please log in")
+            return redirect(url_for('login'))
+        
+    return render_template("forgetPassEmail.html", form=forgetPassEmailForm)
 
 @app.route('/query', methods=['POST', 'GET'])
 def query():
@@ -212,7 +317,7 @@ def btn():
     pin = data['pin']
 
     try:
-        query = esp32.query.filter_by(esp32pin='5').first()
+        query = esp32.query.filter_by(esp32pin=pin).first()
         
         if query:
 
@@ -234,32 +339,20 @@ def espOnline():
     if request.method != 'POST':
         return redirect(url_for('index'))
 
-    global espstate, startTime
-
-    startTime = time.time()
-
+    global espStartTime
+    print("-----------------------------from route----------------")
+    
+    espStartTime = time.time()
+    print (espStartTime)
     return "online"
 
-def confirmOnline():
-
-    global timeout, startTime, espstate
-
-    currentTime = time.time()
-
-    if currentTime - startTime > timeout:
-
-        espstate = 0
-        socketio.emit('espOnlineState', {"value":0}, broadcast=True)
-        print("0")
-
-    else:
-        espstate = 1
-        socketio.emit('espOnlineState', {"value":1}, broadcast=True)
-        print("1")
+@socketio.on('connect')
+def handle_connect():
+    print('Client connected')
 
 @socketio.on('disconnect')
 def handle_disconnect():
-    print("device offline")
+   print("device offline")
 
 @socketio.on('current_status')
 def websocket():
@@ -268,15 +361,17 @@ def websocket():
 
     query = esp32.query.filter_by(esp32pin='5').first()
     state = query.switchState
-    current_status_from_db = {"success":state, "value":espstate}
-    socketio.emit('message', current_status_from_db, json=True, broadcast=True)
+
+    socketio.emit('message', {"success":state, "value":espstate})
+
     print("A new client connected")
 
 @socketio.on('espstatus')
 def espstatus():
-    while True:
-        socketio.start_background_task(target=confirmOnline)
-        time.sleep(0.1)
+    with current_app.app_context():
+        while True:
+            socketio.start_background_task(target=confirmOnline())
+            time.sleep(0.1)
 
 @socketio.on('update')
 def websocket(update):
@@ -301,10 +396,9 @@ def websocket(update):
         current_status_from_db = {"success":state}
         socketio.emit('message', current_status_from_db, json=True, broadcast=True)
 
-
 @socketio.on('role')
-def role():
-    socketio.emit('storeRole',{"role":current_user.role}, json=True)
+def websocket():
+    socketio.emit('storeRole',{"role":current_user.role})
 
 @app.errorhandler(404)
 def page_not_found(e):

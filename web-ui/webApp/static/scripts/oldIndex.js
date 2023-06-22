@@ -2,23 +2,37 @@ const button = document.querySelector('#toggleBtn');
 const rotateImage = document.getElementById("rotate-image");
 const offlineMsg = document.getElementById("online");
 
-// const socket = io('http://127.0.0.1:5000'); 
-const socket = io.connect( {cookie: false}, 'https://industrialiot.onrender.com');
-// const socket = io.connect('https://industrialiot.onrender.com');
-// const socket = io('https://industrialiot.onrender.com');
-// const socket = io('industrialiot.onrender.com');
-
-socket.on('connect', () => {
-
-    socket.emit("current_status")
-    socket.emit("espstatus")
-    console.log('WebSocket connection opened');
-  console.log('Successfully connected to Socket.IO server.');
-});
+var socket = io.connect('http://127.0.0.1:5000/'); //url currently subject to change
+// var socket = io('http://192.168.0.145:5000/', {
+//     cors: {
+//         origin: '*',
+//         methods: ['GET', 'POST']
+//     }
+// });
+// var socket = io.connect('https://' + window.location.hostname + ':' + location.port);
+// var socket = io.connect('https://industrialiot.onrender.com/');
+// var socket = io.connect('https://216.24.57.253:443');
+// var socket= io.connect('https://industrialiot.onrender.com/', {
+//       cors: {
+//           origin: '*',
+//           methods: ['GET', 'POST']
+//       }
+//   })
 
 var onlineStatus;
-
+console.log("index");
 offlineMsg.style.display = "none";
+
+// socket.emit("current_status")
+// socket.emit("espstatus")
+
+
+socket.on("connect", function() {
+  // socket.emit("role");
+  socket.emit("current_status")
+  socket.emit("espstatus")
+
+});
 
 const handleButtonClick = () => {
 
@@ -69,7 +83,6 @@ const handleButtonClick = () => {
 
     offlineMsg.style.display = "inline";
     document.title = 'Offline';
-    rotateImage.style.display = 'none';
 
     }
 };
@@ -97,8 +110,7 @@ function handleOnLoad(value, onlineStatus){
   }
 
   else{
-    
-    rotateImage.style.display = 'none';
+
     offlineMsg.style.display = "inline";
     document.title = 'Offline';
 
@@ -107,7 +119,8 @@ function handleOnLoad(value, onlineStatus){
 
 socket.on('message', function(msg){
 
-  var value = msg.success;
+  var value = JSON.parse(msg.success);
+  // onlineStatus = JSON.parse(msg.value);
   onlineStatus = msg.value;
 
   handleOnLoad(value, onlineStatus);
@@ -127,6 +140,8 @@ socket.on('localUpdate', function(msg){
 
 socket.on('espOnlineState', function(msg){
 
+  // console.log(msg.value);
+  // onlineStatus = JSON.parse(msg.value);
   onlineStatus = msg.value;
 
   if (onlineStatus === 0){

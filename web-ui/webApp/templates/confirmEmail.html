@@ -36,7 +36,9 @@
                     </div>
         
                     {{ form.emailOTP }}
-        
+
+                    <a href="{{ url_for('email') }}">Request otp</a>
+                    Not {{ email }}, click <a href="{{ url_for('typoEmail') }}">here</a>
                 </div>
 
                 {{ form.submit(class="signup") }}

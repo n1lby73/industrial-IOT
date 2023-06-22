@@ -1,9 +1,14 @@
 from flask_socketio import SocketIO, send, emit
+from flask_jwt_extended import JWTManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_migrate import Migrate
+from flask_caching import Cache
+from flask_restful import Api
 from flask_cors import CORS
 from flask_mail import Mail
 from flask import Flask
+import socketio
 
 app = Flask(__name__)
 app.app_context().push()
@@ -11,8 +16,14 @@ app.app_context().push()
 from webApp import config
 
 db = SQLAlchemy(app)
+api = Api(app)
 mail = Mail(app)
+cache = Cache(app)
+jwt = JWTManager(app)
 login = LoginManager()
-socketio = SocketIO(app)
+migrate = Migrate(app, db)
+socketio = SocketIO(app, cors_allowed_origins='*')
+# socketio = SocketIO(app, cors_allowed_origins='*',  transports=['websocket', 'xhr-polling'])
 
-from webApp import routes
+
+from webApp import routes, apiRoute

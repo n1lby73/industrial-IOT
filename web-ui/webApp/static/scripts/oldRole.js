@@ -1,20 +1,35 @@
+// var socket = io.connect('http://127.0.0.1:5000/'); //url currently subject to change
+var socket = io.connect('https://' + window.location.hostname+ ':' + location.port);
+// var socket = io('http://192.168.0.145:5000/', {
+//     cors: {
+//         origin: '*',
+//         methods: ['GET', 'POST']
+//     }
+// });
+// var socket= io.connect('https://industrialiot.onrender.com/', {
+//   cors: {
+//       origin: '*',
+//       methods: ['GET', 'POST']
+//   }
+// })
+
 var role;
+
+document.getElementById('loading-screen').style.display = 'block';
+// console.dir(io)
+
+// socket.emit("role")
 
 socket.on("connect", function() {
   console.log("immediately after connect socket");
   socket.emit("role");
   console.log("role inside socket");
 });
-
 console.log("role outside socket");
-
-
 socket.on('storeRole', function(msg){
 
-  console.log("role outside store role");
-
   role = msg.role;
-  
+   
   if(role === "user"){
 
     document.querySelector('#toggleBtn').style.display = "none";
@@ -38,5 +53,5 @@ socket.on('storeRole', function(msg){
 
   document.getElementById('loading-screen').style.display = 'none';
   document.getElementById('content').style.display = 'block';
-  
+
 });

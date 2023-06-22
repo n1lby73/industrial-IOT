@@ -57,8 +57,6 @@ class unKnownUserFp(FlaskForm):
 
 class forgetPassEmail(FlaskForm):
 
-    emailOTP = PasswordField("OTP from email", validators=[InputRequired(), Length(min=6, max=6, message='OTP must contain 6 characters')]) 
-
     newPassword = PasswordField("New Password", validators=[InputRequired(), Length(min=8, max=20, message='Password must be  between 8-20 characters')])
 
     confirmPass = PasswordField("Confirm password", validators=[InputRequired(), EqualTo('newPassword', message="Password must be same")])
@@ -67,6 +65,19 @@ class forgetPassEmail(FlaskForm):
 
 class confirmEmail(FlaskForm):
 
-    emailOTP = StringField("OTP from email", validators=[InputRequired(), Length(min=6, max=6, message='OTP must contain 6 characters')],render_kw={"inputmode": "numeric"}) 
+    emailOTP = StringField("Input OTP",  validators=[InputRequired(), Length(min=6, max=6, message='Input a valid otp')])
 
     submit = SubmitField("Verify")
+
+class validEmail(FlaskForm):
+
+    email = EmailField('New email', validators=[InputRequired(), Email('Input a valid email')])
+
+    reset = SubmitField("Send OTP")
+
+    def validate_email(self, email):
+
+        existingMail = users.query.filter_by(email=email.data).first()
+
+        if existingMail:
+            raise ValidationError("Email already exit")
