@@ -52,7 +52,13 @@ class indexApi(Resource):
 # pnon ==> pin name or number
 class updatePinApi(Resource):
     @jwt_required()
-    def put(self, pnon, newState):
+    def __init__(self):
+
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument("pin", required=True)
+        self.parser.add_argument("state", required=True)
+
+    def put(self):
         
         user = get_jwt_identity()
         role = user["role"]
@@ -70,6 +76,10 @@ class updatePinApi(Resource):
 
         if role == "user":
             return {"error":"not authorized"}
+        
+        args = self.parser.parse_args()
+        pnon = args["pin"]
+        newState = args["state"]
 
         try:
 
@@ -175,7 +185,12 @@ class registerApi(Resource):
 
 class verifyEmailApi(Resource):
     @jwt_required()
-    def put(self, user_otp):
+    def __init__(self):
+
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument("otp", required=True)
+
+    def put(self):
 
         global genOtpStartTime
         
@@ -191,6 +206,9 @@ class verifyEmailApi(Resource):
         if logged_user.verifiedEmail == "True":
 
             return {"Msg":"email verification already completed"}
+
+        args = self.parser.parse_args()
+        user_otp = args["otp"]
 
         if logged_user.otp != user_otp:
 
@@ -318,12 +336,17 @@ class resetOutTokenApi(Resource):
 
         self.parser = reqparse.RequestParser()
         self.parser.add_argument("token", required=True)
+        self.parser.add_argument("new", required=True)
 
     def put(self, token, newPass):
 
+        args = self.parser.parse_args()
+        user_token = args["token"]
+        newPass = args["new"]
+
         try:
 
-            decoded_token = decode_token(token)
+            decoded_token = decode_token(user_token)
 
             payload = decoded_token['sub']
 
@@ -331,7 +354,7 @@ class resetOutTokenApi(Resource):
 
             verifyEmail = users.query.filter_by(email=email).first()
 
-            if verifyEmail.token != token:
+            if verifyEmail.token != user_token:
                 
                 return ({"Error":"Invalid Token"})
                              
@@ -404,14 +427,14 @@ class updateRoleApi(Resource):
 
         return ({"Msg": userEmail + " role, has been updated successfully"})
 
-api.add_resource(indexApi, '/api', '/api/')
+api.add_resource(indexApi, '/api/index', '/api/index/')
 api.add_resource(loginApi, '/api/login', '/api/login/')
 api.add_resource(logOutApi, '/api/logout', '/api/logout/')
 api.add_resource(genOtpApi, '/api/genotp', '/api/genotp/')
 api.add_resource(resetInApi, '/api/resetin', '/api/resetin/')
 api.add_resource(resetOutApi, '/api/resetout', '/api/resetout/')
 api.add_resource(registerApi, '/api/register', '/api/register/')
+api.add_resource(updatePinApi, '/api/updatepin', '/api/updatepin/')
 api.add_resource(updateRoleApi, '/api/updaterole', '/api/updaterole/')
-api.add_resource(updatePinApi, '/api/updatepin/<pnon>/<newState>', '/api/updatepin/<pnon>/<newState>/')
-api.add_resource(verifyEmailApi, '/api/verifyemail/<user_otp>', '/api/verifyemail/<user_otp>/')
-api.add_resource(resetOutTokenApi, '/api/resetouttoken/<token>/<newPass>', '/api/resetouttoken/<token>/<newPass>/')
+api.add_resource(verifyEmailApi, '/api/verifyemail', '/api/verifyemail/')
+api.add_resource(resetOutTokenApi, '/api/resetouttoken', '/api/resetouttoken/')
