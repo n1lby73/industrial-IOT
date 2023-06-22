@@ -22,7 +22,7 @@ cache = Cache(app)
 jwt = JWTManager(app)
 login = LoginManager()
 migrate = Migrate(app, db)
-socketio = SocketIO(app, cors_allowed_origins='http://127.0.0.1:5000')
+socketio = SocketIO(app, cors_allowed_origins=['http://127.0.0.1:5000', 'wss://industrialiot.onrender.com', 'https://industrialiot.onrender.com'])
 # socketio = SocketIO(app, cors_allowed_origins='*',  transports=['websocket', 'xhr-polling'])
 
 
