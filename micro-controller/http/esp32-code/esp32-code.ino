@@ -26,7 +26,7 @@ int globalState;
 #define ssid "esp8266"
 #define password "forTheLoveOfEmbededSystem"
 
-const char* serverID = "https://industrialiot.onrender.com";
+const char* serverID = "industrialiot.onrender.com";
 const char* serverIP = "192.168.0.145"; //host subject to change always untill app is hosted
 const int serverPort = 5000;
 
@@ -146,7 +146,6 @@ void onlineStatus(){
   }
 
   http.end();
-
 }
 
 void setup(){ 
@@ -190,7 +189,7 @@ void loop() {
 
     internetAccess();
     onlineStatus();
-
+    
     String url = "http://" + String(serverID) + "/query";
 
     http.begin(client, url);
@@ -200,15 +199,13 @@ void loop() {
     // Retrieve Json data from server
 
     if (httpCode > 0){
-
       String payload = http.getString();
-
       int json = payload.indexOf("{");
       String jsonData = payload.substring(json);
       
       DynamicJsonDocument doc(200);
       DeserializationError error = deserializeJson(doc, jsonData);
-
+      
       if (error) {
 
         Serial.println("Deserialization failed: " + String(error.c_str()));
@@ -216,7 +213,7 @@ void loop() {
         return;
 
       }
-
+      
       motorState = doc["success"];
 
       // Synchronizing realtime update with local changes
