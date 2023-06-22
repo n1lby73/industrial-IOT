@@ -7,7 +7,7 @@ const offlineMsg = document.getElementById("online");
 // const socket = io.connect('https://industrialiot.onrender.com');
 // const socket = io('industrialiot.onrender.com');
 // const socket = io('https://industrialiot.onrender.com');
-var socket = io.connect();
+var socket = io.connect('https://industrialiot.onrender.com');
 
 socket.on('connect', () => {
 
