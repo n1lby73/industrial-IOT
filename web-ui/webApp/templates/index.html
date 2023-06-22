@@ -49,7 +49,39 @@
                     <i class="fa fa-search search-icon"></i>
                     <input type="text" placeholder="Search for users..." id="user-search">
                 </div>
-                <table>
+                <style>
+                    .dropdown {
+                        position: relative;
+                        display: inline-block;
+                    }
+                
+                    .dropdown-content {
+                        /* display: none;
+                        position: absolute;
+                        z-index: 1;
+                        background-color: #f1f1f1;
+                        min-width: 160px;
+                        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+                        padding: 12px 16px;
+                        margin-top: -2px;
+                        left: 0; */
+
+                        display: none;
+                        position: absolute;
+                        background-color: #f1f1f1;
+                        min-width: 100%;
+                        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+                        padding: 12px 16px;
+                        margin-top: 4px;
+                        left: 0;
+                        white-space: nowrap;
+                    }
+                
+                    .user-row:hover .dropdown-content {
+                        display: block;
+                    }
+                </style>
+                <table class="user-table">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -60,6 +92,73 @@
                     </thead>
                     <tbody>
                         {% for user in form %}
+                        <tr class="user-row">
+                            <td>{{ user.id }}</td>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>
+                                <div class="dropdown">
+                                    {{ user.role }}
+                                    <!-- <span class="role-text">{{ user.role }}</span> -->
+                                    <div class="dropdown-content">
+                                        {% if user.role == "admin" %}
+                                            <a href="#" class="message">Demote admin</a>
+                                        {% elif user.role == "user" %}
+                                            <a href="#" class="message">Promote admin</a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+
+                <!-- <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in form %}
+                        <tr class="dropdown">
+                            <td>{{ user.id }}</td>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>
+                                {{ user.role }}
+                                <div class="dropdown-content">
+                                    {% if user.role == "admin" %}
+                                        <a href="#" class="message">Demote admin</a>
+                                    {% elif user.role == "user" %}
+                                        <a href="#" class="message">Promote admin</a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table> -->
+                
+
+                <!-- <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                        </tr>
+                    </thead>
+                    <div class="dropdown">
+                    <tbody>
+                        <div class="dropdown">
+                        {% for user in form %}
                         <tr>
                             <td class="id">{{ user.id }}</td>
                             <td class="username">{{ user.username }}</td>
@@ -67,6 +166,7 @@
                             <td>
                                 <div class="dropdown">
                                     <button class="dropbtn">{{ user.role }}</button>
+                                    {{ user.role }}
                                     <div class="dropdown-content">
                                         {% if user.role == "admin" %}
                                             <a href="#" class="message">Demote admin</a>
@@ -78,8 +178,10 @@
                             </td>
                         </tr>
                         {% endfor %}
+                        </div>
                     </tbody>
-                </table>          
+                     </div>
+                </table>           -->
             </div>
         </div>
 
