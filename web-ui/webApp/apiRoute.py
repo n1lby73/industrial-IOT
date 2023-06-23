@@ -469,9 +469,30 @@ class deleteApi(Resource):
         db.session.commit()
 
         return ({"Msg": userEmail + " has been deleted from the database"})
+
+class usersApi(Resource):
+    @jwt_required()
+    def get(self):
+        
+        user = get_jwt_identity()
+        role = user["role"]
+        email = user["email"]
+
+        if not cache.get(email):
+
+            return ({"Error":"User not logged in"})
+        
+        if role != "owner":
+
+            return ({"Error":"not authorized"})
     
+        # regUser = users.query.with_entities(users.id, users.username, users.email, users.role).all()
+
+        return jsonify(registeredUsers="regUser")
+
 api.add_resource(indexApi, '/api/index', '/api/index/')
 api.add_resource(loginApi, '/api/login', '/api/login/')
+api.add_resource(usersApi, '/api/users', '/api/users/')
 api.add_resource(deleteApi, '/api/delete', '/api/delete/')
 api.add_resource(logOutApi, '/api/logout', '/api/logout/')
 api.add_resource(genOtpApi, '/api/genotp', '/api/genotp/')
