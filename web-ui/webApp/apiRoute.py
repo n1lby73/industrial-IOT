@@ -22,7 +22,7 @@ class indexApi(Resource):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument("pin", required=True)
 
-    def post(self):
+    def get(self):
 
         user = get_jwt_identity()
         email = user["email"]
