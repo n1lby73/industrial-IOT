@@ -427,8 +427,44 @@ class updateRoleApi(Resource):
 
         return ({"Msg": userEmail + " role, has been updated successfully"})
 
+class deleteApi(Resource):
+    @jwt_required()
+    def __init__(self):
+
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument("email", required=True)
+
+    def delete(self):
+
+        args = self.parser.parse_args()
+        userEmail = args["email"]
+
+        user = get_jwt_identity()
+        role = user["role"]
+        email = user["email"]
+
+        if not cache.get(email):
+
+            return ({"Error":"User not logged in"})
+        
+        if role != "owner":
+
+            return ({"Error":"not authorized"})
+        
+        del_user = users.query.filter_by(email=userEmail).first()
+
+        if not del_user:
+
+            return ({"Error": "Invalid Email"})
+        
+        db.session.delete(del_user)
+        db.session.commit()
+
+        return ({"Msg": userEmail + " has been deleted from the database"})
+    
 api.add_resource(indexApi, '/api/index', '/api/index/')
 api.add_resource(loginApi, '/api/login', '/api/login/')
+api.add_resource(deleteApi, '/api/delete', '/api/delete/')
 api.add_resource(logOutApi, '/api/logout', '/api/logout/')
 api.add_resource(genOtpApi, '/api/genotp', '/api/genotp/')
 api.add_resource(resetInApi, '/api/resetin', '/api/resetin/')
