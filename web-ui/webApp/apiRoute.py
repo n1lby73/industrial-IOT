@@ -39,6 +39,13 @@ class indexApi(Resource):
         if logged_user.verifiedEmail != "True":
 
             return {"error":"email verification not completed"}
+        
+        query = esp32.query.filter_by(pinName='onlineStatus').first()
+        status = query.switchState
+
+        if status == "0":
+
+            return {"Alert":"Esp is offline. Current state unknown"}
 
         if status == stato:
             
@@ -99,6 +106,7 @@ class updatePinApi(Resource):
         status = query.switchState
 
         if status == "0":
+            
             return {"Alert":"Esp is offline, can't update"}
         
         try:
