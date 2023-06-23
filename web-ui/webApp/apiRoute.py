@@ -486,9 +486,22 @@ class usersApi(Resource):
 
             return ({"Error":"not authorized"})
     
-        # regUser = users.query.with_entities(users.id, users.username, users.email, users.role).all()
+        regUser = users.query.with_entities(users.id, users.username, users.email, users.role).all()
 
-        return jsonify(registeredUsers="regUser")
+        serialized_users = []
+
+        for row in regUser:
+
+            user_dict = {
+                "id": row.id,
+                "username": row.username,
+                "email": row.email,
+                "role": row.role
+            }
+            
+            serialized_users.append(user_dict)
+
+        return jsonify(registeredUsers=serialized_users)
 
 api.add_resource(indexApi, '/api/index', '/api/index/')
 api.add_resource(loginApi, '/api/login', '/api/login/')
