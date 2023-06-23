@@ -1,5 +1,6 @@
 from webApp.globalVar import espOnlineTimeout, espStartTime, espstate
-from webApp import app, socketio
+from webApp import app, socketio, db
+from webApp.models import esp32
 import random
 import time
 
@@ -18,23 +19,21 @@ def confirmOnline():
 
             espstate = 0
             socketio.emit('espOnlineState', {"value":0})
-            # query = esp32.query.filter_by(pinName='onlineStatus').first()
-            # query.switchState = str(espstate)
-            # db.session.commit()
+            query = esp32.query.filter_by(pinName='onlineStatus').first()
+            query.switchState = str(espstate)
+            db.session.commit()
             # print("0")
 
         else:
             espstate = 1
             socketio.emit('espOnlineState', {"value":1})
-            # query = esp32.query.filter_by(pinName='onlineStatus').first()
-            # query.switchState = str(espstate)
-            # db.session.commit()
+            query = esp32.query.filter_by(pinName='onlineStatus').first()
+            query.switchState = str(espstate)
+            db.session.commit()
             # print("1")
 
 def genOTP():
     
-    # global otpStartTime
-
     otpStartTime = time.time()
 
     random.seed(time.time())
