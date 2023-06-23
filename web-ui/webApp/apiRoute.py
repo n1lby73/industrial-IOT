@@ -493,12 +493,14 @@ class usersApi(Resource):
         for row in regUser:
 
             user_dict = {
+
                 "id": row.id,
                 "username": row.username,
                 "email": row.email,
                 "role": row.role
+                
             }
-            
+
             serialized_users.append(user_dict)
 
         return jsonify(registeredUsers=serialized_users)
