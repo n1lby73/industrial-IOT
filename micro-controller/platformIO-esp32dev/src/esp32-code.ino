@@ -1,313 +1,87 @@
-/*
-  Refrence:
-    WiFiClient (Arduino pre-built example)
-    WiFiClientBasic (Arduino pre-built exaample)
-    Httpclient (Arduino pre-built example)
-    
-*/
-
-#include <Arduino.h>
-#include <ArduinoJson.h>
-#include <HTTPClient.h>
-#include <ESPping.h>
 #include <WiFi.h>
+#include <WiFiClientSecure.h>
 
-int dt_out = 100; //dt_out ==> delay timer out (out denoting the end of the void loop)
-int minDt = 0.5; //minDt ==> minimum timer
-int wifiDt = 100;
+const char* ssid = "esp8266";
+const char* password = "forTheLoveOfEmbededSystem";
 
-int motor  = 26;
-int motorPb = 27;
-int pbStateOld;
-int pbStateNew;
-int localMotorState;
-int motorState;
-int globalState;
+const char* host = "industrialiot.onrender.com";
+const int httpsPort = 443;
 
-#define ssid "esp8266"
-#define password "forTheLoveOfEmbededSystem"
+// Root certificate for the server
+const char* rootCACertificate =  \
+"-----BEGIN CERTIFICATE-----\n" \
+"MIIFNDCCBNqgAwIBAgIQCC9vXhMOqjhjh/fFfICYmTAKBggqhkjOPQQDAjBKMQsw\n" \
+"CQYDVQQGEwJVUzEZMBcGA1UEChMQQ2xvdWRmbGFyZSwgSW5jLjEgMB4GA1UEAxMX\n" \
+"Q2xvdWRmbGFyZSBJbmMgRUNDIENBLTMwHhcNMjMwNDI1MDAwMDAwWhcNMjQwNDIz\n" \
+"MjM1OTU5WjB1MQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQG\n" \
+"A1UEBxMNU2FuIEZyYW5jaXNjbzEZMBcGA1UEChMQQ2xvdWRmbGFyZSwgSW5jLjEe\n" \
+"MBwGA1UEAxMVc25pLmNsb3VkZmxhcmVzc2wuY29tMFkwEwYHKoZIzj0CAQYIKoZI\n" \
+"zj0DAQcDQgAESe3PljFfsfWY/UJwLvX39Es+PH0EnxrZ7LHXgwMpPmHuZnlWRW/j\n" \
+"VVGdGnrc68bhtmIaSqyzTPvmGStQpoCgxKOCA3UwggNxMB8GA1UdIwQYMBaAFKXO\n" \
+"N+rrsHUOlGeItEX62SQQh5YfMB0GA1UdDgQWBBQQqEe2OJuOgKxBzIYtfUWM0gbU\n" \
+"iDA8BgNVHREENTAzghVzbmkuY2xvdWRmbGFyZXNzbC5jb22CGmluZHVzdHJpYWxp\n" \
+"b3Qub25yZW5kZXIuY29tMA4GA1UdDwEB/wQEAwIHgDAdBgNVHSUEFjAUBggrBgEF\n" \
+"BQcDAQYIKwYBBQUHAwIwewYDVR0fBHQwcjA3oDWgM4YxaHR0cDovL2NybDMuZGln\n" \
+"aWNlcnQuY29tL0Nsb3VkZmxhcmVJbmNFQ0NDQS0zLmNybDA3oDWgM4YxaHR0cDov\n" \
+"L2NybDQuZGlnaWNlcnQuY29tL0Nsb3VkZmxhcmVJbmNFQ0NDQS0zLmNybDA+BgNV\n" \
+"HSAENzA1MDMGBmeBDAECAjApMCcGCCsGAQUFBwIBFhtodHRwOi8vd3d3LmRpZ2lj\n" \
+"ZXJ0LmNvbS9DUFMwdgYIKwYBBQUHAQEEajBoMCQGCCsGAQUFBzABhhhodHRwOi8v\n" \
+"b2NzcC5kaWdpY2VydC5jb20wQAYIKwYBBQUHMAKGNGh0dHA6Ly9jYWNlcnRzLmRp\n" \
+"Z2ljZXJ0LmNvbS9DbG91ZGZsYXJlSW5jRUNDQ0EtMy5jcnQwDAYDVR0TAQH/BAIw\n" \
+"ADCCAX0GCisGAQQB1nkCBAIEggFtBIIBaQFnAHUA7s3QZNXbGs7FXLedtM0TojKH\n" \
+"Rny87N7DUUhZRnEftZsAAAGHula9PgAABAMARjBEAiAo1LKjZ7GCS4NtrQfPIBs7\n" \
+"6Yl8IQoj2l3GrVjpZJeXyQIgVygiIxo/bKaP2cBPjNDDZ7SNRGNb8sxK/+jVixbq\n" \
+"tEsAdgBz2Z6JG0yWeKAgfUed5rLGHNBRXnEZKoxrgBB6wXdytQAAAYe6Vr13AAAE\n" \
+"AwBHMEUCIQCPtn6ZfB3otXJE96wo77OO0iDjDlBmptaFk3k3OzcC/AIgQvlAeNSV\n" \
+"dmUu5h1mrBG3gLhftRL0xjy53P+Bwxo0tcQAdgBIsONr2qZHNA/lagL6nTDrHFIB\n" \
+"y1bdLIHZu7+rOdiEcwAAAYe6Vr1eAAAEAwBHMEUCIFmI7nPYuSuGHakZvDf3sn5b\n" \
+"ZVa25g1MesfH9GlwAOdIAiEA5WzCFrFe2pB8voAA/gpTwgXZ0WsnJMFBxIU/kjRP\n" \
+"/wswCgYIKoZIzj0EAwIDSAAwRQIhANHGjpotdE3x+Roghod99sY8dKOHUuwrAI5U\n" \
+"kyuiFa7MAiA/pxvobn/sikKd/YtnN6XQe+llfZskXNxVwXQWjodHAw==\n" \
+"-----END CERTIFICATE-----\n";
 
-const char* serverID = "industrialiot.onrender.com";
-const char* serverIP = "192.168.0.145"; //host subject to change always untill app is hosted
-const int serverPort = 5000;
+void setup() {
+  Serial.begin(115200);
 
-// Ping google.com to know if connected wifi has access to internet
-const char* google = "216.58.223.238";
-
-// Use WiFiClient and HTTPclient class to create TCP connections
-
-IPAddress ip;
-HTTPClient http;
-WiFiClient client;
-
-// Function to constantly check for changes on the hardware
-
-void hardChanges(){
-
-  pbStateNew = digitalRead(motorPb);
-
-  if ((pbStateNew == 1) && (pbStateOld == 0)) {
-
-    if ((localMotorState == 0) || (localMotorState == 3)) {
-
-      digitalWrite(motor, HIGH);
-      localMotorState = 1;
-
-    }
-
-    else {
-
-      digitalWrite(motor, LOW);
-      localMotorState = 0;
-
-    }
-  }
-
-  pbStateOld = pbStateNew;
-
-}
-
-// Function to send hardware changes to server
-
-void syncHardChanges(){
-
-  DynamicJsonDocument doc(200);
-  doc["state"] = localMotorState;
-  doc["pin"] = 5;
-
-  String jsonString;
-  serializeJson(doc, jsonString);
-
-  String url = "http://" + String(serverID) + "/synchardchanges";
-
-  http.begin(client, url);
-  http.addHeader("Content-Type", "application/json");
-
-  int httpCode = http.POST(jsonString);
-
-  if (httpCode > 0){
-
-    String payload = http.getString();
-
-    int json = payload.indexOf("{");
-    String jsonData = payload.substring(json);
-
-    DynamicJsonDocument doc(200);
-    DeserializationError error = deserializeJson(doc, jsonData);
-
-    if (error) {
-
-        Serial.println("Deserialization failed: " + String(error.c_str()));
-        return;
-
-      }
-
-    motorState = doc["success"];
-  }
-
-  http.end();
-
-}
-
-void internetAccess() {
-
-  while (!Ping.ping(google, 1)) {
-
-    hardChanges();
-
-    if (WiFi.status() == WL_CONNECTED){
-
-      Serial.println(String(ssid) + " has no internet connection");
-      Serial.println();
-      Serial.print("Local state is ==>: ");
-      Serial.println(localMotorState);
-      
-    }
-
-    else{
-      Serial.println("wifi disconnected");
-      ESP.restart();
-    }
-  }
-
-
-}
-
-void onlineStatus(){
-
-  String url = "http://" + String(serverID) + "/espOnline";
-
-  http.begin(client, url);
-  http.addHeader("Content-Type", "application/json");
-
-  int httpCode = http.POST("");
-
-  if (httpCode > 0){
-
-  }
-
-  http.end();
-}
-
-void setup(){ 
-
-  pinMode(motor, OUTPUT);
-
-  WiFi.mode(WIFI_STA);
+  // Connect to Wi-Fi
   WiFi.begin(ssid, password);
-
-  Serial.begin (115200);
-  int trial = 0;
   while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Connecting to WiFi...");
+  }
+  Serial.println("Connected to WiFi");
 
-     Serial.print("Connecting to "+String(ssid)+" Wifi network...");
-     Serial.println(".");
-     trial++;
-     hardChanges();
-     Serial.println(localMotorState);
+  // Create a WiFiClientSecure object
+  WiFiClientSecure client;
 
-     if (trial == 1000){
-        Serial.println("resetting");
-        ESP.restart();
-      }
+  // Set the root certificate
+  client.setCACert(rootCACertificate);
+
+  // Connect to the server
+  if (!client.connect(host, httpsPort)) {
+    Serial.println("Connection failed!");
+    return;
   }
 
-  internetAccess();
-  
-  Serial.println("");
-  Serial.println("WiFi connected");
+  // Make an HTTP GET request
+  client.print(String("GET /query HTTP/1.1\r\n") +
+               "Host: " + host + "\r\n" +
+               "Connection: close\r\n\r\n");
+
+  Serial.println("Request sent!");
+
+  // Wait for the response
+  while (client.connected()) {
+    String line = client.readStringUntil('\n');
+    Serial.println(line);
+  }
+
+  Serial.println("Response received!");
+
+  // Disconnect from the server
+  client.stop();
 }
 
 void loop() {
-  
-  // Check for hardwware changes
-
-  hardChanges();
-
-  // Check if wifi is connected
-
-  if (WiFi.status() == WL_CONNECTED){
-
-    internetAccess();
-    onlineStatus();
-    
-    String url = "http://" + String(serverID) + "/query";
-
-    http.begin(client, url);
-    http.addHeader("Content-Type", "application/json");
-    int httpCode = http.POST("");
-
-    // Retrieve Json data from server
-
-    if (httpCode > 0){
-      String payload = http.getString();
-      int json = payload.indexOf("{");
-      String jsonData = payload.substring(json);
-      
-      DynamicJsonDocument doc(200);
-      DeserializationError error = deserializeJson(doc, jsonData);
-      
-      if (error) {
-
-        Serial.println("Deserialization failed: " + String(error.c_str()));
-        
-        return;
-
-      }
-      
-      motorState = doc["success"];
-
-      // Synchronizing realtime update with local changes
-
-      if ((motorState == 1) && (localMotorState == 3)){
-
-        localMotorState = 2;
-
-      }
-
-      if ((motorState == 0) && (localMotorState == 2)){
-
-        localMotorState = 3;
-
-      }
-
-      // Updating and Assigning a new value to local state other than 0 and 1 o keep track of changes
-
-      if ((localMotorState == 1) || (localMotorState == 0)){
-
-        if (localMotorState == 1){
-
-          syncHardChanges();
-          localMotorState = 2;
-
-        }
-
-        else{
-
-          syncHardChanges();
-          localMotorState = 3;
-
-        }
-      }
-
-      // Giving conditions to write the esp32 pin either high or low
-
-      if ((motorState == 1) && (localMotorState == 2)){
-
-        digitalWrite(motor, HIGH);
-
-      }
-
-      else{
-
-        digitalWrite(motor, LOW);
-
-      }
-    }
-
-    // Printing error code if unable to get to the server
-
-    else{
-
-      Serial.println("Error: " + String(httpCode));
-
-    }
-
-    http.end();
-
-  }
-  
-  // In cases where internet is disconnected
-
-  else{
-
-    Serial.println("Wifi disconnected");
-    delay(wifiDt);
-    int trial = 0;
-
-    while (WiFi.status() != WL_CONNECTED) {
-      
-     delay(wifiDt);
-      Serial.println("Reconnecting to "+String(ssid)+" wifi network....");
-      WiFi.disconnect();
-      WiFi.begin(ssid, password);
-      trial++;
-      hardChanges();
-
-      if (trial == 500){
-        Serial.println("resetting");
-        ESP.restart();
-      }
-
-    }
-
-    internetAccess();
-
-    Serial.println("Connected to "+String(ssid));
-    syncHardChanges();
-
-  }
-
-  delay (dt_out);
-
+  // Empty loop
 }
