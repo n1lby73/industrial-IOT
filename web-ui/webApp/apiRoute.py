@@ -182,8 +182,15 @@ class registerApi(Resource):
 
         msg = Message('Api email Verification', recipients=[email])
         msg.html = render_template("emailVerification.html", otp=otp)
-        mail.send(msg)
 
+        try:
+
+            mail.send(msg)
+
+        except:
+
+            return ({"Error": "Invalid email format"})
+        
         new_user = users(email=email, username=username, role="user", password=generate_password_hash(password), otp=otp)
 
         db.session.add(new_user)
