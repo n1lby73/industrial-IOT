@@ -270,7 +270,14 @@ class genOtpApi(Resource):
 
         msg = Message('Api email Verification', recipients=[email])
         msg.html = render_template("emailVerification.html", otp=otp)
-        mail.send(msg)
+        
+        try:
+
+            mail.send(msg)
+
+        except:
+
+            return ({"Error": "Invalid email format"})
 
         logged_user.otp = otp
 
@@ -341,7 +348,14 @@ class resetOutApi(Resource):
 
         msg = Message('Api Password reset', recipients=[email])
         msg.html = render_template("apiResetToken.html", token=access_token, username=logged_user.username)
-        mail.send(msg)
+
+        try:
+
+            mail.send(msg)
+
+        except:
+
+            return ({"Error": "Invalid email format"})
 
         return ({"Msg": "Token sent to email"})
     
