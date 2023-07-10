@@ -1,3 +1,57 @@
+// void setup() {
+
+//   Serial.begin(115200);
+//   delay(100);
+
+//   Serial.print("Attempting to connect to SSID: ");
+//   Serial.println(ssid);
+//   WiFi.begin(ssid, password);
+
+//   while (WiFi.status() != WL_CONNECTED) {
+//     Serial.print(".");
+//     // wait 1 second for re-trying
+//     delay(1000);
+//   }
+
+//   Serial.print("Connected to ");
+//   Serial.println(ssid);
+
+//   client.setCACert(test_root_ca);
+//   //client.setCertificate(test_client_cert); // for client verification
+//   //client.setPrivateKey(test_client_key);	// for client verification
+
+//   Serial.println("\nStarting connection to server...");
+//   if (!client.connect(server, 443))
+//     Serial.println("Connection failed!");
+//   else {
+//     Serial.println("Connected to server!");
+//     // Make a HTTP request:
+//     client.println("POST https://industrialiot.onrender.com/query HTTP/1.0");
+//     client.println("Host: industrialiot.onrender.com");
+//     client.println("Connection: close");
+//     client.println();
+
+//     while (client.connected()) {
+//       String line = client.readStringUntil('\n');
+//       if (line == "\r") {
+//         Serial.println("headers received");
+//         break;
+//       }
+//     }
+//     // if there are incoming bytes available
+//     // from the server, read them and print them:
+//     while (client.available()) {
+//       char c = client.read();
+//       Serial.write(c);
+//     }
+
+//     client.stop();
+//   }
+// }
+
+// void loop() {
+//   // do nothing
+// }
 /*
   Refrence:
     WiFiClient (Arduino pre-built example)
@@ -5,6 +59,44 @@
     Httpclient (Arduino pre-built example)
     
 */
+
+
+    // Prepare the JSON payload
+    // StaticJsonDocument<200> doc;
+    // doc["param1"] = "value1";
+    // doc["param2"] = "value2";
+
+    // // Serialize the JSON document to a string
+    // String payload;
+    // serializeJson(doc, payload);
+
+    // // Make a HTTP POST request with the JSON payload
+    // client.println("POST /query HTTP/1.1");
+    // client.println("Host: industrialiot.onrender.com");
+    // client.println("Connection: close");
+    // client.println("Content-Type: application/json");
+    // client.print("Content-Length: ");
+    // client.println(payload.length());
+    // client.println();
+    // client.println(payload);
+
+    // while (client.connected()) {
+    //   String line = client.readStringUntil('\n');
+    //   if (line == "\r") {
+    //     Serial.println("headers received");
+    //     break;
+    //   }
+    // }
+
+    // // If there are incoming bytes available
+    // // from the server, read and print them:
+    // while (client.available()) {
+    //   char c = client.read();
+    //   Serial.write(c);
+    // }
+
+    // client.stop();
+
 
 #include <ArduinoJson.h>
 #include <HTTPClient.h>
