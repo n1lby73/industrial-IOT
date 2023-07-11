@@ -248,42 +248,46 @@ class verifyEmailApi(Resource):
 class genOtpApi(Resource):
     @jwt_required()
     def get(self):
-
-        global genOtpStartTime
-
-        user = get_jwt_identity()
-        email = user["email"]
-
-        if not cache.get(email):
-
-            return ({"Error":"User not logged in"})
-        
-        logged_user = users.query.filter_by(email=email).first()
-
-        if logged_user.verifiedEmail == "True":
-
-            return {"Msg":"email verification already completed"}
-        
-        otp, otpStartTime = genOTP()
-
-        genOtpStartTime = otpStartTime
-
-        msg = Message('Api email Verification', recipients=[email])
-        msg.html = render_template("emailVerification.html", otp=otp)
-        
         try:
+            global genOtpStartTime
 
-            mail.send(msg)
+            user = get_jwt_identity()
+            email = user["email"]
 
+            if not cache.get(email):
+
+                return ({"Error":"User not logged in"})
+            
+            logged_user = users.query.filter_by(email=email).first()
+
+            if logged_user.verifiedEmail == "True":
+
+                return {"Msg":"email verification already completed"}
+            
+            otp, otpStartTime = genOTP()
+
+            genOtpStartTime = otpStartTime
+
+            msg = Message('Api email Verification', recipients=[email])
+            msg.html = render_template("emailVerification.html", otp=otp)
+            
+            try:
+
+                mail.send(msg)
+
+            except:
+
+                return ({"Error": "Invalid email format"})
+
+            logged_user.otp = otp
+
+            db.session.commit()
+
+            return ({"status": "otp sent to mail"})
+        
         except:
 
-            return ({"Error": "Invalid email format"})
-
-        logged_user.otp = otp
-
-        db.session.commit()
-
-        return ({"status": "otp sent to mail"})
+            return ({"error": "login before requesting otp"})
         
 class resetInApi(Resource):
     @jwt_required()
