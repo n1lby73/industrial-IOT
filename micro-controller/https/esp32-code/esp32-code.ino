@@ -87,7 +87,6 @@ void syncHardChanges(){
   if (httpCode > 0){
 
     String payload = http.getString();
-
     int json = payload.indexOf("{");
     String jsonData = payload.substring(json);
 
