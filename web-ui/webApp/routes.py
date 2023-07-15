@@ -303,7 +303,7 @@ def synchardchanges():
         state = status
         value = {"update":state}
 
-    socketio.emit("localUpdate", value, broadcast=True)
+    socketio.emit("localUpdate", value)
 
     return jsonify(success = state)
 
