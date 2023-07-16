@@ -277,8 +277,6 @@ void setup(){
 
   client.setCACert(test_root_ca);
 
-  connectServer();
-
 }
 
 void loop() {
@@ -396,6 +394,7 @@ void loop() {
 
     else{
 
+      hardChanges();
       Serial.println("Error: disconnected from server");
       Serial.println("Reconnecting now... MAIN LOOP");
       connectServer();
@@ -436,7 +435,4 @@ void loop() {
     syncHardChanges();
 
   }
-
-  // delay (dt_out);
-
 }
