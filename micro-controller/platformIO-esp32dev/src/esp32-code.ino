@@ -89,13 +89,7 @@ void hardChanges(){
 
 void syncHardChanges(){
 
-  if (!client.connect(server, serverPort)){
-
-    Serial.println("Could not connect to server - synchronize changes");
-
-  }
-
-  else{
+  if (client.connected()){
 
     DynamicJsonDocument doc(200);
     doc["state"] = localMotorState;
@@ -143,7 +137,7 @@ void syncHardChanges(){
 
     if (error) {
 
-      Serial.println("Deserialization failed: " + String(error.c_str()));
+      Serial.println("Deserializtion failed: " + String(error.c_str()));
       return;
 
     }
@@ -151,10 +145,17 @@ void syncHardChanges(){
     motorState = docs["success"];
 
     Serial.println("Received payload: " + String(motorState));
-    
-    client.stop();
   
   }
+
+  else{
+
+    Serial.println("Error: disconnected from server");
+    Serial.println("Reconnecting now...SYNC HARD CHANGE");
+    connectServer();
+    syncHardChanges();
+
+  }  
 }
 
 void internetAccess() {
@@ -181,13 +182,7 @@ void internetAccess() {
 
 void onlineStatus(){
 
-  if (!client.connect(server, serverPort)){
-
-    Serial.println("Could not connect to server - online status");
-
-  }
-
-  else{
+  if (client.connected()){
 
     client.print("POST /espOnline HTTP/1.0\r\n");
     client.print("Host: industrialiot.onrender.com\r\n");
@@ -222,8 +217,29 @@ void onlineStatus(){
 
     Serial.println(payload);
 
-    client.stop();
   }
+
+  else{
+
+    Serial.println("Error: disconnected from server");
+    Serial.println("Reconnecting now.ONLINE STATUS.......");
+    connectServer();
+    onlineStatus();
+
+  }
+}
+
+void connectServer(){
+
+  while (!client.connect(server, serverPort)) {
+
+    hardChanges();
+    Serial.println("Connection to server failed");
+    internetAccess();
+
+  } 
+  
+  Serial.println("Connected to server");
 }
 
 void setup(){ 
@@ -255,79 +271,9 @@ void setup(){
 
   client.setCACert(test_root_ca);
 
+  connectServer();
+
 }
-
-// void setup() {
-//   Serial.println("\nStarting connection to server...");
-//   if (!client.connect(server, 443))
-//     Serial.println("Connection failed!");
-//   else {
-//     Serial.println("Connected to server!");
-//     // Make a HTTP request:
-//     // client.println("POST https://industrialiot.onrender.com/query HTTP/1.0");
-//     // client.println("Host: industrialiot.onrender.com");
-//     // client.println("Connection: close");
-//     // client.println();
-//     DynamicJsonDocument doc(200);
-//     doc["state"] = 0;
-//     doc["pin"] = 5;
-
-//     String jsonString;
-//     serializeJson(doc, jsonString);
-
-//     client.print("POST /synchardchanges HTTP/1.0\r\n");
-//     client.print("Host: industrialiot.onrender.com\r\n");
-//     client.print("User-Agent: ESP32\r\n");
-//     client.print("Content-Type: application/json\r\n");
-//     client.print("Content-Length: " + String(jsonString.length()) + "\r\n");
-//     client.print("Connection: close\r\n");
-//     client.print("\r\n");
-//     client.print(jsonString);
-//     client.println();
-
-//     // client.print("POST /synchardchanges HTTP/1.1");
-//     // client.print("Host: industrialiot.onrender.com");
-//     // client.print("User-Agent: ESP32");
-//     // client.print("Content-Type: application/json");
-//     // client.print("Content-Length: " + String(jsonString.length()));
-//     // client.print("Connection: keep-alive");
-//     // client.println();
-//     // client.print(jsonString);
-//     // client.println();
-
-//     while (client.connected()) {
-//       String line = client.readStringUntil('\n');
-//       if (line == "\r") {
-//         Serial.println("headers received");
-//         break;
-//       }
-//     }
-//     // if there are incoming bytes available
-//     // from the server, read them and print them:
-//     while (client.available()) {
-//       char c = client.read();
-//       Serial.write(c);
-
-//       payload += c;
-//     }
-
-//     Serial.println("Received payload: " + payload);
-//     // Serial.println("Received payload: " + c);
-//     DynamicJsonDocument docs(200);
-//     DeserializationError error = deserializeJson(docs, payload);
-//     if (error) {
-//       Serial.println("Deserialization failed: " + String(error.c_str()));
-//       return;
-//     }
-//     motorState = doc["success"];
-//     Serial.print("received state:");
-//     Serial.println(motorState);
-//     Serial.println("Received payload: " + String(motorState));
-    
-
-//     client.stop();
-//   }
-// }
 
 void loop() {
   
@@ -340,17 +286,11 @@ void loop() {
   if (WiFi.status() == WL_CONNECTED){
 
     internetAccess();
+    connectServer();
     onlineStatus();
     
-
-    if (!client.connect(server, serverPort)){
-
-    Serial.println("Could not connect to server - query db");
-
-    }
-
-    else{
-
+    if (client.connected()){
+      
       client.print("POST /query HTTP/1.0\r\n");
       client.print("Host: industrialiot.onrender.com\r\n");
       client.print("User-Agent: ESP32\r\n");
@@ -444,14 +384,16 @@ void loop() {
       }    
     }
 
-    // Printing error code if unable to get to the server
+    else{
 
-    // else{
+      Serial.println("Error: disconnected from server");
+      Serial.println("Reconnecting now... MAIN LOOP");
+      connectServer();
 
-    //   Serial.println("Error: " + String(httpCode));
+    }
 
-    // }
     client.stop();
+
   }
   
   // In cases where internet is disconnected
