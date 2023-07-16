@@ -1,17 +1,14 @@
 /*
-  Refrence:
-    WiFiClient (Arduino pre-built example)
-    WiFiClientBasic (Arduino pre-built exaample)
-    Httpclient (Arduino pre-built example)
-    WiFiClientSecure (Arduino pre-built exaample)
-    
+  Wifi secure connection example for ESP32
+  Running on TLS 1.2 using mbedTLS
+  Suporting the following chipersuites:
+  "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384","TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384","TLS_DHE_RSA_WITH_AES_256_GCM_SHA384","TLS_ECDHE_ECDSA_WITH_AES_256_CCM","TLS_DHE_RSA_WITH_AES_256_CCM","TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384","TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384","TLS_DHE_RSA_WITH_AES_256_CBC_SHA256","TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA","TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA","TLS_DHE_RSA_WITH_AES_256_CBC_SHA","TLS_ECDHE_ECDSA_WITH_AES_256_CCM_8","TLS_DHE_RSA_WITH_AES_256_CCM_8","TLS_ECDHE_ECDSA_WITH_CAMELLIA_256_GCM_SHA384","TLS_ECDHE_RSA_WITH_CAMELLIA_256_GCM_SHA384","TLS_DHE_RSA_WITH_CAMELLIA_256_GCM_SHA384","TLS_ECDHE_ECDSA_WITH_CAMELLIA_256_CBC_SHA384","TLS_ECDHE_RSA_WITH_CAMELLIA_256_CBC_SHA384","TLS_DHE_RSA_WITH_CAMELLIA_256_CBC_SHA256","TLS_DHE_RSA_WITH_CAMELLIA_256_CBC_SHA","TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256","TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256","TLS_DHE_RSA_WITH_AES_128_GCM_SHA256","TLS_ECDHE_ECDSA_WITH_AES_128_CCM","TLS_DHE_RSA_WITH_AES_128_CCM","TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256","TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256","TLS_DHE_RSA_WITH_AES_128_CBC_SHA256","TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA","TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA","TLS_DHE_RSA_WITH_AES_128_CBC_SHA","TLS_ECDHE_ECDSA_WITH_AES_128_CCM_8","TLS_DHE_RSA_WITH_AES_128_CCM_8","TLS_ECDHE_ECDSA_WITH_CAMELLIA_128_GCM_SHA256","TLS_ECDHE_RSA_WITH_CAMELLIA_128_GCM_SHA256","TLS_DHE_RSA_WITH_CAMELLIA_128_GCM_SHA256","TLS_ECDHE_ECDSA_WITH_CAMELLIA_128_CBC_SHA256","TLS_ECDHE_RSA_WITH_CAMELLIA_128_CBC_SHA256","TLS_DHE_RSA_WITH_CAMELLIA_128_CBC_SHA256","TLS_DHE_RSA_WITH_CAMELLIA_128_CBC_SHA","TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA","TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA","TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA","TLS_DHE_PSK_WITH_AES_256_GCM_SHA384","TLS_DHE_PSK_WITH_AES_256_CCM","TLS_ECDHE_PSK_WITH_AES_256_CBC_SHA384","TLS_DHE_PSK_WITH_AES_256_CBC_SHA384","TLS_ECDHE_PSK_WITH_AES_256_CBC_SHA","TLS_DHE_PSK_WITH_AES_256_CBC_SHA","TLS_DHE_PSK_WITH_CAMELLIA_256_GCM_SHA384","TLS_ECDHE_PSK_WITH_CAMELLIA_256_CBC_SHA384","TLS_DHE_PSK_WITH_CAMELLIA_256_CBC_SHA384","TLS_PSK_DHE_WITH_AES_256_CCM_8","TLS_DHE_PSK_WITH_AES_128_GCM_SHA256","TLS_DHE_PSK_WITH_AES_128_CCM","TLS_ECDHE_PSK_WITH_AES_128_CBC_SHA256","TLS_DHE_PSK_WITH_AES_128_CBC_SHA256","TLS_ECDHE_PSK_WITH_AES_128_CBC_SHA","TLS_DHE_PSK_WITH_AES_128_CBC_SHA","TLS_DHE_PSK_WITH_CAMELLIA_128_GCM_SHA256","TLS_DHE_PSK_WITH_CAMELLIA_128_CBC_SHA256","TLS_ECDHE_PSK_WITH_CAMELLIA_128_CBC_SHA256","TLS_PSK_DHE_WITH_AES_128_CCM_8","TLS_ECDHE_PSK_WITH_3DES_EDE_CBC_SHA","TLS_DHE_PSK_WITH_3DES_EDE_CBC_SHA","TLS_RSA_WITH_AES_256_GCM_SHA384","TLS_RSA_WITH_AES_256_CCM","TLS_RSA_WITH_AES_256_CBC_SHA256","TLS_RSA_WITH_AES_256_CBC_SHA","TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384","TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384","TLS_ECDH_RSA_WITH_AES_256_CBC_SHA","TLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384","TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384","TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA","TLS_RSA_WITH_AES_256_CCM_8","TLS_RSA_WITH_CAMELLIA_256_GCM_SHA384","TLS_RSA_WITH_CAMELLIA_256_CBC_SHA256","TLS_RSA_WITH_CAMELLIA_256_CBC_SHA","TLS_ECDH_RSA_WITH_CAMELLIA_256_GCM_SHA384","TLS_ECDH_RSA_WITH_CAMELLIA_256_CBC_SHA384","TLS_ECDH_ECDSA_WITH_CAMELLIA_256_GCM_SHA384","TLS_ECDH_ECDSA_WITH_CAMELLIA_256_CBC_SHA384","TLS_RSA_WITH_AES_128_GCM_SHA256","TLS_RSA_WITH_AES_128_CCM","TLS_RSA_WITH_AES_128_CBC_SHA256","TLS_RSA_WITH_AES_128_CBC_SHA","TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256","TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256","TLS_ECDH_RSA_WITH_AES_128_CBC_SHA","TLS_ECDH_ECDSA_WITH_AES_128_GCM_SHA256","TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA256","TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA","TLS_RSA_WITH_AES_128_CCM_8","TLS_RSA_WITH_CAMELLIA_128_GCM_SHA256","TLS_RSA_WITH_CAMELLIA_128_CBC_SHA256","TLS_RSA_WITH_CAMELLIA_128_CBC_SHA","TLS_ECDH_RSA_WITH_CAMELLIA_128_GCM_SHA256","TLS_ECDH_RSA_WITH_CAMELLIA_128_CBC_SHA256","TLS_ECDH_ECDSA_WITH_CAMELLIA_128_GCM_SHA256","TLS_ECDH_ECDSA_WITH_CAMELLIA_128_CBC_SHA256","TLS_RSA_WITH_3DES_EDE_CBC_SHA","TLS_ECDH_RSA_WITH_3DES_EDE_CBC_SHA","TLS_ECDH_ECDSA_WITH_3DES_EDE_CBC_SHA","TLS_RSA_PSK_WITH_AES_256_GCM_SHA384","TLS_RSA_PSK_WITH_AES_256_CBC_SHA384","TLS_RSA_PSK_WITH_AES_256_CBC_SHA","TLS_RSA_PSK_WITH_CAMELLIA_256_GCM_SHA384","TLS_RSA_PSK_WITH_CAMELLIA_256_CBC_SHA384","TLS_RSA_PSK_WITH_AES_128_GCM_SHA256","TLS_RSA_PSK_WITH_AES_128_CBC_SHA256","TLS_RSA_PSK_WITH_AES_128_CBC_SHA","TLS_RSA_PSK_WITH_CAMELLIA_128_GCM_SHA256","TLS_RSA_PSK_WITH_CAMELLIA_128_CBC_SHA256","TLS_RSA_PSK_WITH_3DES_EDE_CBC_SHA","TLS_PSK_WITH_AES_256_GCM_SHA384","TLS_PSK_WITH_AES_256_CCM","TLS_PSK_WITH_AES_256_CBC_SHA384","TLS_PSK_WITH_AES_256_CBC_SHA","TLS_PSK_WITH_CAMELLIA_256_GCM_SHA384","TLS_PSK_WITH_CAMELLIA_256_CBC_SHA384","TLS_PSK_WITH_AES_256_CCM_8","TLS_PSK_WITH_AES_128_GCM_SHA256","TLS_PSK_WITH_AES_128_CCM","TLS_PSK_WITH_AES_128_CBC_SHA256","TLS_PSK_WITH_AES_128_CBC_SHA","TLS_PSK_WITH_CAMELLIA_128_GCM_SHA256","TLS_PSK_WITH_CAMELLIA_128_CBC_SHA256","TLS_PSK_WITH_AES_128_CCM_8","TLS_PSK_WITH_3DES_EDE_CBC_SHA","TLS_EMPTY_RENEGOTIATION_INFO_SCSV"]
+  2017 - Evandro Copercini - Apache 2.0 License.
 */
 
-#include <Arduino.h>
 #include <WiFiClientSecure.h>
 #include <ArduinoJson.h>
 #include <ESPping.h>
-#include <WiFi.h>
 
 int dt_out = 100; //dt_out ==> delay timer out (out denoting the end of the void loop)
 int minDt = 0.5; //minDt ==> minimum timer
@@ -28,7 +25,7 @@ int globalState;
 const char* ssid = "esp8266";
 const char* password = "forTheLoveOfEmbededSystem";
 
-const int port = 443;
+const int serverPort = 443;
 const char*  server = "https://industrialiot.onrender.com";  // Server URL
 
 // Ping google.com to know if connected wifi has access to internet
@@ -91,58 +88,72 @@ void hardChanges(){
 // Function to send hardware changes to server
 
 void syncHardChanges(){
-  Serial.println ("jsdkanjksdf");
-  DynamicJsonDocument doc(200);
-  doc["state"] = localMotorState;
-  doc["pin"] = 5;
 
-  String jsonString;
-  serializeJson(doc, jsonString);
-  client.setCACert(test_root_ca);
-  if (client.connect(server, port)){
-    Serial.println ("asdfghjkl;");
-    client.print("POST /synchardchanges HTTP/1.1");
-    client.print("Host: industrialiot.onrender.com");
-    client.print("Content-Type: application/json");
-    client.print("Content-Length: " + String(jsonString.length()));
-    client.print("Connection: close");
-    client.print(" ");
+  if (!client.connect(server, serverPort)){
+
+    Serial.println("Could not connect to server - synchronize changes");
+
+  }
+
+  else{
+
+    DynamicJsonDocument doc(200);
+    doc["state"] = localMotorState;
+    doc["pin"] = 5;
+
+    String jsonString;
+    serializeJson(doc, jsonString);
+
+    client.print("POST /synchardchanges HTTP/1.0\r\n");
+    client.print("Host: industrialiot.onrender.com\r\n");
+    client.print("User-Agent: ESP32\r\n");
+    client.print("Content-Type: application/json\r\n");
+    client.print("Content-Length: " + String(jsonString.length()) + "\r\n");
+    client.print("Connection: close\r\n");
+    client.print("\r\n");
     client.print(jsonString);
-    
-    // client.print();
+    client.println();
 
-    // Wait for the server's response and read the response data
-    while (client.connected() && !client.available()) {
+    while (client.connected()) {
 
-      delay(100);
+      String line = client.readStringUntil('\n');
 
+      if (line == "\r") {
+
+        Serial.println("headers received");
+        break;
+
+      }
     }
+
+    // check for incoming byte from the server
+    String payload;
 
     while (client.available()) {
-      
-      String payload;
       char c = client.read();
-      // payload += c;
+      Serial.write(c);
 
-      // DynamicJsonDocument doc(500);
-      // DeserializationError error = deserializeJson(doc, payload);
-
-      // if (error) {
-
-      //   Serial.println("Deserialization failed: " + String(error.c_str()));
-      //   return;
-
-      // }
-
-      // motorState = doc["success"];
-
-      // Serial.println(motorState);
-      // Serial.println ("yyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
-      Serial.println(c);
+      payload += c;
     }
 
+    Serial.println("Received payload: " + payload);
+    // Serial.println("Received payload: " + c);
+    DynamicJsonDocument docs(200);
+    DeserializationError error = deserializeJson(docs, payload);
+
+    if (error) {
+
+      Serial.println("Deserialization failed: " + String(error.c_str()));
+      return;
+
+    }
+
+    motorState = docs["success"];
+
+    Serial.println("Received payload: " + String(motorState));
+    
     client.stop();
-    Serial.println ("byeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+  
   }
 }
 
@@ -166,26 +177,22 @@ void internetAccess() {
       ESP.restart();
     }
   }
-
 }
 
 void onlineStatus(){
 
-  if (!client.connect(server, port)){
+  if (!client.connect(server, serverPort)){
 
-    Serial.println("Connection failed!");
+    Serial.println("Could not connect to server - online status");
 
   }
 
-  else {
+  else{
 
-    Serial.println("Connected to server!");
-
-    // Make a HTTP request:
-
-    client.println("POST /espOnline HTTP/1.0");
-    client.println("Host: industrialiot.onrender.com");
-    client.println("Connection: close");
+    client.print("POST /espOnline HTTP/1.0\r\n");
+    client.print("Host: industrialiot.onrender.com\r\n");
+    client.print("User-Agent: ESP32\r\n");
+    client.print("Connection: close\r\n");
     client.println();
 
     while (client.connected()) {
@@ -196,18 +203,33 @@ void onlineStatus(){
 
         Serial.println("headers received");
         break;
-
+        
       }
+      
     }
+
+    // check for incoming byte from the server
+
+    String payload;
+
+    while (client.available()) {
+
+      char c = client.read();
+      Serial.write(c);
+
+      payload += c;
+    }
+
+    Serial.println(payload);
+
     client.stop();
   }
 }
 
-void setup() {
+void setup(){ 
 
   pinMode(motor, OUTPUT);
 
-  WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
 
   Serial.begin (115200);
@@ -225,18 +247,90 @@ void setup() {
         ESP.restart();
       }
   }
+
+  internetAccess();
   
   Serial.println("");
   Serial.println("WiFi connected");
-
-  internetAccess();
 
   client.setCACert(test_root_ca);
 
 }
 
-void loop() {
+// void setup() {
+//   Serial.println("\nStarting connection to server...");
+//   if (!client.connect(server, 443))
+//     Serial.println("Connection failed!");
+//   else {
+//     Serial.println("Connected to server!");
+//     // Make a HTTP request:
+//     // client.println("POST https://industrialiot.onrender.com/query HTTP/1.0");
+//     // client.println("Host: industrialiot.onrender.com");
+//     // client.println("Connection: close");
+//     // client.println();
+//     DynamicJsonDocument doc(200);
+//     doc["state"] = 0;
+//     doc["pin"] = 5;
 
+//     String jsonString;
+//     serializeJson(doc, jsonString);
+
+//     client.print("POST /synchardchanges HTTP/1.0\r\n");
+//     client.print("Host: industrialiot.onrender.com\r\n");
+//     client.print("User-Agent: ESP32\r\n");
+//     client.print("Content-Type: application/json\r\n");
+//     client.print("Content-Length: " + String(jsonString.length()) + "\r\n");
+//     client.print("Connection: close\r\n");
+//     client.print("\r\n");
+//     client.print(jsonString);
+//     client.println();
+
+//     // client.print("POST /synchardchanges HTTP/1.1");
+//     // client.print("Host: industrialiot.onrender.com");
+//     // client.print("User-Agent: ESP32");
+//     // client.print("Content-Type: application/json");
+//     // client.print("Content-Length: " + String(jsonString.length()));
+//     // client.print("Connection: keep-alive");
+//     // client.println();
+//     // client.print(jsonString);
+//     // client.println();
+
+//     while (client.connected()) {
+//       String line = client.readStringUntil('\n');
+//       if (line == "\r") {
+//         Serial.println("headers received");
+//         break;
+//       }
+//     }
+//     // if there are incoming bytes available
+//     // from the server, read them and print them:
+//     while (client.available()) {
+//       char c = client.read();
+//       Serial.write(c);
+
+//       payload += c;
+//     }
+
+//     Serial.println("Received payload: " + payload);
+//     // Serial.println("Received payload: " + c);
+//     DynamicJsonDocument docs(200);
+//     DeserializationError error = deserializeJson(docs, payload);
+//     if (error) {
+//       Serial.println("Deserialization failed: " + String(error.c_str()));
+//       return;
+//     }
+//     motorState = doc["success"];
+//     Serial.print("received state:");
+//     Serial.println(motorState);
+//     Serial.println("Received payload: " + String(motorState));
+    
+
+//     client.stop();
+//   }
+// }
+
+void loop() {
+  
   // Check for hardwware changes
 
   hardChanges();
@@ -245,127 +339,119 @@ void loop() {
 
   if (WiFi.status() == WL_CONNECTED){
 
-    hardChanges();
     internetAccess();
     onlineStatus();
-    syncHardChanges();
-    delay(1000);
-  
-    // String url = "http://" + String(serverID) + "/query";
-
-    // http.begin(client, url);
-    // http.addHeader("Content-Type", "application/json");
-    // int httpCode = http.POST("");
-
-  //   if (!client.connect(server, 443)){
-
-  //     Serial.println("Connection failed!");
     
-  //   }
 
-  //   else {
-    
-  //   Serial.println("Connected to server!");
-  //   // Make a HTTP request:
-  //   client.println("POST /query HTTP/1.0");
-  //   client.println("Host: industrialiot.onrender.com");
-  //   client.println("Connection: close");
-  //   client.println();
+    if (!client.connect(server, serverPort)){
 
-  //   while (client.connected()) {
-  //     String line = client.readStringUntil('\n');
-  //     if (line == "\r") {
-  //       Serial.println("headers received");
-  //       break;
-  //     }
-  //   }
-  //   // if there are incoming bytes available
-  //   // from the server, read them and print them:
-  //   while (client.available()) {
-  //     char c = client.read();
-  //     Serial.write(c);
-  //   }
+    Serial.println("Could not connect to server - query db");
 
-  //   client.stop();
-  //   }
-  //   // Retrieve Json data from server
+    }
 
-  //   if (httpCode > 0){
-  //     String payload = http.getString();
-  //     int json = payload.indexOf("{");
-  //     String jsonData = payload.substring(json);
-      
-  //     DynamicJsonDocument doc(200);
-  //     DeserializationError error = deserializeJson(doc, jsonData);
-      
-  //     if (error) {
+    else{
 
-  //       Serial.println("Deserialization failed: " + String(error.c_str()));
-        
-  //       return;
+      client.print("POST /query HTTP/1.0\r\n");
+      client.print("Host: industrialiot.onrender.com\r\n");
+      client.print("User-Agent: ESP32\r\n");
+      client.print("Connection: close\r\n");
+      client.println();
 
-  //     }
-      
-  //     motorState = doc["success"];
+      while (client.connected()) {
 
-  //     // Synchronizing realtime update with local changes
+        String line = client.readStringUntil('\n');
 
-  //     if ((motorState == 1) && (localMotorState == 3)){
+        if (line == "\r") {
 
-  //       localMotorState = 2;
+          Serial.println("headers received");
+          break;
 
-  //     }
+        }
+      }
 
-  //     if ((motorState == 0) && (localMotorState == 2)){
+      // check for incoming byte from the server
 
-  //       localMotorState = 3;
+      String payload;
 
-  //     }
+      while (client.available()) {
 
-  //     // Updating and Assigning a new value to local state other than 0 and 1 o keep track of changes
+        char c = client.read();
+        Serial.write(c);
 
-  //     if ((localMotorState == 1) || (localMotorState == 0)){
+        payload += c;
 
-  //       if (localMotorState == 1){
+      }
 
-  //         syncHardChanges();
-  //         localMotorState = 2;
+      DynamicJsonDocument docs(200);
+      DeserializationError error = deserializeJson(docs, payload);
 
-  //       }
+      if (error) {
 
-  //       else{
+        Serial.println("Deserialization failed: " + String(error.c_str()));
+        return;
 
-  //         syncHardChanges();
-  //         localMotorState = 3;
+      }
 
-  //       }
-  //     }
+      motorState = docs["success"];
 
-  //     // Giving conditions to write the esp32 pin either high or low
+      Serial.println("Received payload: " + String(motorState));
 
-  //     if ((motorState == 1) && (localMotorState == 2)){
+      // Synchronizing realtime update with local changes
 
-  //       digitalWrite(motor, HIGH);
+      if ((motorState == 1) && (localMotorState == 3)){
 
-  //     }
+        localMotorState = 2;
 
-  //     else{
+      }
 
-  //       digitalWrite(motor, LOW);
+      if ((motorState == 0) && (localMotorState == 2)){
 
-  //     }
-  //   }
+        localMotorState = 3;
 
-  //   // Printing error code if unable to get to the server
+      }
 
-  //   else{
+      // Updating and Assigning a new value to local state other than 0 and 1 o keep track of changes
 
-  //     Serial.println("Error: " + String(httpCode));
+      if ((localMotorState == 1) || (localMotorState == 0)){
 
-  //   }
+        if (localMotorState == 1){
 
-  //   http.end();
+          syncHardChanges();
+          localMotorState = 2;
 
+        }
+
+        else{
+
+          syncHardChanges();
+          localMotorState = 3;
+
+        }
+      }
+
+      // Giving conditions to write the esp32 pin either high or low
+
+      if ((motorState == 1) && (localMotorState == 2)){
+
+        digitalWrite(motor, HIGH);
+
+      }
+
+      else{
+
+        digitalWrite(motor, LOW);
+
+      }    
+    }
+
+    // Printing error code if unable to get to the server
+
+    // else{
+
+    //   Serial.println("Error: " + String(httpCode));
+
+    // }
+    client.stop();
   }
   
   // In cases where internet is disconnected
@@ -400,4 +486,5 @@ void loop() {
   }
 
   delay (dt_out);
+
 }
