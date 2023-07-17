@@ -340,7 +340,7 @@ def espOnline():
         return redirect(url_for('index'))
 
     # global espStartTime
-    espStartTime
+    # espStartTime
     print("-----------------------------from route----------------")
     
     espStartTime = time.time()
