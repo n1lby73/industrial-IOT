@@ -8,7 +8,8 @@ import time
 def confirmOnline():
     with app.app_context():
 
-        global espOnlineTimeout, espStartTime, espstate
+        # global espOnlineTimeout, espStartTime, espstate
+        espOnlineTimeout, espStartTime, espstate
 
         currentTime = time.time()
 

@@ -339,7 +339,8 @@ def espOnline():
     if request.method != 'POST':
         return redirect(url_for('index'))
 
-    global espStartTime
+    # global espStartTime
+    espStartTime
     print("-----------------------------from route----------------")
     
     espStartTime = time.time()
@@ -357,8 +358,8 @@ def handle_disconnect():
 @socketio.on('current_status')
 def websocket():
 
-    global espstate
-
+    # global espstate
+    espstate
     query = esp32.query.filter_by(esp32pin='5').first()
     state = query.switchState
 
