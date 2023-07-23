@@ -372,7 +372,7 @@ def websocket():
 def espstatus():
     with current_app.app_context():
         while True:
-            socketio.start_background_task(target=confirmOnline())
+            socketio.start_background_task(target=confirmOnline)
             time.sleep(0.1)
 
 @socketio.on('update')
