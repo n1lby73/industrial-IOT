@@ -345,11 +345,7 @@ def espOnline():
     
     espStartTime = time.time()
     print (espStartTime)
-
-    with current_app.app_context():
-        while True:
-            socketio.start_background_task(target=confirmOnline())
-            time.sleep(0.1)
+    socketio.emit('espstatus')
     return "online"
 
 @socketio.on('connect')
