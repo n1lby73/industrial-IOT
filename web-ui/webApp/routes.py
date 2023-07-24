@@ -27,7 +27,7 @@ def confirmOnline():
         # espstate
 
         # global espOnlineTimeout, espStartTime, espstate
-        global espOnlineTimeout, espStartTime
+        global espOnlineTimeout, espStartTime, espstate
 
         currentTime = time.time()
 
@@ -395,8 +395,8 @@ def handle_disconnect():
 @socketio.on('current_status')
 def websocket():
 
-    # global espstate
-    espstate
+    global espstate
+    # espstate
     query = esp32.query.filter_by(esp32pin='5').first()
     state = query.switchState
 
