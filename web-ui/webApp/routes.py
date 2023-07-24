@@ -2,10 +2,10 @@ from webApp.form import loginForm, knownUserFp, unKnownUserFp, forgetPassEmail, 
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, decode_token, jwt_manager
 from flask import render_template, url_for, request, redirect, jsonify, flash, current_app
 from flask_login import login_required, current_user, login_user, logout_user, UserMixin
-from webApp.globalVar import espOnlineTimeout, espStartTime, espstate, otpTimeout 
+from webApp.globalVar import otpTimeout 
 from werkzeug.security import generate_password_hash, check_password_hash
 from webApp import app, db, mail, login, socketio, jwt
-from webApp.function import confirmOnline, genOTP
+from webApp.function import  genOTP
 from webApp.models import users, esp32
 from werkzeug.urls import url_parse
 from flask_mail import Message
@@ -17,6 +17,42 @@ login.init_app(app)
 login.login_view = 'login'
 login.login_message = "You're not logged in"
 
+espstate = 0
+espStartTime = 0
+espOnlineTimeout = 60
+
+def confirmOnline():
+    with app.app_context():
+
+        # espstate
+
+        # global espOnlineTimeout, espStartTime, espstate
+        global espOnlineTimeout, espStartTime
+
+        currentTime = time.time()
+
+        print("----------------------from function-------------------")
+        print(espStartTime)
+        print(espOnlineTimeout)
+        print(currentTime)
+        if currentTime - espStartTime > espOnlineTimeout:
+
+            espstate = 0
+            socketio.emit('espOnlineState', {"value":0})
+            query = esp32.query.filter_by(pinName='onlineStatus').first()
+            query.switchState = str(espstate)
+            db.session.commit()
+            # print("0")
+
+        else:
+
+            print("----------------------from function-----elseee--------------")
+            espstate = 1
+            socketio.emit('espOnlineState', {"value":1})
+            query = esp32.query.filter_by(pinName='onlineStatus').first()
+            query.switchState = str(espstate)
+            db.session.commit()
+            # print("1")
 
 @login.user_loader
 def load_user(user_id):
@@ -339,7 +375,7 @@ def espOnline():
     if request.method != 'POST':
         return redirect(url_for('index'))
 
-    # global espStartTime
+    global espStartTime
     # espStartTime
     print("-----------------------------from route----------------")
     

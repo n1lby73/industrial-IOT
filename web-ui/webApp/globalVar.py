@@ -1,4 +1,4 @@
-espstate = 0
-espStartTime = 0
+espstateq = 0
+espStartTimeq = 0
 otpTimeout = 120
-espOnlineTimeout = 60
+espOnlineTimeoutq = 60
