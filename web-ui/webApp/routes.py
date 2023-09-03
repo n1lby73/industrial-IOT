@@ -21,34 +21,34 @@ espstate = 0
 espStartTime = 0
 espOnlineTimeout = 60
 
-def confirmOnline():
-    with app.app_context():
+# def confirmOnline():
+#     with app.app_context():
 
-        # espstate
+#         # espstate
 
-        # global espOnlineTimeout, espStartTime, espstate
-        global espOnlineTimeout, espStartTime, espstate
+#         # global espOnlineTimeout, espStartTime, espstate
+#         global espOnlineTimeout, espStartTime, espstate
 
-        currentTime = time.time()
+#         currentTime = time.time()
 
-        print("----------------------from function-------------------")
-        print(espStartTime)
-        print(espOnlineTimeout)
-        print(currentTime)
-        if currentTime - espStartTime > espOnlineTimeout:
+#         print("----------------------from function-------------------")
+#         print(espStartTime)
+#         print(espOnlineTimeout)
+#         print(currentTime)
+#         if currentTime - espStartTime > espOnlineTimeout:
 
-            espstate = 0
-            socketio.emit('espOnlineState', {"value":0})
-            # query = esp32.query.filter_by(pinName='onlineStatus').first()
-            # query.switchState = str(espstate)
-            # db.session.commit()
-            # print("0")
+#             espstate = 0
+#             socketio.emit('espOnlineState', {"value":0})
+#             # query = esp32.query.filter_by(pinName='onlineStatus').first()
+#             # query.switchState = str(espstate)
+#             # db.session.commit()
+#             # print("0")
 
-        else:
+#         else:
 
-            print("----------------------from function-----elseee--------------")
-            espstate = 1
-            socketio.emit('espOnlineState', {"value":1})
+#             print("----------------------from function-----elseee--------------")
+#             espstate = 1
+#             socketio.emit('espOnlineState', {"value":1})
             # query = esp32.query.filter_by(pinName='onlineStatus').first()
             # query.switchState = str(espstate)
             # db.session.commit()
@@ -406,10 +406,11 @@ def websocket():
 
 @socketio.on('espstatus')
 def espstatus():
-    with current_app.app_context():
-        while True:
-            socketio.start_background_task(target=confirmOnline)
-            time.sleep(0.1)
+    socketio.emit('espOnlineState', {"value":1})
+#     with current_app.app_context():
+#         while True:
+#             socketio.start_background_task(target=confirmOnline)
+#             time.sleep(0.1)
 
 @socketio.on('update')
 def websocket(update):
