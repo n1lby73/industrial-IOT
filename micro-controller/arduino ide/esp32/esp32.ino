@@ -188,12 +188,20 @@ void internetAccess() {
 
 void onlineStatus(){
 
-  if (client.connected()){
+  // if (client.connected()){
+
+  if (!client.connect(server, serverPort)){
+
+    Serial.println("Could not connect to server - query db");
+
+  }
+
+  else{  
 
     client.print("POST /espOnline HTTP/1.0\r\n");
     client.print("Host: industrialiot.onrender.com\r\n");
     client.print("User-Agent: ESP32\r\n");
-    client.print("Connection: close\r\n");
+    client.print("Connection: close\r\n");zzz
     client.println();
 
     while (client.connected()) {
@@ -225,14 +233,14 @@ void onlineStatus(){
 
   }
 
-  else{
+  // else{
 
-    Serial.println("Error: disconnected from server");
-    Serial.println("Reconnecting now.ONLINE STATUS.......");
-    connectServer();
-    onlineStatus();
+  //   Serial.println("Error: disconnected from server");
+  //   Serial.println("Reconnecting now.ONLINE STATUS.......");
+  //   connectServer();
+  //   onlineStatus();
 
-  }
+  // }
 }
 
 void connectServer(){
@@ -290,10 +298,13 @@ void loop() {
   if (WiFi.status() == WL_CONNECTED){
 
     internetAccess();
+    // connectServer();
+    onlineStatus();
     connectServer();
-    // onlineStatus();
 
-    if (client.connected()){
+    // if (client.connected()){
+
+      Serial.println("hereherehereherehereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
 
       hardChanges();
       
@@ -390,16 +401,16 @@ void loop() {
         digitalWrite(motor, LOW);
 
       }    
-    }
+    // }
 
-    else{
+    // else{
 
-      hardChanges();
-      Serial.println("Error: disconnected from server");
-      Serial.println("Reconnecting now... MAIN LOOP");
-      connectServer();
+    //   hardChanges();
+    //   Serial.println("Error: disconnected from server");
+    //   Serial.println("Reconnecting now... MAIN LOOP");
+    //   connectServer();
 
-    }
+    // }
 
     client.stop();
     hardChanges();
