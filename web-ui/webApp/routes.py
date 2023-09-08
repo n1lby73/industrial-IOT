@@ -17,9 +17,9 @@ login.init_app(app)
 login.login_view = 'login'
 login.login_message = "You're not logged in"
 
-espstate = 0
-espStartTime = 0
-espOnlineTimeout = 60
+# espstate = 1
+# espStartTime = 0
+# espOnlineTimeout = 60
 
 # def confirmOnline():
 #     with app.app_context():
@@ -395,13 +395,13 @@ def handle_disconnect():
 @socketio.on('current_status')
 def websocket():
 
-    global espstate
+    # global espstate
     # espstate
     query = esp32.query.filter_by(esp32pin='5').first()
     state = query.switchState
 
-    socketio.emit('message', {"success":state, "value":espstate})
-
+    socketio.emit('currentUpdate', {"success":state, "value":1})
+    print (state)
     print("A new client connected")
 
 @socketio.on('espstatus')
@@ -424,7 +424,8 @@ def websocket(update):
         query.switchState = state
         db.session.commit()
         current_status_from_db = {"success":state}
-        socketio.emit('message', current_status_from_db, json=True, broadcast=True)
+        # socketio.emit('message', current_status_from_db, json=True, broadcast=True)
+        socketio.emit('message', current_status_from_db)
 
     else:
 
@@ -433,7 +434,8 @@ def websocket(update):
         db.session.commit()
 
         current_status_from_db = {"success":state}
-        socketio.emit('message', current_status_from_db, json=True, broadcast=True)
+        # socketio.emit('message', current_status_from_db, json=True, broadcast=True)
+        socketio.emit('message', current_status_from_db)
 
 @socketio.on('role')
 def websocket():

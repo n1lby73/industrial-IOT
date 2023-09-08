@@ -12,7 +12,7 @@ var socket = io.connect();
 socket.on('connect', () => {
 
     socket.emit("current_status")
-    socket.emit("espstatus")
+    // socket.emit("espstatus")
     console.log('WebSocket connection opened');
   console.log('Successfully connected to Socket.IO server.');
 });
@@ -23,95 +23,71 @@ offlineMsg.style.display = "none";
 
 const handleButtonClick = () => {
 
-  if (onlineStatus === 1){
-
-    offlineMsg.classList.remove("online");
-
-    let data = {};
-
-    if (button.innerHTML === "ON") {
-
-      button.innerHTML = "OFF";
-
-      data = { 
-        
-        state: 1,
-        pin : 5
-
-      };
-
-      rotateImage.classList.toggle("rotate");
-      console.log("tuygjyfg kxqkJG CB UF GCJGuy g BCHJ")
-      document.title = 'Running'
-
-      socket.emit('update', data);
-
-    } 
-    
-    else {
-
-      button.innerHTML = "ON";
-      data = {
-
-        state: 0,
-        pin : 5
-        
-      };
-
-      rotateImage.classList.remove("rotate");
-      document.title = 'Halted'
-
-      socket.emit('update', data)
-
-    }
-  }
+  // offlineMsg.classList.remove("online");
+  let data = {};
   
-  else{
+  if (button.innerHTML === "Turn ON") {
 
-    offlineMsg.style.display = "inline";
-    document.title = 'Offline';
-    rotateImage.style.display = 'none';
+    button.innerHTML = "Turn OFF";
 
-    }
-};
+    data = { 
+      
+      state: 1,
+      pin : 5
+    };
 
-function handleOnLoad(value, onlineStatus){
-  if (onlineStatus === 1){
-
-    offlineMsg.classList.remove("online");
-
-    if (value === 1){
-
-      button.innerHTML = "OFF";
-      rotateImage.classList.toggle("rotate");
-      document.title = 'Running';
-
-    }
-
-    else{
-
-      button.innerHTML = "ON";
-      rotateImage.classList.remove("rotate");
-      document.title = 'Halted';
-      console.log("else");
-    }
-  }
-
-  else{
+    rotateImage.classList.toggle("rotate");
     
-    rotateImage.style.display = 'none';
-    offlineMsg.style.display = "inline";
-    document.title = 'Offline';
+    document.title = 'Running'
+    socket.emit('update', data);
+
+  } 
+  
+  else {
+
+    button.innerHTML = "Turn ON";
+
+    data = {
+      state: 0,
+      pin : 5
+      
+    };
+
+    rotateImage.classList.remove("rotate");
+    document.title = 'Halted'
+    socket.emit('update', data)
 
   }
 };
 
-socket.on('message', function(msg){
+function handleOnLoad(value){
+
+  if (value === "1"){
+
+    button.innerHTML = "Turn OFF";
+
+    document.title = 'Running';
+
+  }
+
+  else{
+
+    button.innerHTML = "Turn ON";
+    rotateImage.classList.toggle("rotate");
+    document.title = 'Halted';
+    console.log("else");
+  }
+
+};
+
+socket.on('currentUpdate', function(msg){
 
   var value = msg.success;
   onlineStatus = msg.value;
-
-  handleOnLoad(value, onlineStatus);
+  console.log("socket io message");
+  console.log(value);
+  console.log(onlineStatus);
+  handleOnLoad(value);
   
 });
 
@@ -126,22 +102,22 @@ socket.on('localUpdate', function(msg){
   console.log("syncupdate");
 });
 
-socket.on('espOnlineState', function(msg){
+// socket.on('espOnlineState', function(msg){
 
-  onlineStatus = msg.value;
+//   onlineStatus = msg.value;
 
-  if (onlineStatus === 0){
+//   if (onlineStatus === 0){
 
-    offlineMsg.style.display = "inline";
-    document.title = 'Offline';
+//     offlineMsg.style.display = "inline";
+//     document.title = 'Offline';
 
-  }
+//   }
 
-  else{
+//   else{
 
-    offlineMsg.style.display = "none";
+//     offlineMsg.style.display = "none";
     
-  }
-})
+//   }
+// })
 
 button.addEventListener('click', handleButtonClick);
