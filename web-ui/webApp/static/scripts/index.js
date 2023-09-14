@@ -72,7 +72,7 @@ function handleOnLoad(value){
 
   else{
 
-    button.innerHTML = "Turn ON";
+    button.innerHTML = "Turn ON L";
     rotateImage.classList.toggle("rotate");
     document.title = 'Halted';
     console.log("else");
