@@ -1,6 +1,7 @@
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, decode_token, jwt_manager
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import jsonify, request, render_template, session
+from jwt.exceptions import ExpiredSignatureError
 from flask_restful import Resource, reqparse
 from webApp import api, jwt, db, cache, mail
 from webApp.globalVar import otpTimeout
@@ -236,10 +237,14 @@ class verifyEmailApi(Resource):
             user = get_jwt_identity()
             email = user["email"]
         
-        except:
+        except ExpiredSignatureError:
 
             # Handle the expired token error
             return jsonify({"error": "Token has expired. Please re-authenticate."}), 401
+        
+        except:
+            
+            return jsonify({"error": "Invalid token."}), 401
 
         if not session.get(email):
 
