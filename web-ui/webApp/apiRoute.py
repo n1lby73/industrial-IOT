@@ -137,18 +137,27 @@ class loginApi(Resource):
         email = args["email"]
         password = args["password"]
 
-        user = users.query.filter_by(email=email).first()
+        try:
+
+            user = users.query.filter_by(email=email).first()
+            
+            if not user or not check_password_hash(user.password, password):
+                return ({"msg": "incorrect credentials"})
+
+            loggedUser = {"email":email, "username":user.username, "role":user.role}
+            access_token = create_access_token(identity=loggedUser)
+
+            # cache.set(email, access_token)
+            session[email] = access_token
+
+            return jsonify(access_token=access_token)
         
-        if not user or not check_password_hash(user.password, password):
-            return ({"msg": "incorrect credentials"})
+        except Exception as e:
 
-        loggedUser = {"email":email, "username":user.username, "role":user.role}
-        access_token = create_access_token(identity=loggedUser)
+            db.session.rollback()
+            error_message = str(e) 
 
-        # cache.set(email, access_token)
-        session[email] = access_token
-
-        return jsonify(access_token=access_token)
+            return jsonify({"Error": "Could not login", "Details": str(e)}), 500 
 
 class registerApi(Resource):
 
@@ -222,9 +231,15 @@ class verifyEmailApi(Resource):
     def put(self):
 
         global genOtpStartTime
+        try:
+
+            user = get_jwt_identity()
+            email = user["email"]
         
-        user = get_jwt_identity()
-        email = user["email"]
+        except:
+
+            # Handle the expired token error
+            return jsonify({"error": "Token has expired. Please re-authenticate."}), 401
 
         if not session.get(email):
 
