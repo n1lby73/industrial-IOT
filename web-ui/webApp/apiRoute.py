@@ -193,11 +193,24 @@ class registerApi(Resource):
             return ({"Error": "Invalid email format"})
         
         new_user = users(email=email, username=username, role="user", password=generate_password_hash(password), otp=otp)
+        
+        try:
 
-        db.session.add(new_user)
-        db.session.commit()
+            db.session.add(new_user)
+            db.session.commit()
 
-        return ({"Sucess": "new user created and otp sent to mail"})
+            return ({"Sucess": "new user created and otp sent to mail"})
+        
+        except Exception as e:
+
+            db.session.rollback()
+            error_message = str(e) 
+
+            return jsonify({"Error": "Failed to create user", "Details": str(e)}), 500 
+        
+        finally:
+
+            db.session.close()
 
 class verifyEmailApi(Resource):
     @jwt_required()
