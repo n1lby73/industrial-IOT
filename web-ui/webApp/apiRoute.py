@@ -1,6 +1,6 @@
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, decode_token, jwt_manager
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask import jsonify, request, render_template
+from flask import jsonify, request, render_template, session
 from flask_restful import Resource, reqparse
 from webApp import api, jwt, db, cache, mail
 from webApp.globalVar import otpTimeout
@@ -30,7 +30,7 @@ class indexApi(Resource):
         args = self.parser.parse_args()
         status = args["pin"]
 
-        if not cache.get(email):
+        if not session.get(email):
 
             return ({"Error":"User not logged in"})
 
@@ -71,7 +71,7 @@ class updatePinApi(Resource):
         role = user["role"]
         email = user["email"]
 
-        if not cache.get(email):
+        if not session.get(email):
 
             return ({"Error":"User not logged in"})
 
@@ -145,7 +145,8 @@ class loginApi(Resource):
         loggedUser = {"email":email, "username":user.username, "role":user.role}
         access_token = create_access_token(identity=loggedUser)
 
-        cache.set(email, access_token)
+        # cache.set(email, access_token)
+        session[email] = access_token
 
         return jsonify(access_token=access_token)
 
@@ -212,7 +213,7 @@ class verifyEmailApi(Resource):
         user = get_jwt_identity()
         email = user["email"]
 
-        if not cache.get(email):
+        if not session.get(email):
 
             return ({"Error":"User not logged in"})
 
@@ -254,7 +255,7 @@ class genOtpApi(Resource):
             user = get_jwt_identity()
             email = user["email"]
 
-            if not cache.get(email):
+            if not session.get(email):
 
                 return ({"Error":"User not logged in"})
             
@@ -306,7 +307,7 @@ class resetInApi(Resource):
         user = get_jwt_identity()
         email = user["email"]
 
-        if not cache.get(email):
+        if not session.get(email):
 
             return ({"Error":"User not logged in"})
 
@@ -333,7 +334,7 @@ class resetOutApi(Resource):
         args = self.parser.parse_args()
         email = args["email"]
 
-        if cache.get(email):
+        if session.get(email):
 
             return ({"Error": "User is already logged in. Please use a different route."})
 
@@ -406,7 +407,8 @@ class logOutApi(Resource):
     @jwt_required()
     def post(self):
 
-        cache.clear()
+        # cache.clear()
+        session.clear()
 
         return ({"Msg":"Logged out successfully"})
 
@@ -428,7 +430,7 @@ class updateRoleApi(Resource):
         email = user["email"]
         role = user["role"]
 
-        if not cache.get(email):
+        if not session.get(email):
 
             return ({"Error":"User not logged in"})
         
@@ -476,7 +478,7 @@ class deleteApi(Resource):
         role = user["role"]
         email = user["email"]
 
-        if not cache.get(email):
+        if not session.get(email):
 
             return ({"Error":"User not logged in"})
         
@@ -503,7 +505,7 @@ class usersApi(Resource):
         role = user["role"]
         email = user["email"]
 
-        if not cache.get(email):
+        if not session.get(email):
 
             return ({"Error":"User not logged in"})
         
