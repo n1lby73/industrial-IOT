@@ -16,7 +16,7 @@ stato = "5" #stato == start stop
 
 genOtpStartTime = 0
 
-class indexApi(Resource):
+class pinStatusApi(Resource):
     @jwt_required()
     def __init__(self):
 
@@ -565,13 +565,13 @@ class usersApi(Resource):
 
         return jsonify(registeredUsers=serialized_users)
 
-api.add_resource(indexApi, '/api/index', '/api/index/')
 api.add_resource(loginApi, '/api/login', '/api/login/')
 api.add_resource(usersApi, '/api/users', '/api/users/')
 api.add_resource(deleteApi, '/api/delete', '/api/delete/')
 api.add_resource(logOutApi, '/api/logout', '/api/logout/')
 api.add_resource(genOtpApi, '/api/genotp', '/api/genotp/')
 api.add_resource(resetInApi, '/api/resetin', '/api/resetin/')
+api.add_resource(pinStatusApi, '/api/status', '/api/status/')
 api.add_resource(resetOutApi, '/api/resetout', '/api/resetout/')
 api.add_resource(registerApi, '/api/register', '/api/register/')
 api.add_resource(updatePinApi, '/api/updatepin', '/api/updatepin/')
