@@ -1,5 +1,6 @@
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, decode_token, jwt_manager, set_access_cookies, unset_access_cookies
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_jwt_extended.exceptions import NoAuthorizationError
 from flask import jsonify, request, render_template, session
 from jwt.exceptions import ExpiredSignatureError
 from flask_restful import Resource, reqparse
@@ -640,11 +641,9 @@ class usersApi(Resource):
 
             return jsonify(registeredUsers=serialized_users)
         
-        except Exception as e:
-
-            error_message = str(e) 
-
-            return jsonify({"Error": "Could not login", "Details": str(e)})
+        except NoAuthorizationError:
+            
+            return {"Error": "Authorization header is missing"}, 401
 
 api.add_resource(loginApi, '/api/login', '/api/login/')
 api.add_resource(usersApi, '/api/users', '/api/users/')
