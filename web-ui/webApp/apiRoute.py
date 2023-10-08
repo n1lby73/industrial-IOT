@@ -322,7 +322,77 @@ class genOtpApi(Resource):
         except:
 
             return ({"error": "login before requesting otp"})
+
+# class resetPassApi(Resource):
+#     @jwt_required(optional=True)
+#     def __init__(self):
+
+#         self.parser = reqparse.RequestParser()
+#         self.parser.add_argument("oldpass", required=True)
+#         self.parser.add_argument("newpass", required=True)
+#         self.parser.add_argument("email", required=True)
+
+#     def put(self):
+
+#         args = self.parser.parse_args()
+#         emailLoggedOut = args["email"]
+#         oldPass = args["oldpass"]
+#         newPass = args["newpass"]
         
+#         if get_jwt_identity() is None and emailLoggedOut is None:
+
+#             return {"error": "User is logged out, provide email parameter only"}, 400
+        
+#         if get_jwt_identity() is None and emailLoggedOut is not None:
+
+#             # if session.get(email):
+
+#             # return ({"Error": "User is already logged in. Please use a different route."})
+
+#             logged_user = users.query.filter_by(email=emailLoggedOut).first()
+
+#             if not logged_user:
+
+#                 return ({"Error":"Incorrect email"})
+            
+#             loggedUser = {"email":emailLoggedOut, "username":logged_user.username, "role":logged_user.role}
+#             access_token = create_access_token(identity=loggedUser, expires_delta=timedelta(seconds=300))
+
+#             logged_user.token = access_token
+
+#             db.session.commit()
+
+#             msg = Message('Api Password reset', recipients=[email])
+#             msg.html = render_template("apiResetToken.html", token=access_token, username=logged_user.username)
+
+#             try:
+
+#                 mail.send(msg)
+
+#             except:
+
+#                 return ({"Error": "Invalid email format"})
+
+#             return ({"Msg": "Token sent to email"}), 200
+        
+#         user = get_jwt_identity()
+#         email = user["email"]
+
+#         if not session.get(email):
+
+#             return ({"Error":"User not logged in"})
+
+#         logged_user = users.query.filter_by(email=email).first()
+
+#         if not check_password_hash(logged_user.password, oldPass):
+
+#             return ({"Error":"Incorrect old password, logout to reset password or try again"})
+        
+#         logged_user.password = generate_password_hash(newPass)
+#         db.session.commit()
+
+#         return ({"Msg": "Password updated successfully"})
+
 class resetInApi(Resource):
     @jwt_required()
     def __init__(self):
