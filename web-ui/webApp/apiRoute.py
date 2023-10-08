@@ -2,9 +2,9 @@ from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_requir
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended.exceptions import NoAuthorizationError
 from flask import jsonify, request, render_template, session
+from webApp import api, jwt, db, cache, mail, app
 from jwt.exceptions import ExpiredSignatureError
 from flask_restful import Resource, reqparse
-from webApp import api, jwt, db, cache, mail
 from webApp.globalVar import otpTimeout
 from webApp.models import users, esp32
 from webApp.function import genOTP
@@ -608,7 +608,7 @@ class usersApi(Resource):
     @jwt_required()
     def get(self):
         
-        try:
+        # try:
 
             user = get_jwt_identity()
             role = user["role"]
@@ -641,9 +641,13 @@ class usersApi(Resource):
 
             return jsonify(registeredUsers=serialized_users)
         
-        except NoAuthorizationError:
+        # except NoAuthorizationError:
             
-            return {"Error": "Authorization header is missing"}, 401
+        #     return {"Error": "Authorization header is missing"}, 401
+
+@app.errorhandler(NoAuthorizationError)
+def handle_no_authorization_error(e):
+    return jsonify({"Error": "Authorization header is missing"}), 401
 
 api.add_resource(loginApi, '/api/login', '/api/login/')
 api.add_resource(usersApi, '/api/users', '/api/users/')
