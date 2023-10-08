@@ -150,7 +150,7 @@ class loginApi(Resource):
 
             # cache.set(email, access_token)
             # session[email] = access_token
-            response = jsonify({"msg": "login successful"}),200
+            response = jsonify({"msg": "login successful"})
 
             set_access_cookies(response, access_token)
             
