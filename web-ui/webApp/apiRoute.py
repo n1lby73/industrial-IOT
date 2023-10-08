@@ -1,4 +1,4 @@
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, decode_token, jwt_manager
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, decode_token, jwt_manager, set_access_cookies, unset_access_cookies
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import jsonify, request, render_template, session
 from jwt.exceptions import ExpiredSignatureError
@@ -149,9 +149,12 @@ class loginApi(Resource):
             access_token = create_access_token(identity=loggedUser)
 
             # cache.set(email, access_token)
-            session[email] = access_token
+            # session[email] = access_token
+            response = jsonify({"msg": "login successful"})
 
-            return jsonify(access_token=access_token)
+            set_access_cookies(response, access_token)
+            
+            return response, 200
         
         except Exception as e:
 
