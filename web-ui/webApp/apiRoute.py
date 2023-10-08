@@ -1,9 +1,8 @@
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, decode_token, jwt_manager, set_access_cookies, unset_access_cookies
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended.exceptions import NoAuthorizationError
 from flask import jsonify, request, render_template, session
-from webApp import api, jwt, db, cache, mail, app
 from jwt.exceptions import ExpiredSignatureError
+from webApp import api, jwt, db, cache, mail
 from flask_restful import Resource, reqparse
 from webApp.globalVar import otpTimeout
 from webApp.models import users, esp32
@@ -645,12 +644,16 @@ class usersApi(Resource):
             
         #     return {"Error": "Authorization header is missing"}, 401
 
-@app.errorhandler(NoAuthorizationError)
-def handle_no_authorization_error(e):
-    if request.method == "OPTIONS":
-        return {"message": "CORS preflight request"}, 200
+# @app.errorhandler(NoAuthorizationError)
+# def handle_no_authorization_error(e):
+#     if request.method == "OPTIONS":
+#         return {"message": "CORS preflight request"}, 200
 
-    return jsonify({"Error": "Authorization header is missing"}), 401
+#     return jsonify({"Error": "Authorization header is missing"}), 401
+
+@jwt.unauthorized_loader
+def handle_unauthorized(callback):
+    return jsonify({"error": "Missing Authorization Header"}), 401
 
 api.add_resource(loginApi, '/api/login', '/api/login/')
 api.add_resource(usersApi, '/api/users', '/api/users/')
