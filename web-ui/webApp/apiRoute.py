@@ -16,6 +16,10 @@ stato = "5" #stato == start stop
 
 genOtpStartTime = 0
 
+@jwt.unauthorized_loader
+def handle_unauthorized(callback):
+    return jsonify({"error": "Missing Authorization Header"}), 401
+
 class pinStatusApi(Resource):
     @jwt_required()
     def __init__(self):
@@ -650,10 +654,6 @@ class usersApi(Resource):
 #         return {"message": "CORS preflight request"}, 200
 
 #     return jsonify({"Error": "Authorization header is missing"}), 401
-
-@jwt.unauthorized_loader
-def handle_unauthorized(callback):
-    return jsonify({"error": "Missing Authorization Header"}), 401
 
 api.add_resource(loginApi, '/api/login', '/api/login/')
 api.add_resource(usersApi, '/api/users', '/api/users/')
