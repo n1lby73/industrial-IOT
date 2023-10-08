@@ -647,6 +647,9 @@ class usersApi(Resource):
 
 @app.errorhandler(NoAuthorizationError)
 def handle_no_authorization_error(e):
+    if request.method == "OPTIONS":
+        return {"message": "CORS preflight request"}, 200
+
     return jsonify({"Error": "Authorization header is missing"}), 401
 
 api.add_resource(loginApi, '/api/login', '/api/login/')
