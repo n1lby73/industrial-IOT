@@ -607,36 +607,44 @@ class usersApi(Resource):
     @jwt_required()
     def get(self):
         
-        user = get_jwt_identity()
-        role = user["role"]
-        email = user["email"]
+        try:
 
-        if not session.get(email):
+            user = get_jwt_identity()
+            role = user["role"]
+            email = user["email"]
 
-            return ({"Error":"User not logged in"})
+            if not session.get(email):
+
+                return ({"Error":"User not logged in"})
+            
+            if role != "owner":
+
+                return ({"Error":"not authorized"})
         
-        if role != "owner":
+            regUser = users.query.with_entities(users.id, users.username, users.email, users.role).all()
 
-            return ({"Error":"not authorized"})
-    
-        regUser = users.query.with_entities(users.id, users.username, users.email, users.role).all()
+            serialized_users = []
 
-        serialized_users = []
+            for row in regUser:
 
-        for row in regUser:
+                user_dict = {
 
-            user_dict = {
+                    "id": row.id,
+                    "username": row.username,
+                    "email": row.email,
+                    "role": row.role
+                    
+                }
 
-                "id": row.id,
-                "username": row.username,
-                "email": row.email,
-                "role": row.role
-                
-            }
+                serialized_users.append(user_dict)
 
-            serialized_users.append(user_dict)
+            return jsonify(registeredUsers=serialized_users)
+        
+        except Exception as e:
 
-        return jsonify(registeredUsers=serialized_users)
+            error_message = str(e) 
+
+            return jsonify({"Error": "Could not login", "Details": str(e)})
 
 api.add_resource(loginApi, '/api/login', '/api/login/')
 api.add_resource(usersApi, '/api/users', '/api/users/')
