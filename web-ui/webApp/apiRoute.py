@@ -156,7 +156,7 @@ class loginApi(Resource):
             # session[email] = access_token
             response = jsonify({"msg": "login successful"}, {"token":access_token})
 
-            set_access_cookies(response, access_token)
+            # set_access_cookies(response, access_token)
             
             return response
         
