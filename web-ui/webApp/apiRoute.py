@@ -28,16 +28,7 @@ def my_expired_token_callback(jwt_header, jwt_payload):
 @jwt.invalid_token_loader
 def handle_invalid(error):
     return jsonify({"message": "invalid token",
-                    "error":error}), 401
-
-# @jwt.expired_refresh_token_loader
-# def handle_expired_refresh_token(jwt_header, jwt_payload):
-#     return jsonify({"message": "Expired refresh token"}), 401
-
-# @jwt.invalid_refresh_token_loader
-# def handle_invalid_refresh_token(error):
-#     return jsonify({"message": "Invalid refresh token"}), 401
-    
+                    "error":error}), 401    
 class refreshApi(Resource):
     @jwt_required(refresh=True)
     def get(self):
