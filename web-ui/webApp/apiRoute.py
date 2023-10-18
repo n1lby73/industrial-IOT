@@ -635,9 +635,9 @@ class usersApi(Resource):
             role = user["role"]
             email = user["email"]
 
-            if not session.get(email):
+            # if not session.get(email):
 
-                return ({"Error":"User not logged in"})
+            #     return ({"Error":"User not logged in"})
             
             if role != "owner":
 
