@@ -2,8 +2,8 @@ from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_requir
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import jsonify, request, render_template, session
 from datetime import datetime, timedelta, timezone
+from webApp import api, jwt, db, cache, mail, app
 from jwt.exceptions import ExpiredSignatureError
-from webApp import api, jwt, db, cache, mail
 from flask_restful import Resource, reqparse
 from webApp.globalVar import otpTimeout
 from webApp.models import users, esp32
@@ -29,19 +29,13 @@ def my_expired_token_callback(jwt_header, jwt_payload):
 def handle_invalid(error):
     return jsonify({"message": "invalid token"}), 401
 
-@app.after_request
-def refresh_expiring_jwts(response):
-    try:
-        exp_timestamp = get_jwt()["exp"]
-        now = datetime.now(timezone.utc)
-        target_timestamp = datetime.timestamp(now + timedelta(minutes=30))
-        if target_timestamp > exp_timestamp:
-            access_token = create_access_token(identity=get_jwt_identity())
-            set_access_cookies(response, access_token)
-        return response
-    except (RuntimeError, KeyError):
-        # Case where there is not a valid JWT. Just return the original response
-        return response
+@jwt.expired_refresh_token_loader
+def handle_expired_refresh_token(jwt_header, jwt_payload):
+    return jsonify({"message": "Expired refresh token"}), 401
+
+@jwt.invalid_refresh_token_loader
+def handle_invalid_refresh_token(error):
+    return jsonify({"message": "Invalid refresh token"}), 401
     
 class pinStatusApi(Resource):
     @jwt_required()
