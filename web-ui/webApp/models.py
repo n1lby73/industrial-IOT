@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
+from datetime import datetime
 from webApp import db
 
 class esp32(db.Model):
@@ -27,4 +28,14 @@ class users(UserMixin, db.Model):
     verifiedEmail = db.Column(db.String(5), nullable = True, default = "False")
     
     def __repr__(self):
-        return '<esp32 {} {}>'.format(self.email, self.password)
+        return '<users {} {}>'.format(self.email, self.password)
+
+class token(UserMixin, db.Model):
+
+    __tablename__ = 'blacklistedTokens'
+    id = db.Column(db.Integer, primary_key=True)
+    jti = db.Column(db.String(36), nullable=False, index=True)
+    creationDate = db.Column(db.DateTime, default=datetime.utcnow())
+    
+    def __repr__(self):
+        return '<token {} {}>'.format(self.jti, self.creationDate)
