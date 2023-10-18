@@ -40,12 +40,7 @@ def handle_invalid(error):
     
 class refreshApi(Resource):
     @jwt_required(refresh=True)
-    def __init__(self):
-
-        self.parser = reqparse.RequestParser()
-        self.parser.add_argument("refreshToken", required=True)
-
-    def post(self):
+    def get(self):
 
         id = get_jwt_identity()
         access_token = create_access_token(identity=id)
