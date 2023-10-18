@@ -20,6 +20,11 @@ genOtpStartTime = 0
 def handle_unauthorized(callback):
     return jsonify({"error": "Missing Authorization Header"}), 401
 
+@jwt.expired_token_loader
+def my_expired_token_callback(jwt_header, jwt_payload):
+    return jsonify(code="dave", err="I can't let you do that"), 401
+
+
 class pinStatusApi(Resource):
     @jwt_required()
     def __init__(self):
