@@ -1,4 +1,4 @@
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, decode_token, jwt_manager, set_access_cookies, unset_access_cookies, create_refresh_token
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, decode_token, jwt_manager, set_access_cookies, unset_jwt_cookies, create_refresh_token
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import jsonify, request, render_template, session
 from jwt.exceptions import ExpiredSignatureError
@@ -532,10 +532,13 @@ class logOutApi(Resource):
     @jwt_required()
     def post(self):
 
+        response = jsonify({"msg": "logout successful"})
+        unset_jwt_cookies(response)
+        return response
         # cache.clear()
-        session.clear()
+        # session.clear()
 
-        return ({"Msg":"Logged out successfully"})
+        # return ({"Msg":"Logged out successfully"})
 
 class updateRoleApi(Resource):
     @jwt_required()
