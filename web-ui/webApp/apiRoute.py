@@ -70,10 +70,6 @@ class pinStatusApi(Resource):
         args = self.parser.parse_args()
         status = args["pin"]
 
-        if not session.get(email):
-
-            return ({"Error":"User not logged in"})
-
         logged_user = users.query.filter_by(email=email).first()
 
         if logged_user.verifiedEmail != "True":
@@ -110,10 +106,6 @@ class updatePinApi(Resource):
         user = get_jwt_identity()
         role = user["role"]
         email = user["email"]
-
-        if not session.get(email):
-
-            return ({"Error":"User not logged in"})
 
         logged_user = users.query.filter_by(email=email).first()
 
@@ -188,8 +180,6 @@ class loginApi(Resource):
             refresh_token = create_refresh_token(identity=loggedUser)
             access_token = create_access_token(identity=loggedUser, fresh=True, additional_claims={"refresh_jti": decode_token(refresh_token)["jti"]})
 
-            # cache.set(email, access_token)
-            # session[email] = access_token
             response = jsonify(
 
                 {
@@ -211,6 +201,10 @@ class loginApi(Resource):
             error_message = str(e) 
 
             return jsonify({"Error": "Could not login", "Details": str(e)})
+        
+        finally:
+
+            db.session.close()
 
 class registerApi(Resource):
 
@@ -298,10 +292,6 @@ class verifyEmailApi(Resource):
             
             return jsonify({"error": "Invalid token."}), 401
 
-        if not session.get(email):
-
-            return ({"Error":"User not logged in"})
-
         logged_user = users.query.filter_by(email=email).first()
 
         if logged_user.verifiedEmail == "True":
@@ -339,10 +329,6 @@ class genOtpApi(Resource):
 
             user = get_jwt_identity()
             email = user["email"]
-
-            if not session.get(email):
-
-                return ({"Error":"User not logged in"})
             
             logged_user = users.query.filter_by(email=email).first()
 
@@ -391,10 +377,6 @@ class resetInApi(Resource):
 
         user = get_jwt_identity()
         email = user["email"]
-
-        if not session.get(email):
-
-            return ({"Error":"User not logged in"})
 
         logged_user = users.query.filter_by(email=email).first()
 
@@ -537,12 +519,7 @@ class updateRoleApi(Resource):
 
         user = get_jwt_identity()
         email = user["email"]
-        role = user["role"]
-
-        if not session.get(email):
-
-            return ({"Error":"User not logged in"})
-        
+        role = user["role"]        
         
         if role != "owner":
 
@@ -586,10 +563,6 @@ class deleteApi(Resource):
         user = get_jwt_identity()
         role = user["role"]
         email = user["email"]
-
-        if not session.get(email):
-
-            return ({"Error":"User not logged in"})
         
         if role != "owner":
 
@@ -610,38 +583,33 @@ class usersApi(Resource):
     @jwt_required()
     def get(self):
         
-        # try:
 
-            user = get_jwt_identity()
-            role = user["role"]
-            email = user["email"]
-
-            # if not session.get(email):
-
-            #     return ({"Error":"User not logged in"})
+        user = get_jwt_identity()
+        role = user["role"]
+        email = user["email"]
             
-            if role != "owner":
+        if role != "owner":
 
-                return ({"Error":"not authorized"})
+            return ({"Error":"not authorized"})
         
-            regUser = users.query.with_entities(users.id, users.username, users.email, users.role).all()
+        regUser = users.query.with_entities(users.id, users.username, users.email, users.role).all()
 
-            serialized_users = []
+        serialized_users = []
 
-            for row in regUser:
+        for row in regUser:
 
-                user_dict = {
+            user_dict = {
 
-                    "id": row.id,
-                    "username": row.username,
-                    "email": row.email,
-                    "role": row.role
+                "id": row.id,
+                "username": row.username,
+                "email": row.email,
+                "role": row.role
                     
-                }
+            }
 
-                serialized_users.append(user_dict)
+            serialized_users.append(user_dict)
 
-            return jsonify(registeredUsers=serialized_users)
+        return jsonify(registeredUsers=serialized_users)
 
 api.add_resource(loginApi, '/api/login', '/api/login/')
 api.add_resource(usersApi, '/api/users', '/api/users/')
