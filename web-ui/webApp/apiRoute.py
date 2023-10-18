@@ -27,7 +27,8 @@ def my_expired_token_callback(jwt_header, jwt_payload):
 
 @jwt.invalid_token_loader
 def handle_invalid(error):
-    return jsonify({"message": "invalid token"}), 401
+    return jsonify({"message": "invalid token",
+                    "error":error}), 401
 
 # @jwt.expired_refresh_token_loader
 # def handle_expired_refresh_token(jwt_header, jwt_payload):
