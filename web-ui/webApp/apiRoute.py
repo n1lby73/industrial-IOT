@@ -24,6 +24,9 @@ def handle_unauthorized(callback):
 def my_expired_token_callback(jwt_header, jwt_payload):
     return jsonify({"message": "expired token"}), 401
 
+@jwt.invalid_token_loader
+def handle_invalid(error):
+    return jsonify({"message": "invalid token"}), 401
 
 class pinStatusApi(Resource):
     @jwt_required()
