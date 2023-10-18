@@ -186,62 +186,62 @@ void internetAccess() {
   }
 }
 
-void onlineStatus(){
+// void onlineStatus(){
 
-  // if (client.connected()){
+//   // if (client.connected()){
 
-  if (!client.connect(server, serverPort)){
+//   if (!client.connect(server, serverPort)){
 
-    Serial.println("Could not connect to server - query db");
+//     Serial.println("Could not connect to server - query db");
 
-  }
+//   }
 
-  else{  
+//   else{  
 
-    client.print("POST /espOnline HTTP/1.0\r\n");
-    client.print("Host: industrialiot.onrender.com\r\n");
-    client.print("User-Agent: ESP32\r\n");
-    client.print("Connection: close\r\n");zzz
-    client.println();
+//     client.print("POST /espOnline HTTP/1.0\r\n");
+//     client.print("Host: industrialiot.onrender.com\r\n");
+//     client.print("User-Agent: ESP32\r\n");
+//     client.print("Connection: close\r\n");zzz
+//     client.println();
 
-    while (client.connected()) {
+//     while (client.connected()) {
 
-      String line = client.readStringUntil('\n');
+//       String line = client.readStringUntil('\n');
 
-      if (line == "\r") {
+//       if (line == "\r") {
 
-        Serial.println("headers received");
-        break;
+//         Serial.println("headers received");
+//         break;
         
-      }
+//       }
       
-    }
+//     }
 
-    // check for incoming byte from the server
+//     // check for incoming byte from the server
 
-    String payload;
+//     String payload;
 
-    while (client.available()) {
+//     while (client.available()) {
 
-      char c = client.read();
-      Serial.write(c);
+//       char c = client.read();
+//       Serial.write(c);
 
-      payload += c;
-    }
+//       payload += c;
+//     }
 
-    Serial.println(payload);
+//     Serial.println(payload);
 
-  }
+//   }
 
-  // else{
+//   // else{
 
-  //   Serial.println("Error: disconnected from server");
-  //   Serial.println("Reconnecting now.ONLINE STATUS.......");
-  //   connectServer();
-  //   onlineStatus();
+//   //   Serial.println("Error: disconnected from server");
+//   //   Serial.println("Reconnecting now.ONLINE STATUS.......");
+//   //   connectServer();
+//   //   onlineStatus();
 
-  // }
-}
+//   // }
+// }
 
 void connectServer(){
   hardChanges();
@@ -299,7 +299,7 @@ void loop() {
 
     internetAccess();
     // connectServer();
-    onlineStatus();
+    // onlineStatus();
     connectServer();
 
     // if (client.connected()){

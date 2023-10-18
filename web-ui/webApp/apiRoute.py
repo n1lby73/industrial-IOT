@@ -29,14 +29,28 @@ def my_expired_token_callback(jwt_header, jwt_payload):
 def handle_invalid(error):
     return jsonify({"message": "invalid token"}), 401
 
-@jwt.expired_refresh_token_loader
-def handle_expired_refresh_token(jwt_header, jwt_payload):
-    return jsonify({"message": "Expired refresh token"}), 401
+# @jwt.expired_refresh_token_loader
+# def handle_expired_refresh_token(jwt_header, jwt_payload):
+#     return jsonify({"message": "Expired refresh token"}), 401
 
-@jwt.invalid_refresh_token_loader
-def handle_invalid_refresh_token(error):
-    return jsonify({"message": "Invalid refresh token"}), 401
+# @jwt.invalid_refresh_token_loader
+# def handle_invalid_refresh_token(error):
+#     return jsonify({"message": "Invalid refresh token"}), 401
     
+class refreshApi(Resource):
+    @jwt_required(refresh=True)
+    def __init__(self):
+
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument("refreshToken", required=True)
+
+    def post(self):
+
+        id = get_jwt_identity()
+        access_token = create_access_token(identity=id)
+
+        return jsonify(access_token=access_token)
+
 class pinStatusApi(Resource):
     @jwt_required()
     def __init__(self):
@@ -167,7 +181,7 @@ class loginApi(Resource):
                 return ({"msg": "incorrect credentials"})
 
             loggedUser = {"email":email, "username":user.username, "role":user.role}
-            access_token = create_access_token(identity=loggedUser)
+            access_token = create_access_token(identity=loggedUser, fresh=True)
             refresh_token = create_refresh_token(identity=loggedUser)
 
             # cache.set(email, access_token)
@@ -611,5 +625,6 @@ api.add_resource(resetOutApi, '/api/resetout', '/api/resetout/')
 api.add_resource(registerApi, '/api/register', '/api/register/')
 api.add_resource(updatePinApi, '/api/updatepin', '/api/updatepin/')
 api.add_resource(updateRoleApi, '/api/updaterole', '/api/updaterole/')
+api.add_resource(refreshApi, '/api/refreshtoken', '/api/refreshtoken/')
 api.add_resource(verifyEmailApi, '/api/verifyemail', '/api/verifyemail/')
 api.add_resource(resetOutTokenApi, '/api/resetouttoken', '/api/resetouttoken/')
