@@ -4,9 +4,9 @@ from flask import jsonify, request, render_template, session
 from datetime import datetime, timedelta, timezone
 from webApp import api, jwt, db, cache, mail, app
 from jwt.exceptions import ExpiredSignatureError
+from webApp.models import users, esp32, token
 from flask_restful import Resource, reqparse
 from webApp.globalVar import otpTimeout
-from webApp.models import users, esp32
 from webApp.function import genOTP
 from datetime import timedelta
 from flask_mail import Message
@@ -29,12 +29,29 @@ def my_expired_token_callback(jwt_header, jwt_payload):
 def handle_invalid(error):
     return jsonify({"message": "invalid token",
                     "error":error}), 401    
+
+@jwt.token_in_blocklist_loader
+def check_if_token_revoked(jwt_header, jwt_payload):
+
+    jti = jwt_payload["jti"]
+    # token = db.session.query(token.id).filter_by(jti=jti).scalar()
+    Token = token.query.filter_by(jti=jti).first()
+
+    if Token:
+        return token is not None
+
 class refreshApi(Resource):
     @jwt_required(refresh=True)
     def get(self):
 
+        refresh_token = get_jwt()["jti"]
         id = get_jwt_identity()
-        access_token = create_access_token(identity=id)
+        # decoded_token = decode_token(refresh_token)
+        # return jsonify(decode_token)
+        # return jsonify(jti=refresh_token)
+        # jti = {"refresh_jti": refresh_token}
+        claims = {"refresh_jti":refresh_token}
+        access_token = create_access_token(identity=id, additional_claims=claims)
 
         return jsonify(access_token=access_token)
 
@@ -168,8 +185,8 @@ class loginApi(Resource):
                 return ({"msg": "incorrect credentials"})
 
             loggedUser = {"email":email, "username":user.username, "role":user.role}
-            access_token = create_access_token(identity=loggedUser, fresh=True)
             refresh_token = create_refresh_token(identity=loggedUser)
+            access_token = create_access_token(identity=loggedUser, fresh=True, additional_claims={"refresh_jti": decode_token(refresh_token)["jti"]})
 
             # cache.set(email, access_token)
             # session[email] = access_token
@@ -193,7 +210,7 @@ class loginApi(Resource):
             db.session.rollback()
             error_message = str(e) 
 
-            return jsonify({"Error": "Could not login", "Details": str(e)}), 500 
+            return jsonify({"Error": "Could not login", "Details": str(e)})
 
 class registerApi(Resource):
 
@@ -475,9 +492,34 @@ class logOutApi(Resource):
     @jwt_required()
     def post(self):
 
+        jti = get_jwt()["jti"]
+        now = datetime.now(timezone.utc)
         response = jsonify({"msg": "logout successful"})
+
         unset_jwt_cookies(response)
-        return response
+
+        db.session.add(token(jti=jti))
+
+        refresh_jti = get_jwt()["refresh_jti"]
+
+        db.session.add(token(jti=refresh_jti))
+
+        try:
+
+            db.session.commit()
+
+            return response
+        
+        except Exception as e:
+
+            db.session.rollback()
+            error_message = str(e) 
+
+            return jsonify({"Error": "logout unsuccesful", "Details": str(e)}), 500 
+        
+        finally:
+
+            db.session.close()
 
 class updateRoleApi(Resource):
     @jwt_required()
