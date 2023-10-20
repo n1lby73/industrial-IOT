@@ -114,46 +114,50 @@ class updatePinApi(Resource):
             return {"error":"email verification not completed"}
 
         if role == "user":
-            return {"error":"not authorized"}
+            return {"error":"not authorized"}, 401
         
         args = self.parser.parse_args()
         pnon = args["pin"]
         newState = args["state"]
 
-        try:
+        query = esp32.query.filter_by(pinName=pnon).first()
 
-            query = esp32.query.filter_by(pinName=pnon).first()
-
-        except AttributeError:
+        if not query:
 
             query = esp32.query.filter_by(esp32pin=pnon).first()
 
-        else:
-            return {"error":"invalid pin name or number"}
+            if not query:
+
+                return {"error":"invalid pin name or number"}, 400
         
         if newState != "1" and newState != "0":
-            return {"error":"invalid update msg"}
+            return {"error":"invalid update value"}, 400
         
-        query = esp32.query.filter_by(pinName='onlineStatus').first()
-        status = query.switchState
+        onlineState = esp32.query.filter_by(pinName='OS').first()
+        status = onlineState.switchState
 
         if status == "0":
             
             return {"Alert":"Esp is offline, can't update"}
         
+        query.switchState = newState
+
         try:
 
-            query = esp32.query.filter_by(pinName=pnon).first()
-            query.switchState = newState
             db.session.commit()
 
-        except:
+            return ({"Message": "pin updated successfully"}),200
+        
+        except Exception as e:
 
-            query = esp32.query.filter_by(esp32pin=pnon).first()
-            query.switchState = newState
-            db.session.commit()
+            db.session.rollback()
+            error_message = str(e) 
 
-        return ({"status":"success"}), 200
+            return jsonify({"Error": "Failed to update pin", "Details": str(e)}), 500 
+        
+        finally:
+
+            db.session.close()        
 
 class queryApi(Resource):
     def __init__(self):
