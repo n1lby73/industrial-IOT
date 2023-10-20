@@ -156,7 +156,6 @@ class updatePinApi(Resource):
         return ({"status":"success"}), 200
 
 class queryApi(Resource):
-    @jwt_required()
     def __init__(self):
 
         self.parser = reqparse.RequestParser()
