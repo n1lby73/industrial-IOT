@@ -155,6 +155,23 @@ class updatePinApi(Resource):
 
         return ({"status":"success"}), 200
 
+class queryApi(Resource):
+    @jwt_required()
+    def __init__(self):
+
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument("pin", required=True)
+        
+    def post(self):
+
+        args = self.parser.parse_args()
+        pin = args["pin"]
+
+        query = esp32.query.filter_by(esp32pin=pin).first()
+        state = query.switchState
+
+        return jsonify(success = state)
+
 class loginApi(Resource):
 
     def __init__(self):
@@ -611,6 +628,7 @@ class usersApi(Resource):
 
         return jsonify(registeredUsers=serialized_users)
 
+api.add_resource(queryApi, '/api/query', '/api/query/')
 api.add_resource(loginApi, '/api/login', '/api/login/')
 api.add_resource(usersApi, '/api/users', '/api/users/')
 api.add_resource(deleteApi, '/api/delete', '/api/delete/')
