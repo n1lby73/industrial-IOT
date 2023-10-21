@@ -1,8 +1,8 @@
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, decode_token, jwt_manager, set_access_cookies, unset_jwt_cookies, create_refresh_token, get_jwt
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import jsonify, request, render_template, session
+from webApp import api, jwt, db, cache, mail, app, socketio
 from datetime import datetime, timedelta, timezone
-from webApp import api, jwt, db, cache, mail, app
 from jwt.exceptions import ExpiredSignatureError
 from webApp.models import users, esp32, token
 from flask_restful import Resource, reqparse
@@ -175,6 +175,53 @@ class queryApi(Resource):
 
         return jsonify(success = state)
 
+class synchardchangesApi(Resource):
+
+    def __init__(self):
+
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument("status", required=True)
+        self.parser.add_argument("pin", required=True)
+
+    def put(self):
+
+        args = self.parser.parse_args()
+        status = args["status"]
+        pin = args["pin"]
+
+        query = esp32.query.filter_by(esp32pin=pin).first()
+
+        if not query:
+
+            return ({"error":"invalid pin entered"}), 400
+        
+        state = query.switchState
+
+        if state != status:
+
+            query.switchState = status
+
+        try:
+
+            db.session.commit()
+
+            value = {"update":status}
+
+            socketio.emit("localUpdate", value)
+
+            return jsonify(success = status)   
+             
+        except Exception as e:
+
+            db.session.rollback()
+            error_message = str(e) 
+
+            return jsonify({"Error": "Could not synchronize changes", "Details": str(e)}), 500
+        
+        finally:
+
+            db.session.close()
+            
 class loginApi(Resource):
 
     def __init__(self):
@@ -646,3 +693,4 @@ api.add_resource(updateRoleApi, '/api/updaterole', '/api/updaterole/')
 api.add_resource(refreshApi, '/api/refreshjwt', '/api/refreshjwt/')
 api.add_resource(verifyEmailApi, '/api/verifyemail', '/api/verifyemail/')
 api.add_resource(resetOutTokenApi, '/api/resetouttoken', '/api/resetouttoken/')
+api.add_resource(synchardchangesApi, '/api/synchardchanges', '/api/synchardchanges/')
