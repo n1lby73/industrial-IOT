@@ -163,18 +163,18 @@ void hardChanges(){
 void syncHardChanges(){
 
   DynamicJsonDocument doc(200);
-  doc["state"] = localMotorState;
+  doc["status"] = localMotorState;
   doc["pin"] = 5;
 
   String jsonString;
   serializeJson(doc, jsonString);
 
-  String url = "http://" + String(serverID) + "/synchardchanges";
+  String url = "http://" + String(serverIP) + ":" + String(serverPort) + "/api/synchardchanges";
 
   http.begin(client, url);
   http.addHeader("Content-Type", "application/json");
 
-  int httpCode = http.POST(jsonString);
+  int httpCode = http.PUT(jsonString);
 
   if (httpCode > 0){
 
@@ -280,6 +280,7 @@ void loop() {
   if (WiFi.status() == WL_CONNECTED){
 
     internetAccess();
+    // syncHardChanges();
     // onlineStatus();
     
     String url = "http://" + String(serverIP) + ":" + String(serverPort) + "/api/query";
@@ -317,13 +318,13 @@ void loop() {
 
       if ((motorState == 1) && (localMotorState == 3)){
 
-        localMotorState = 2;
+        localMotorState = 2; //if the online query sends a signal of one while the local state is zero(3) change the local state to 1 
 
       }
 
       if ((motorState == 0) && (localMotorState == 2)){
 
-        localMotorState = 3;
+        localMotorState = 3; 
 
       }
 
