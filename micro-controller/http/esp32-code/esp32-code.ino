@@ -9,6 +9,9 @@ int wifiDt = 100;
 
 int motor  = 26;
 int motorPb = 27;
+int emergency = 22;
+int resetEmergency = 23;
+int emergency led = 14;
 int pbStateOld;
 int pbStateNew;
 int localMotorState;
@@ -155,6 +158,14 @@ void setup(){
 
 void loop() {
   
+  // when emergency is not pressed
+  // Serial.println(" ");
+  // Serial.print("emergency state is: ");
+  // Serial.println(digitalRead(emergency));
+  // Serial.println(" ");
+  // Serial.print("reset state is: ");
+  // Serial.println(digitalRead(resetEmergency));
+  // delay(1000);
   // Check for hardwware changes
 
   hardChanges();
