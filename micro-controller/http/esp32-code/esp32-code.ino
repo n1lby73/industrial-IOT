@@ -11,7 +11,7 @@ int motor  = 26;
 int motorPb = 27;
 int emergency = 22;
 int resetEmergency = 23;
-int emergency led = 14;
+int emergencyLed = 14;
 int pbStateOld;
 int pbStateNew;
 int localMotorState;
