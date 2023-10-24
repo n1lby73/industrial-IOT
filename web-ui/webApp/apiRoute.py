@@ -221,7 +221,16 @@ class synchardchangesApi(Resource):
         finally:
 
             db.session.close()
-            
+
+class syncEmergencyApi(Resource):
+
+    def put(self):
+
+        value = {"update":1}
+        socketio.emit("emergency")
+
+        return ({"msg":"broadcast successful"}), 200
+        
 class loginApi(Resource):
 
     def __init__(self):
@@ -689,6 +698,7 @@ api.add_resource(pinStatusApi, '/api/status', '/api/status/')
 api.add_resource(resetOutApi, '/api/resetout', '/api/resetout/')
 api.add_resource(registerApi, '/api/register', '/api/register/')
 api.add_resource(updatePinApi, '/api/updatepin', '/api/updatepin/')
+api.add_resource(syncEmergencyApi, '/api/emergency', '/api/emergency/')
 api.add_resource(updateRoleApi, '/api/updaterole', '/api/updaterole/')
 api.add_resource(refreshApi, '/api/refreshjwt', '/api/refreshjwt/')
 api.add_resource(verifyEmailApi, '/api/verifyemail', '/api/verifyemail/')
