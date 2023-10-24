@@ -46,10 +46,6 @@ class refreshApi(Resource):
 
         refresh_token = get_jwt()["jti"]
         id = get_jwt_identity()
-        # decoded_token = decode_token(refresh_token)
-        # return jsonify(decode_token)
-        # return jsonify(jti=refresh_token)
-        # jti = {"refresh_jti": refresh_token}
         claims = {"refresh_jti":refresh_token}
         access_token = create_access_token(identity=id, additional_claims=claims)
 
