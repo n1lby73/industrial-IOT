@@ -64,7 +64,7 @@ class pinStatusApi(Resource):
         email = user["email"]
         
         args = self.parser.parse_args()
-        status = args["pin"]
+        pin = args["pin"]
 
         logged_user = users.query.filter_by(email=email).first()
 
@@ -72,14 +72,14 @@ class pinStatusApi(Resource):
 
             return {"error":"email verification not completed"}
         
-        query = esp32.query.filter_by(pinName='onlineStatus').first()
+        query = esp32.query.filter_by(pinName='OS').first()
         status = query.switchState
 
         if status == "0":
 
             return {"Alert":"Esp is offline. Current state unknown"}
 
-        if status == stato:
+        if pin == stato:
             
             query = esp32.query.filter_by(esp32pin=stato).first()
             state = query.switchState
