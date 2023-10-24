@@ -2,6 +2,7 @@
 #include <HTTPClient.h>
 #include <ESPping.h>
 #include <WiFi.h>
+#include <WiFiManager.h>
 
 int dt_out = 100; //dt_out ==> delay timer out (out denoting the end of the void loop)
 int minDt = 0.5; //minDt ==> minimum timer
@@ -18,8 +19,11 @@ int localMotorState;
 int motorState;
 int globalState;
 
-#define ssid "esp8266"
-#define password "forTheLoveOfEmbededSystem"
+// #define ssid "esp8266"
+// #define password "forTheLoveOfEmbededSystem"
+
+#define ssid ""
+#define password ""
 
 const char* serverID = "industrialiot.onrender.com";
 const char* serverIP = "192.168.0.4"; //host subject to change always untill app is hosted
@@ -129,12 +133,37 @@ void internetAccess() {
 
 void setup(){ 
 
+  Serial.begin (115200);
+
   pinMode(motor, OUTPUT);
 
   WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
 
-  Serial.begin (115200);
+  WiFiManager wm;
+
+  // wm.resetSettings();
+
+  bool res;
+
+    res = wm.autoConnect("industrial-iot","stanleyemyc29"); // password protected ap
+
+    if(!res) {
+
+        Serial.println("Failed to connect");
+
+    } 
+
+    if(res) {
+
+      //if you get here you have connected to the WiFi    
+      // Serial.println("connected...yeey :)");
+      const char* ssid = wifiManager.getSSID();
+      const char* password = wifiManager.getPW();
+
+    }
+  // WiFi.begin(ssid, password);
+  // String ssid = WiFi.SSID();
+  
   int trial = 0;
   while (WiFi.status() != WL_CONNECTED) {
 
