@@ -141,6 +141,38 @@ void syncEmergency(int emergencyValue){
 
 }
 
+void setupEmergency(){
+
+  if (digitalRead(emergencybtn) == 1) {
+
+      emergency = true;
+      localMotorState = 0;
+      digitalWrite(motor, LOW);
+      digitalWrite(emergencyLed, HIGH);
+      syncHardChanges();
+      syncEmergency(1);
+
+      while (digitalRead(resetEmergencybtn) != 1 && emergency) {
+
+        Serial.println("Waiting for emergency to be reset");
+        Serial.print("emergency state is: ");
+        Serial.println(digitalRead(emergencybtn));
+        Serial.println(" ");
+        Serial.print("reset state is: ");
+        Serial.println(digitalRead(resetEmergencybtn));
+
+      }
+
+      Serial.println(" ");
+      Serial.println("emergency mode off");
+      emergency = false;
+      syncEmergency(0);
+      digitalWrite(emergencyLed, LOW);
+
+    }
+
+}
+
 void internetAccess() {
 
   while (!Ping.ping(google, 1)) {
@@ -184,6 +216,7 @@ void setup(){
      Serial.println(".");
      trial++;
      hardChanges();
+     setupEmergency();
      Serial.println(localMotorState);
 
      if (trial == 1000){
