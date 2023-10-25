@@ -18,7 +18,7 @@ stato = "5" #stato == start stop
 genOtpStartTime = 0
 
 verifyEmailRoute = ['/api/status', '/api/status/', '/api/updatepin', '/api/updatepin/', '/api/logout', '/api/logout/']
-trackLogin = ['/api/resetout', '/api/resetout/', '/api/resetpass', '/api/resetpass/']
+trackLogin = ['/api/resetpass', '/api/resetpass/']
 
 @jwt.unauthorized_loader
 def handle_unauthorized(callback):
