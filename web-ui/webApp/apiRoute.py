@@ -523,8 +523,8 @@ class resetPasswordApi(Resource):
 
         genOtpStartTime = otpStartTime
 
-        token = str(otp)+email
-        
+        token = str(otp)+logged_user.username
+
         logged_user.token = token
 
         try:
@@ -611,17 +611,17 @@ class resetOutTokenApi(Resource):
         newPass = args["new"]
 
         # otp = token.split(token[6:])[0]
-        email = token.split(token[0:6])[1]
+        username = token.split(token[0:6])[1]
 
         global genOtpStartTime
 
-        verifyEmail = users.query.filter_by(email=email).first()
+        verifyUser = users.query.filter_by(username=username).first()
 
-        if not verifyEmail:
+        if not verifyUser:
                 
             return ({"Error":"Invalid Token"})
         
-        if verifyEmail.token != token:
+        if verifyUser.token != token:
 
             return ({"Error":"Invalid Token"})
             
@@ -629,7 +629,7 @@ class resetOutTokenApi(Resource):
 
         if (currentTime - genOtpStartTime) > otpTimeout:
 
-            verifyEmail.otp = " "
+            verifyUser.otp = " "
 
             try:
 
@@ -649,8 +649,8 @@ class resetOutTokenApi(Resource):
                 db.session.close()
                              
         
-        verifyEmail.password = generate_password_hash(newPass)
-        verifyEmail.token = " "
+        verifyUser.password = generate_password_hash(newPass)
+        verifyUser.token = " "
 
         try:
 
