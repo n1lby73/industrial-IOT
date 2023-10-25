@@ -393,20 +393,50 @@ class verifyEmailApi(Resource):
         if (currentTime - genOtpStartTime) > otpTimeout:
 
             logged_user.otp = " "
-            db.session.commit()
 
-            return ({"error": "Expired otp, request for a new one"})
+            try:
+
+                db.session.commit()
+
+                return ({"error": "Expired otp, request for a new one"})
+            
+            except Exception as e:
+
+                db.session.rollback()
+                error_message = str(e) 
+
+                return jsonify({"Error": "Failed to update db", "Details": str(e)}), 500 
+        
+            finally:
+
+                db.session.close()
+        
         
         logged_user.otp = " "
+        
         logged_user.verifiedEmail = "True"
 
-        db.session.commit()
+        try:
 
-        return ({"Success": "Email verified successfully"})
+            db.session.commit()
+
+            return ({"Success": "Email verified successfully"})
+        
+        except Exception as e:
+
+            db.session.rollback()
+            error_message = str(e) 
+
+            return jsonify({"Error": "verification unsuccessfull", "Details": str(e)}), 500 
+        
+        finally:
+
+            db.session.close()
 
 class genOtpApi(Resource):
     @jwt_required()
     def get(self):
+
         try:
             global genOtpStartTime
 
@@ -436,9 +466,21 @@ class genOtpApi(Resource):
 
             logged_user.otp = otp
 
-            db.session.commit()
+            try:
+                db.session.commit()
 
-            return ({"status": "otp sent to mail"})
+                return ({"status": "otp sent to mail"})
+            
+            except Exception as e:
+
+                db.session.rollback()
+                error_message = str(e) 
+
+                return jsonify({"Error": "could not send to mail", "Details": str(e)}), 500 
+        
+            finally:
+
+                db.session.close()
         
         except:
 
@@ -468,7 +510,21 @@ class resetInApi(Resource):
             return ({"Error":"Incorrect old password, logout to reset password or try again"})
         
         logged_user.password = generate_password_hash(newPass)
-        db.session.commit()
+
+        try:
+
+            db.session.commit()
+        
+        except Exception as e:
+
+            db.session.rollback()
+            error_message = str(e) 
+
+            return jsonify({"Error": "Failed to update password", "Details": str(e)}), 500 
+        
+        finally:
+
+            db.session.close()
 
         return ({"Msg": "Password updated successfully"})
 
@@ -549,9 +605,22 @@ class resetOutTokenApi(Resource):
         verifyEmail.password = generate_password_hash(newPass)
         verifyEmail.token = " "
 
-        db.session.commit()
+        try:
 
-        return ({"Success":"Password updated successfully"})
+            db.session.commit()
+
+            return ({"Success":"Password updated successfully"})
+        
+        except Exception as e:
+
+            db.session.rollback()
+            error_message = str(e) 
+
+            return jsonify({"Error": "Password update unsuccessfull", "Details": str(e)}), 500 
+        
+        finally:
+
+            db.session.close()
     
 class logOutApi(Resource):
     @jwt_required()
@@ -627,9 +696,22 @@ class updateRoleApi(Resource):
             return ({"Msg": "Role not updated but same"})
         
         update_user.role = newRole
-        db.session.commit()
 
-        return ({"Msg": userEmail + " role, has been updated successfully"})
+        try:
+            db.session.commit()
+
+            return ({"Msg": userEmail + " role, has been updated successfully"})
+        
+        except Exception as e:
+
+            db.session.rollback()
+            error_message = str(e) 
+
+            return jsonify({"Error": "Failed to update user", "Details": str(e)}), 500 
+        
+        finally:
+
+            db.session.close()
 
 class deleteApi(Resource):
     @jwt_required()
@@ -657,10 +739,22 @@ class deleteApi(Resource):
 
             return ({"Error": "Invalid Email"})
         
-        db.session.delete(del_user)
-        db.session.commit()
+        try:
+            db.session.delete(del_user)
+            db.session.commit()
 
-        return ({"Msg": userEmail + " has been deleted from the database"})
+            return ({"Msg": userEmail + " has been deleted from the database"})
+        
+        except Exception as e:
+
+            db.session.rollback()
+            error_message = str(e) 
+
+            return jsonify({"Error": "Failed to delete user", "Details": str(e)}), 500 
+        
+        finally:
+
+            db.session.close()
 
 class usersApi(Resource):
     @jwt_required()
