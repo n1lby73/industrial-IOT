@@ -18,7 +18,7 @@ stato = "5" #stato == start stop
 genOtpStartTime = 0
 
 verifyEmailRoute = ['/api/status', '/api/status/', '/api/updatepin', '/api/updatepin/', '/api/logout', '/api/logout/']
-trackLogin = ['/api/resetout', '/api/resetout/']
+trackLogin = ['/api/resetout', '/api/resetout/', '/api/resetpass', '/api/resetpass/']
 
 @jwt.unauthorized_loader
 def handle_unauthorized(callback):
@@ -65,9 +65,13 @@ def verifyUserLogin():
 
     if request.path in trackLogin:
 
-        if 'access_token_cookie' in request.cookies:   
+        if 'access_token_cookie' in request.cookies and request.method != "PUT":   
 
-            return ({"Error": "User is already logged in. Please use a different route."})
+            return ({"Error": "User is logged in, use 'PUT' method."})
+        
+        if 'access_token_cookie' not in request.cookies and request.method != "GET":
+
+            return ({"Error": "User is logged out, use 'GET' method."})
      
 class refreshApi(Resource):
     @jwt_required(refresh=True)
@@ -496,16 +500,154 @@ class genOtpApi(Resource):
 
             return ({"error": "login before requesting otp"}), 400
 
-class resetInApi(Resource):
-    @jwt_required()
+# class resetInApi(Resource):
+#     @jwt_required()
+#     def __init__(self):
+
+#         self.parser = reqparse.RequestParser()
+#         self.parser.add_argument("oldpass", required=True)
+#         self.parser.add_argument("newpass", required=True)
+
+#     def put(self):
+
+#         args = self.parser.parse_args()
+#         oldPass = args["oldpass"]
+#         newPass = args["newpass"]
+
+#         user = get_jwt_identity()
+#         email = user["email"]
+
+#         logged_user = users.query.filter_by(email=email).first()
+
+#         if not check_password_hash(logged_user.password, oldPass):
+
+#             return ({"Error":"Incorrect old password, logout to reset password or try again"})
+        
+#         logged_user.password = generate_password_hash(newPass)
+
+#         try:
+
+#             db.session.commit()
+        
+#         except Exception as e:
+
+#             db.session.rollback()
+#             error_message = str(e) 
+
+#             return jsonify({"Error": "Failed to update password", "Details": str(e)}), 500 
+        
+#         finally:
+
+#             db.session.close()
+
+#         return ({"Msg": "Password updated successfully"})
+
+# class resetOutApi(Resource):
+
+#     def __init__(self):
+
+#         self.parser = reqparse.RequestParser()
+#         self.parser.add_argument("email", required=True)
+
+#     def get(self):
+        
+#         args = self.parser.parse_args()
+#         email = args["email"]
+
+#         logged_user = users.query.filter_by(email=email).first()
+
+#         if not logged_user:
+
+#             return ({"Error":"Incorrect email"})
+        
+#         loggedUser = {"email":email, "username":logged_user.username, "role":logged_user.role, "verified":logged_user.verifiedEmail}
+#         access_token = create_access_token(identity=loggedUser, expires_delta=timedelta(seconds=300))
+
+#         logged_user.token = access_token
+
+#         try:
+
+#             db.session.commit()
+
+#             msg = Message('Api Password reset', recipients=[email])
+#             msg.html = render_template("apiResetToken.html", token=access_token, username=logged_user.username)
+
+#             try:
+
+#                 mail.send(msg)
+
+#             except:
+
+#                 return ({"Error": "Invalid email format"})
+
+#             return ({"Msg": "Token sent to email"})
+        
+#         except Exception as e:
+
+#             db.session.rollback()
+#             error_message = str(e) 
+
+#             return jsonify({"Error": "Failed to store token", "Details": str(e)}), 500 
+        
+#         finally:
+
+#             db.session.close()
+    
+class resetPasswordApi(Resource):
+
     def __init__(self):
-
         self.parser = reqparse.RequestParser()
-        self.parser.add_argument("oldpass", required=True)
-        self.parser.add_argument("newpass", required=True)
 
+    def get(self):
+        
+        self.parser.add_argument("email", required=True)
+        args = self.parser.parse_args()
+        email = args["email"]
+
+        logged_user = users.query.filter_by(email=email).first()
+
+        if not logged_user:
+
+            return ({"Error":"Incorrect email"})
+        
+        loggedUser = {"email":email, "username":logged_user.username, "role":logged_user.role, "verified":logged_user.verifiedEmail}
+        access_token = create_access_token(identity=loggedUser, expires_delta=timedelta(seconds=300))
+
+        logged_user.token = access_token
+
+        try:
+
+            db.session.commit()
+
+            msg = Message('Password reset', recipients=[email])
+            msg.html = render_template("apiResetToken.html", token=access_token, username=logged_user.username)
+
+            try:
+
+                mail.send(msg)
+
+            except:
+
+                return ({"Error": "Invalid email format"})
+
+            return ({"Msg": "Token sent to email"})
+        
+        except Exception as e:
+
+            db.session.rollback()
+            error_message = str(e) 
+
+            return jsonify({"Error": "Failed to store token", "Details": str(e)}), 500 
+        
+        finally:
+
+            db.session.close()
+
+    @jwt_required()
     def put(self):
 
+        self.parser.add_argument("oldpass", required=True)
+        self.parser.add_argument("newpass", required=True)
         args = self.parser.parse_args()
         oldPass = args["oldpass"]
         newPass = args["newpass"]
@@ -537,58 +679,6 @@ class resetInApi(Resource):
             db.session.close()
 
         return ({"Msg": "Password updated successfully"})
-
-class resetOutApi(Resource):
-
-    def __init__(self):
-
-        self.parser = reqparse.RequestParser()
-        self.parser.add_argument("email", required=True)
-
-    def get(self):
-        
-        args = self.parser.parse_args()
-        email = args["email"]
-
-        logged_user = users.query.filter_by(email=email).first()
-
-        if not logged_user:
-
-            return ({"Error":"Incorrect email"})
-        
-        loggedUser = {"email":email, "username":logged_user.username, "role":logged_user.role, "verified":logged_user.verifiedEmail}
-        access_token = create_access_token(identity=loggedUser, expires_delta=timedelta(seconds=300))
-
-        logged_user.token = access_token
-
-        try:
-
-            db.session.commit()
-
-            msg = Message('Api Password reset', recipients=[email])
-            msg.html = render_template("apiResetToken.html", token=access_token, username=logged_user.username)
-
-            try:
-
-                mail.send(msg)
-
-            except:
-
-                return ({"Error": "Invalid email format"})
-
-            return ({"Msg": "Token sent to email"})
-        
-        except Exception as e:
-
-            db.session.rollback()
-            error_message = str(e) 
-
-            return jsonify({"Error": "Failed to store token", "Details": str(e)}), 500 
-        
-        finally:
-
-            db.session.close()
-    
 class resetOutTokenApi(Resource):
 
     def __init__(self):
@@ -813,9 +903,9 @@ api.add_resource(usersApi, '/api/users', '/api/users/')
 api.add_resource(deleteApi, '/api/delete', '/api/delete/')
 api.add_resource(logOutApi, '/api/logout', '/api/logout/')
 api.add_resource(genOtpApi, '/api/genotp', '/api/genotp/')
-api.add_resource(resetInApi, '/api/resetin', '/api/resetin/')
+# api.add_resource(resetInApi, '/api/resetin', '/api/resetin/')
 api.add_resource(pinStatusApi, '/api/status', '/api/status/')
-api.add_resource(resetOutApi, '/api/resetout', '/api/resetout/')
+# api.add_resource(resetOutApi, '/api/resetout', '/api/resetout/')
 api.add_resource(registerApi, '/api/register', '/api/register/')
 api.add_resource(updatePinApi, '/api/updatepin', '/api/updatepin/')
 api.add_resource(syncEmergencyApi, '/api/emergency', '/api/emergency/')
@@ -824,3 +914,4 @@ api.add_resource(refreshApi, '/api/refreshjwt', '/api/refreshjwt/')
 api.add_resource(verifyEmailApi, '/api/verifyemail', '/api/verifyemail/')
 api.add_resource(resetOutTokenApi, '/api/resetouttoken', '/api/resetouttoken/')
 api.add_resource(synchardchangesApi, '/api/synchardchanges', '/api/synchardchanges/')
+api.add_resource(resetPasswordApi, '/api/resetpass', '/api/resetpass/')
