@@ -17,6 +17,8 @@ stato = "5" #stato == start stop
 
 genOtpStartTime = 0
 
+verifyEmailRoute = ['/api/status', '/api/status/', '/api/updatepin', '/api/updatepin/']
+
 @jwt.unauthorized_loader
 def handle_unauthorized(callback):
     return jsonify({"error": "Missing Authorization Header"}), 401
@@ -40,6 +42,24 @@ def check_if_token_revoked(jwt_header, jwt_payload):
     if Token:
         return token is not None
 
+@app.before_request
+def verifyEmailRequest():
+
+    if request.path in verifyEmailRoute:
+
+        identity = request.headers.get('Authorization')
+        token = identity[len("Bearer "):]
+        
+        decoded_token = decode_token(token)
+        payload = decoded_token['sub']
+
+        email = payload['email']
+        logged_user = users.query.filter_by(email=email).first()
+
+        if logged_user.verifiedEmail != "True":
+
+            return {"error":"email verification not completed"}
+        
 class refreshApi(Resource):
     @jwt_required(refresh=True)
     def get(self):
@@ -60,17 +80,17 @@ class pinStatusApi(Resource):
 
     def get(self):
 
-        user = get_jwt_identity()
-        email = user["email"]
+        # user = get_jwt_identity()
+        # email = user["email"]
 
         args = self.parser.parse_args()
         pin = args["pin"]
 
-        logged_user = users.query.filter_by(email=email).first()
+        # logged_user = users.query.filter_by(email=email).first()
 
-        if logged_user.verifiedEmail != "True":
+        # # if logged_user.verifiedEmail != "True":
 
-            return {"error":"email verification not completed"}
+        # #     return {"error":"email verification not completed"}
         
         query = esp32.query.filter_by(pinName='OS').first()
         status = query.switchState
@@ -101,13 +121,13 @@ class updatePinApi(Resource):
         
         user = get_jwt_identity()
         role = user["role"]
-        email = user["email"]
+        # email = user["email"]
 
-        logged_user = users.query.filter_by(email=email).first()
+        # logged_user = users.query.filter_by(email=email).first()
 
-        if logged_user.verifiedEmail != "True":
+        # if logged_user.verifiedEmail != "True":
 
-            return {"error":"email verification not completed"}
+        #     return {"error":"email verification not completed"}
 
         if role == "user":
             return {"error":"not authorized"}, 401
@@ -256,7 +276,7 @@ class loginApi(Resource):
             if not user or not check_password_hash(user.password, password):
                 return ({"msg": "incorrect credentials"})
 
-            loggedUser = {"email":email, "username":user.username, "role":user.role}
+            loggedUser = {"email":email, "username":user.username, "role":user.role, "verified":user.verifiedEmail}
             refresh_token = create_refresh_token(identity=loggedUser)
             access_token = create_access_token(identity=loggedUser, fresh=True, additional_claims={"refresh_jti": decode_token(refresh_token)["jti"]})
 
@@ -491,7 +511,7 @@ class resetOutApi(Resource):
 
             return ({"Error":"Incorrect email"})
         
-        loggedUser = {"email":email, "username":logged_user.username, "role":logged_user.role}
+        loggedUser = {"email":email, "username":logged_user.username, "role":logged_user.role, "verified":logged_user.verifiedEmail}
         access_token = create_access_token(identity=loggedUser, expires_delta=timedelta(seconds=120))
 
         logged_user.token = access_token
