@@ -627,7 +627,6 @@ class logOutApi(Resource):
     def post(self):
 
         jti = get_jwt()["jti"]
-        now = datetime.now(timezone.utc)
         response = jsonify({"msg": "logout successful"})
 
         unset_jwt_cookies(response)
