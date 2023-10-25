@@ -18,6 +18,7 @@ stato = "5" #stato == start stop
 genOtpStartTime = 0
 
 verifyEmailRoute = ['/api/status', '/api/status/', '/api/updatepin', '/api/updatepin/', '/api/logout', '/api/logout/']
+trackLogin = ['/api/resetout', '/api/resetout/']
 
 @jwt.unauthorized_loader
 def handle_unauthorized(callback):
@@ -59,6 +60,15 @@ def verifyEmailRequest():
 
             return {"error":"email verification not completed"}
         
+@app.before_request
+def verifyUserLogin():
+
+    if request.path in trackLogin:
+
+        if 'access_token_cookie' in request.cookies:   
+
+            return ({"Error": "User is already logged in. Please use a different route."})
+     
 class refreshApi(Resource):
     @jwt_required(refresh=True)
     def get(self):
@@ -540,10 +550,6 @@ class resetOutApi(Resource):
         args = self.parser.parse_args()
         email = args["email"]
 
-        if session.get(email):
-
-            return ({"Error": "User is already logged in. Please use a different route."})
-
         logged_user = users.query.filter_by(email=email).first()
 
         if not logged_user:
@@ -551,24 +557,37 @@ class resetOutApi(Resource):
             return ({"Error":"Incorrect email"})
         
         loggedUser = {"email":email, "username":logged_user.username, "role":logged_user.role, "verified":logged_user.verifiedEmail}
-        access_token = create_access_token(identity=loggedUser, expires_delta=timedelta(seconds=120))
+        access_token = create_access_token(identity=loggedUser, expires_delta=timedelta(seconds=300))
 
         logged_user.token = access_token
 
-        db.session.commit()
-
-        msg = Message('Api Password reset', recipients=[email])
-        msg.html = render_template("apiResetToken.html", token=access_token, username=logged_user.username)
-
         try:
 
-            mail.send(msg)
+            db.session.commit()
 
-        except:
+            msg = Message('Api Password reset', recipients=[email])
+            msg.html = render_template("apiResetToken.html", token=access_token, username=logged_user.username)
 
-            return ({"Error": "Invalid email format"})
+            try:
 
-        return ({"Msg": "Token sent to email"})
+                mail.send(msg)
+
+            except:
+
+                return ({"Error": "Invalid email format"})
+
+            return ({"Msg": "Token sent to email"})
+        
+        except Exception as e:
+
+            db.session.rollback()
+            error_message = str(e) 
+
+            return jsonify({"Error": "Failed to store token", "Details": str(e)}), 500 
+        
+        finally:
+
+            db.session.close()
     
 class resetOutTokenApi(Resource):
 
