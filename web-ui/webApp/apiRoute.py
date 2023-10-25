@@ -36,7 +36,6 @@ def handle_invalid(error):
 def check_if_token_revoked(jwt_header, jwt_payload):
 
     jti = jwt_payload["jti"]
-    # token = db.session.query(token.id).filter_by(jti=jti).scalar()
     Token = token.query.filter_by(jti=jti).first()
 
     if Token:
@@ -80,17 +79,8 @@ class pinStatusApi(Resource):
 
     def get(self):
 
-        # user = get_jwt_identity()
-        # email = user["email"]
-
         args = self.parser.parse_args()
         pin = args["pin"]
-
-        # logged_user = users.query.filter_by(email=email).first()
-
-        # # if logged_user.verifiedEmail != "True":
-
-        # #     return {"error":"email verification not completed"}
         
         query = esp32.query.filter_by(pinName='OS').first()
         status = query.switchState
@@ -121,13 +111,6 @@ class updatePinApi(Resource):
         
         user = get_jwt_identity()
         role = user["role"]
-        # email = user["email"]
-
-        # logged_user = users.query.filter_by(email=email).first()
-
-        # if logged_user.verifiedEmail != "True":
-
-        #     return {"error":"email verification not completed"}
 
         if role == "user":
             return {"error":"not authorized"}, 401
@@ -440,7 +423,7 @@ class genOtpApi(Resource):
 
             genOtpStartTime = otpStartTime
 
-            msg = Message('Api email Verification', recipients=[email])
+            msg = Message('Industrial IOT email Verification', recipients=[email])
             msg.html = render_template("emailVerification.html", otp=otp)
             
             try:
