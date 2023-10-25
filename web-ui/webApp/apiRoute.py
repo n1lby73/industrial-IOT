@@ -62,7 +62,7 @@ class pinStatusApi(Resource):
 
         user = get_jwt_identity()
         email = user["email"]
-        
+
         args = self.parser.parse_args()
         pin = args["pin"]
 
@@ -220,10 +220,18 @@ class synchardchangesApi(Resource):
 
 class syncEmergencyApi(Resource):
 
+    def __init__(self):
+
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument("emergency", required=True)
+
     def put(self):
 
-        value = {"update":1}
-        socketio.emit("emergency")
+        args = self.parser.parse_args()
+        emergency = args["emergency"]
+
+        value = {"emergency":emergency}
+        socketio.emit("emergency", value)
 
         return ({"msg":"broadcast successful"}), 200
         

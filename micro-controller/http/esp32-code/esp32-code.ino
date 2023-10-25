@@ -104,14 +104,20 @@ void syncHardChanges(){
 
 }
 
-void syncEmergency(){
+void syncEmergency(int emergencyValue){
+
+  DynamicJsonDocument doc(200);
+  doc["emergency"] = emergencyValue;
+
+  String jsonString;
+  serializeJson(doc, jsonString);
 
   String url = "http://" + String(serverIP) + ":" + String(serverPort) + "/api/emergency";
 
   http.begin(client, url);
   http.addHeader("Content-Type", "application/json");
 
-  int httpCode = http.PUT("");
+  int httpCode = http.PUT(jsonString);
 
   if (httpCode > 0){
 
@@ -352,7 +358,7 @@ void loop() {
   digitalWrite(motor, LOW);
   digitalWrite(emergencyLed, HIGH);
   syncHardChanges();
-  syncEmergency();
+  syncEmergency(1);
   Serial.println(digitalRead(emergencybtn));
 
   while ((digitalRead(resetEmergencybtn) != 1) && (emergency)){
@@ -369,5 +375,7 @@ void loop() {
   Serial.println(" ");
   Serial.println("outside");
   emergency = false;
+  syncEmergency(0);
   digitalWrite(emergencyLed, LOW);
+
 }
