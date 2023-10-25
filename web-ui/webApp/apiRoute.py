@@ -768,7 +768,7 @@ class usersApi(Resource):
 
             return ({"Error":"not authorized"}), 401
         
-        regUser = users.query.with_entities(users.id, users.username, users.email, users.role).all()
+        regUser = users.query.with_entities(users.id, users.username, users.email, users.role, users.verifiedEmail).all()
 
         serialized_users = []
 
@@ -779,7 +779,8 @@ class usersApi(Resource):
                 "id": row.id,
                 "username": row.username,
                 "email": row.email,
-                "role": row.role
+                "role": row.role,
+                "verified Email": row.verifiedEmail
                     
             }
 
