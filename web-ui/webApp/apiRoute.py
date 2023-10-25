@@ -1,14 +1,12 @@
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, decode_token, jwt_manager, set_access_cookies, unset_jwt_cookies, create_refresh_token, get_jwt
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, decode_token, set_access_cookies, unset_jwt_cookies, create_refresh_token, get_jwt
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask import jsonify, request, render_template, session
-from webApp import api, jwt, db, cache, mail, app, socketio
-from datetime import datetime, timedelta, timezone
+from flask import jsonify, request, render_template
+from webApp import api, jwt, db, mail, app, socketio
 from jwt.exceptions import ExpiredSignatureError
 from webApp.models import users, esp32, token
 from flask_restful import Resource, reqparse
 from webApp.globalVar import otpTimeout
 from webApp.function import genOTP
-from datetime import timedelta
 from flask_mail import Message
 import time, random
 
