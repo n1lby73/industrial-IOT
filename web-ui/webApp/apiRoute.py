@@ -767,7 +767,7 @@ class usersApi(Resource):
             
         if role != "owner":
 
-            return ({"Error":"not authorized"})
+            return ({"Error":"not authorized"}), 401
         
         regUser = users.query.with_entities(users.id, users.username, users.email, users.role).all()
 
