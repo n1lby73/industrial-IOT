@@ -600,29 +600,54 @@ class resetOutTokenApi(Resource):
         self.parser.add_argument("token", required=True)
         self.parser.add_argument("new", required=True)
 
-    def put(self, token, newPass):
+    def put(self):
 
+        if 'access_token_cookie' in request.cookies:   
+
+            return ({"Error": "User is logged in"}), 401
+        
         args = self.parser.parse_args()
-        user_token = args["token"]
+        token = args["token"]
         newPass = args["new"]
 
-        try:
+        # otp = token.split(token[6:])[0]
+        email = token.split(token[0:6])[1]
 
-            decoded_token = decode_token(user_token)
+        global genOtpStartTime
 
-            payload = decoded_token['sub']
+        verifyEmail = users.query.filter_by(email=email).first()
 
-            email = payload['email']
-
-            verifyEmail = users.query.filter_by(email=email).first()
-
-            if verifyEmail.token != user_token:
+        if not verifyEmail:
                 
-                return ({"Error":"Invalid Token"})
-                             
-        except:
+            return ({"Error":"Invalid Token"})
+        
+        if verifyEmail.token != token:
 
-            return ({"Error":"Expired token"})
+            return ({"Error":"Invalid Token"})
+            
+        currentTime = time.time()
+
+        if (currentTime - genOtpStartTime) > otpTimeout:
+
+            verifyEmail.otp = " "
+
+            try:
+
+                db.session.commit()
+
+                return ({"error": "Expired token"}),400
+            
+            except Exception as e:
+
+                db.session.rollback()
+                error_message = str(e) 
+
+                return jsonify({"Error": "Failed to trash expired token", "Details": str(e)}), 500 
+        
+            finally:
+
+                db.session.close()
+                             
         
         verifyEmail.password = generate_password_hash(newPass)
         verifyEmail.token = " "
