@@ -517,17 +517,22 @@ class resetPasswordApi(Resource):
 
             return ({"Error":"Incorrect email"})
         
-        loggedUser = {"email":email, "username":logged_user.username, "role":logged_user.role, "verified":logged_user.verifiedEmail}
-        access_token = create_access_token(identity=loggedUser, expires_delta=timedelta(seconds=300))
+        global genOtpStartTime
 
-        logged_user.token = access_token
+        otp, otpStartTime = genOTP()
+
+        genOtpStartTime = otpStartTime
+
+        token = str(otp)+email
+        
+        logged_user.token = token
 
         try:
 
             db.session.commit()
 
             msg = Message('Password reset', recipients=[email])
-            msg.html = render_template("apiResetToken.html", token=access_token, username=logged_user.username)
+            msg.html = render_template("apiResetToken.html", token=token, username=logged_user.username)
 
             try:
 
