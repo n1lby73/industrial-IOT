@@ -731,7 +731,7 @@ class deleteApi(Resource):
         
         if role != "owner":
 
-            return ({"Error":"not authorized"})
+            return ({"Error":"not authorized"}), 401
         
         del_user = users.query.filter_by(email=userEmail).first()
 
