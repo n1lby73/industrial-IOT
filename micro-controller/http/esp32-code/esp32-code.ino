@@ -2,7 +2,6 @@
 #include <HTTPClient.h>
 #include <ESPping.h>
 #include <WiFi.h>
-#include <WiFiManager.h>
 
 int dt_out = 100; //dt_out ==> delay timer out (out denoting the end of the void loop)
 int minDt = 0.5; //minDt ==> minimum timer
@@ -10,8 +9,9 @@ int wifiDt = 100;
 
 int motor  = 26;
 int motorPb = 27;
-int emergency = 22;
-int resetEmergency = 23;
+bool emergency = false;
+int emergencybtn = 22;
+int resetEmergencybtn = 23;
 int emergencyLed = 14;
 int pbStateOld;
 int pbStateNew;
@@ -19,11 +19,8 @@ int localMotorState;
 int motorState;
 int globalState;
 
-// #define ssid "esp8266"
-// #define password "forTheLoveOfEmbededSystem"
-
-#define ssid ""
-#define password ""
+#define ssid "esp8266"
+#define password "forTheLoveOfEmbededSystem"
 
 const char* serverID = "industrialiot.onrender.com";
 const char* serverIP = "192.168.0.4"; //host subject to change always untill app is hosted
@@ -107,6 +104,37 @@ void syncHardChanges(){
 
 }
 
+void syncEmergency(){
+
+  String url = "http://" + String(serverIP) + ":" + String(serverPort) + "/api/emergency";
+
+  http.begin(client, url);
+  http.addHeader("Content-Type", "application/json");
+
+  int httpCode = http.PUT("");
+
+  if (httpCode > 0){
+
+    String payload = http.getString();
+
+    int json = payload.indexOf("{");
+    String jsonData = payload.substring(json);
+
+    DynamicJsonDocument doc(200);
+    DeserializationError error = deserializeJson(doc, jsonData);
+
+    if (error) {
+
+      Serial.println("Deserialization failed: " + String(error.c_str()));
+      return;
+
+    }
+  }
+
+  http.end();
+
+}
+
 void internetAccess() {
 
   while (!Ping.ping(google, 1)) {
@@ -133,37 +161,16 @@ void internetAccess() {
 
 void setup(){ 
 
-  Serial.begin (115200);
-
   pinMode(motor, OUTPUT);
+  pinMode(emergencyLed, OUTPUT);
+  pinMode(motorPb, INPUT);
+  pinMode(emergencybtn, INPUT);
+  pinMode(resetEmergencybtn, INPUT);
 
   WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
 
-  WiFiManager wm;
-
-  // wm.resetSettings();
-
-  bool res;
-
-    res = wm.autoConnect("industrial-iot","stanleyemyc29"); // password protected ap
-
-    if(!res) {
-
-        Serial.println("Failed to connect");
-
-    } 
-
-    if(res) {
-
-      //if you get here you have connected to the WiFi    
-      // Serial.println("connected...yeey :)");
-      const char* ssid = wifiManager.getSSID();
-      const char* password = wifiManager.getPW();
-
-    }
-  // WiFi.begin(ssid, password);
-  // String ssid = WiFi.SSID();
-  
+  Serial.begin (115200);
   int trial = 0;
   while (WiFi.status() != WL_CONNECTED) {
 
@@ -195,138 +202,172 @@ void loop() {
   // Serial.print("reset state is: ");
   // Serial.println(digitalRead(resetEmergency));
   // delay(1000);
-  // Check for hardwware changes
 
-  hardChanges();
+  // if (digitalRead(emergency) == 1){
+  //   digitalWrite(emergencyLed, HIGH);
+  //   Serial.println(digitalRead(emergencyLed));
+  //   Serial.println("here");
+  // }
 
-  // Check if wifi is connected
+  while ((digitalRead(emergencybtn) != 1) && (!emergency)){
 
-  if (WiFi.status() == WL_CONNECTED){
-
-    internetAccess();
+    // Check for hardwware changes
     
-    String url = "http://" + String(serverIP) + ":" + String(serverPort) + "/api/query";
-    DynamicJsonDocument doc(200);
-    doc["pin"] = 5; //pin motor is connected to....meant to be 26 but server is using 5
+    hardChanges();
 
-    String jsonString;
-    serializeJson(doc, jsonString);
+    // Check if wifi is connected
 
-    http.begin(client, url);
-    http.addHeader("Content-Type", "application/json");
-    int httpCode = http.POST(jsonString);
+    if (WiFi.status() == WL_CONNECTED){
 
-    // Retrieve Json data from server
-
-    if (httpCode > 0){
-      String payload = http.getString();
-      int json = payload.indexOf("{");
-      String jsonData = payload.substring(json);
+      internetAccess();
       
+      String url = "http://" + String(serverIP) + ":" + String(serverPort) + "/api/query";
       DynamicJsonDocument doc(200);
-      DeserializationError error = deserializeJson(doc, jsonData);
-      
-      if (error) {
+      doc["pin"] = 5; //pin motor is connected to....meant to be 26 but server is using 5
 
-        Serial.println("Deserialization failed: " + String(error.c_str()));
+      String jsonString;
+      serializeJson(doc, jsonString);
+
+      http.begin(client, url);
+      http.addHeader("Content-Type", "application/json");
+      int httpCode = http.POST(jsonString);
+
+      // Retrieve Json data from server
+
+      if (httpCode > 0){
+        String payload = http.getString();
+        int json = payload.indexOf("{");
+        String jsonData = payload.substring(json);
         
-        return;
+        DynamicJsonDocument doc(200);
+        DeserializationError error = deserializeJson(doc, jsonData);
+        
+        if (error) {
 
-      }
-      
-      motorState = doc["success"];
+          Serial.println("Deserialization failed: " + String(error.c_str()));
+          
+          return;
 
-      // Synchronizing realtime update with local changes
+        }
+        
+        motorState = doc["success"];
 
-      if ((motorState == 1) && (localMotorState == 3)){
+        // Synchronizing realtime update with local changes
 
-        localMotorState = 2; //if the online query sends a signal of one while the local state is zero(3) change the local state to 1 
+        if ((motorState == 1) && (localMotorState == 3)){
 
-      }
+          localMotorState = 2; //if the online query sends a signal of one while the local state is zero(3) change the local state to 1 
 
-      if ((motorState == 0) && (localMotorState == 2)){
+        }
 
-        localMotorState = 3; 
+        if ((motorState == 0) && (localMotorState == 2)){
 
-      }
+          localMotorState = 3; 
 
-      // Updating and Assigning a new value to local state other than 0 and 1 o keep track of changes
+        }
 
-      if ((localMotorState == 1) || (localMotorState == 0)){
+        // Updating and Assigning a new value to local state other than 0 and 1 o keep track of changes
 
-        if (localMotorState == 1){
+        if ((localMotorState == 1) || (localMotorState == 0)){
 
-          syncHardChanges();
-          localMotorState = 2;
+          if (localMotorState == 1){
+
+            syncHardChanges();
+            localMotorState = 2;
+
+          }
+
+          else{
+
+            syncHardChanges();
+            localMotorState = 3;
+
+          }
+        }
+
+        // Giving conditions to write the esp32 pin either high or low
+
+        if ((motorState == 1) && (localMotorState == 2)){
+
+          digitalWrite(motor, HIGH);
 
         }
 
         else{
 
-          syncHardChanges();
-          localMotorState = 3;
+          digitalWrite(motor, LOW);
 
         }
       }
 
-      // Giving conditions to write the esp32 pin either high or low
-
-      if ((motorState == 1) && (localMotorState == 2)){
-
-        digitalWrite(motor, HIGH);
-
-      }
+      // Printing error code if unable to get to the server
 
       else{
 
-        digitalWrite(motor, LOW);
+        Serial.println("Error: " + String(httpCode));
 
       }
-    }
 
-    // Printing error code if unable to get to the server
+      http.end();
+
+    }
+    
+    // In cases where internet is disconnected
 
     else{
 
-      Serial.println("Error: " + String(httpCode));
+      Serial.println("Wifi disconnected");
+      delay(wifiDt);
+      int trial = 0;
 
-    }
+      while (WiFi.status() != WL_CONNECTED) {
+        
+      delay(wifiDt);
+        Serial.println("Reconnecting to "+String(ssid)+" wifi network....");
+        WiFi.disconnect();
+        WiFi.begin(ssid, password);
+        trial++;
+        hardChanges();
 
-    http.end();
+        if (trial == 500){
+          Serial.println("resetting");                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+          ESP.restart();
+        }
 
-  }
-  
-  // In cases where internet is disconnected
-
-  else{
-
-    Serial.println("Wifi disconnected");
-    delay(wifiDt);
-    int trial = 0;
-
-    while (WiFi.status() != WL_CONNECTED) {
-      
-     delay(wifiDt);
-      Serial.println("Reconnecting to "+String(ssid)+" wifi network....");
-      WiFi.disconnect();
-      WiFi.begin(ssid, password);
-      trial++;
-      hardChanges();
-
-      if (trial == 500){
-        Serial.println("resetting");
-        ESP.restart();
       }
 
+      internetAccess();
+
+      Serial.println("Connected to "+String(ssid));
+      syncHardChanges();
+
     }
 
-    internetAccess();
-
-    Serial.println("Connected to "+String(ssid));
-    syncHardChanges();
+    delay (dt_out);
 
   }
 
-  delay (dt_out);
+  emergency = true;
+  localMotorState = 0;
+  digitalWrite(motor, LOW);
+  digitalWrite(emergencyLed, HIGH);
+  syncHardChanges();
+  syncEmergency();
+  Serial.println(digitalRead(emergencybtn));
 
+  while ((digitalRead(resetEmergencybtn) != 1) && (emergency)){
+
+    Serial.println("Waiting for emergency to be reset");
+    Serial.print("emergency state is: ");
+    Serial.println(digitalRead(emergencybtn));
+    Serial.println(" ");
+    Serial.print("reset state is: ");
+    Serial.println(digitalRead(resetEmergencybtn));
+
+  }
+
+  Serial.println(" ");
+  Serial.println("outside");
+  emergency = false;
+  digitalWrite(emergencyLed, LOW);
 }
