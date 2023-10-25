@@ -462,7 +462,7 @@ class genOtpApi(Resource):
 
             except:
 
-                return ({"Error": "Invalid email format"})
+                return ({"Error": "Invalid email format"}), 400
 
             logged_user.otp = otp
 
@@ -484,7 +484,7 @@ class genOtpApi(Resource):
         
         except:
 
-            return ({"error": "login before requesting otp"})
+            return ({"error": "login before requesting otp"}), 400
 
 class resetInApi(Resource):
     @jwt_required()
@@ -675,7 +675,7 @@ class updateRoleApi(Resource):
         
         if role != "owner":
 
-            return ({"Error":"not authorized"})
+            return ({"Error":"not authorized"}), 401
         
         update_user = users.query.filter_by(email=userEmail).first()
 
