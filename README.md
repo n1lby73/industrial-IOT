@@ -4,6 +4,8 @@ This project is an embededed system project aimed at merging electronics as a co
  
 In this project i've been able to use both my software and hardware skill to bring this project to live
 
+this project entails a user logging in to the platform in other to be able to control an electric motor connected to an esp32 micro-controller
+
 Consuming API
 
 in other to get necessary details needed to be able to work with this project api, kindly check [here](https://github.com/n1lby73/industrial-IOT/wiki)
