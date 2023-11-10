@@ -1,3 +1,5 @@
+![IOT MOTOR](https://cdn.everythingrf.com/live/Qorvo-IoT-community-erf_636630943594110802.jpg)
+
 # Industrial IOT Motor Control System
 This project implements an internet-of-things system for industrial motor control. It allows remote monitoring and control of a high voltage three-phase squirrel cage electric motor over the internet.
 
