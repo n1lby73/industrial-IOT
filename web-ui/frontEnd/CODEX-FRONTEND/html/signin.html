@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/signin.css">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <script src="../javascript/signin.js"></script>
+    <title>Login</title>
+</head>
+
+<body>
+
+    <div class="register__con">
+        <div class="login wrap">
+
+            <form id="form" name="loginForm" onsubmit="event.preventDefault(); submitForm()">
+
+                <h1 id="h1" class="h1">Login</h1>
+
+                <input placeholder="Email" id="email" name="email" type="text" autocomplete="additional-name">
+
+                <input placeholder="Password" id="password" name="password" type="password">
+
+                <input value="Login" class="btn" type="submit">
+            </form>
+            <div class="urledit">
+                <a href="./signup.html" class="navbar-item">Signup</a>
+                <a href="./forgetPassEmail.html" class="navbar-item">reset password</a>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

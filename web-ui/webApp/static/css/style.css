@@ -76,7 +76,7 @@ nav a:hover {
   .btn-container {
     flex-direction: column;
   }
-  
+
   .btnn {
     width: 100%;
     margin-top: 20px;
@@ -196,7 +196,6 @@ span:before
   }
 }
 /* 
-
 .loader {
   width: 250px;
   height: 50px;
@@ -230,7 +229,6 @@ span:before
     bottom: 0;
   }
 }
-
 @keyframes load {
   0% { left: 0; height: 30px; width: 15px }
   50% { height: 8px; width: 40px }
