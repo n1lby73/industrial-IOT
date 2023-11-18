@@ -73,7 +73,7 @@ def verifyUserLogin():
      
 class refreshApi(Resource):
     @jwt_required(refresh=True)
-    def get(self):
+    def post(self):
 
         refresh_token = get_jwt()["jti"]
         id = get_jwt_identity()
