@@ -11,9 +11,8 @@ This project implements an internet-of-things system for industrial motor contro
 ### key technologies leveraged are:
 
 - Embedded C++ programming on the ESP32 for IO control and WiFi connectivity.
-- Node.js and Express web framework for the backend APIs.
-- React and Redux on the frontend for responsive UI development.
-- Python Flask for Email verification & OTP
+- React and Bootstrap on the frontend for responsive UI development.
+- Python Flask for Email verification, OTP & backend API's.
 - Socket.IO for real-time motor data streaming.
 - JSON Web Tokens for robust user authentication.
 
