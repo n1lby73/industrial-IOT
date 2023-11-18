@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/modal.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+        integrity="sha384-4LISF5TTJX/fLmGSxO53rV4miRxdg84mZsxmO8Rx5jGtp/LbrixFETvWa5a6sESd" crossorigin="anonymous">
+     <link rel="shortcut icon" href="/web-ui/webApp/static/favicon.ico" type="image/x-icon"> 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script defer src="{{ url_for('static', filename='scripts/index.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='scripts/role.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='scripts/modal.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+
+    <title>Halted</title>
+</head>
+
+<body>
+    <!-- <div id="loading-screen" class="loading">
+             comment the tag below 
+             <div class="spinner"></div> 
+            <div class="ring">Loading...</div>
+        </div> -->
+        
+        <div class="pl m-auto" id="loading-screen">
+            <div class="pl__dot"></div>
+            <div class="pl__dot"></div>
+            <div class="pl__dot"></div>
+            <div class="pl__dot"></div>
+            <div class="pl__dot"></div>
+            <div class="pl__dot"></div>
+            <div class="pl__dot"></div>
+            <div class="pl__dot"></div>
+            <div class="pl__dot"></div>
+            <div class="pl__dot"></div>
+            <div class="pl__dot"></div>
+            <div class="pl__dot"></div>
+            <div class="pl__text">Loading…</div>
+        </div>
+
+    <!-- change the class back to d-none once you've finished editing -->
+    <div id="content" class="d-none">
+        <nav class="navbar navbar-expand-lg bg-body-primary ">
+            <div class="container-fluid px-md-5 px-3">
+                <a class="navbar-brand text-secondary" href="#">Industry IOT</a>
+                <button class="navbar-toggler bg-primary bi bi-list" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon "></span>
+                </button>
+                <div class="collapse navbar-collapse flex-grow-0" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 ">
+                        <li class="nav-item">
+                            <a class="nav-link active text-white-50" id="users" href="#">Users</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white-50" href="#" id="logout">Logout</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <button class="btn btn-dark dropdown-toggle text-white-50" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                Settings
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-md-end dropdown-menu-dark ">
+                                <li><a class="dropdown-item" href="#">Action</a></li>
+                                <li><a class="dropdown-item" href="#">Another action</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                            </ul>
+                        </li>
+
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+
+        <div class="container py-4 mt-2  d-flex flex-column">
+            <label class="switch align-self-end">
+                <input type="checkbox" class="cb">
+                <div class="toggle">
+                    <div class="left">OFF</div>
+                    <div class="right" id="toggleBtn">ON</div>
+                </div>
+            </label>
+            <div class="parentDiv">
+                <div id="online">OFFLINE</div> 
+
+                <img src="/web-ui/webApp/static/images/fan.png" class="rotate img-fluid" id="rotate-image">
+            </div>
+
+
+        </div>
+    </div>
+
+    <div id="user-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Registered Users</h2>
+            <div class="search-container">
+                <i class="fa fa-search search-icon"></i>
+                <input type="text" placeholder="Search for users..." id="user-search">
+            </div>
+            <style>
+             
+            </style>
+            <table class="user-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in form %}
+                    <tr class="user-row">
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            <div class="dropdown">
+                                {{ user.role }}
+                                <!-- <span class="role-text">{{ user.role }}</span> -->
+                                <div class="dropdown-content">
+                                    {% if user.role == "admin" %}
+                                    <a href="#" class="message">Demote admin</a>
+                                    {% elif user.role == "user" %}
+                                    <a href="#" class="message">Promote admin</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+
+            <!-- <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in form %}
+                        <tr class="dropdown">
+                            <td>{{ user.id }}</td>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>
+                                {{ user.role }}
+                                <div class="dropdown-content">
+                                    {% if user.role == "admin" %}
+                                        <a href="#" class="message">Demote admin</a>
+                                    {% elif user.role == "user" %}
+                                        <a href="#" class="message">Promote admin</a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table> -->
+
+
+            <!-- <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                        </tr>
+                    </thead>
+                    <div class="dropdown">
+                    <tbody>
+                        <div class="dropdown">
+                        {% for user in form %}
+                        <tr>
+                            <td class="id">{{ user.id }}</td>
+                            <td class="username">{{ user.username }}</td>
+                            <td class="email">{{ user.email }}</td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="dropbtn">{{ user.role }}</button>
+                                    {{ user.role }}
+                                    <div class="dropdown-content">
+                                        {% if user.role == "admin" %}
+                                            <a href="#" class="message">Demote admin</a>
+                                        {% elif user.role == "user" %}
+                                            <a href="#" class="message">promote admin</a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </div>
+                    </tbody>
+                     </div>
+                </table>           -->
+        </div>
+    </div>
+
+
+    <!-- Confirmation modal -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <!-- Confirmation modal content here -->
+            <h2>Confirm action</h2>
+            <p>Do you want to continue?</p>
+            <button class="cancel-button">Cancel</button>
+            <button class="save-button">Save</button>
+        </div>
+    </div>
+
+</body>
+
+</html>
