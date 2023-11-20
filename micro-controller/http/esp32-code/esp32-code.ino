@@ -23,7 +23,7 @@ int globalState;
 #define password "forTheLoveOfEmbededSystem"
 
 const char* serverID = "industrialiot.onrender.com";
-const char* serverIP = "192.168.0.4"; //host subject to change always untill app is hosted
+const char* serverIP = "192.168.62.228"; //host subject to change always untill app is hosted
 const int serverPort = 5000;
 
 // Ping google.com to know if connected wifi has access to internet
