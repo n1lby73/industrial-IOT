@@ -89,7 +89,7 @@ class pinStatusApi(Resource):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument("pin", required=True)
 
-    def get(self):
+    def post(self):
 
         args = self.parser.parse_args()
         pin = args["pin"]
