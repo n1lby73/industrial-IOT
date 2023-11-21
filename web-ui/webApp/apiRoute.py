@@ -182,9 +182,14 @@ class queryApi(Resource):
         pin = args["pin"]
 
         query = esp32.query.filter_by(esp32pin=pin).first()
-        state = query.switchState
 
-        return jsonify(success = state)
+        if query:
+
+            state = query.switchState
+
+            return jsonify(success = state)
+        
+        return ({"error": "invalid pin"}), 404
 
 class synchardchangesApi(Resource):
 
