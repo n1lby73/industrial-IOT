@@ -68,7 +68,7 @@ void syncHardChanges(){
 
   DynamicJsonDocument doc(200);
   doc["status"] = localMotorState;
-  doc["pin"] = 5;
+  doc["pin"] = motor;
 
   String jsonString;
   serializeJson(doc, jsonString);
@@ -262,7 +262,7 @@ void loop() {
       
       String url = "http://" + String(serverIP) + ":" + String(serverPort) + "/api/query";
       DynamicJsonDocument doc(200);
-      doc["pin"] = 5; //pin motor is connected to....meant to be 26 but server is using 5
+      doc["pin"] = motor; //pin motor is connected to....meant to be 26 but server is using 5
 
       String jsonString;
       serializeJson(doc, jsonString);
