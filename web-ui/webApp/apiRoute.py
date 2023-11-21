@@ -11,7 +11,7 @@ from flask_mail import Message
 import time, random
 
 #pin variables
-stato = "5" #stato == start stop
+stato = "26" #stato == start stop
 
 genOtpStartTime = 0
 
