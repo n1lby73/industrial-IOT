@@ -574,7 +574,7 @@ class resetPasswordApi(Resource):
 
         if not check_password_hash(logged_user.password, oldPass):
 
-            return ({"Error":"Incorrect old password, logout to reset password or try again"})
+            return ({"Error":"Incorrect old password, logout to reset password or try again"}), 400
         
         logged_user.password = generate_password_hash(newPass)
 
