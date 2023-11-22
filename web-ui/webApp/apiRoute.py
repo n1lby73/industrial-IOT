@@ -149,7 +149,7 @@ class updatePinApi(Resource):
 
         if status == "0":
             
-            return {"Alert":"Esp is offline, can't update"}
+            return {"Alert":"Esp is offline, can't update"}, 503
         
         query.switchState = newState
 
