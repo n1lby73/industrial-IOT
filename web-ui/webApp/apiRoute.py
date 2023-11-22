@@ -730,19 +730,19 @@ class updateRoleApi(Resource):
 
         if not update_user:
 
-            return ({"Error": "Invalid Email"})
+            return ({"Error": "Invalid Email"}), 400
         
         if update_user.verifiedEmail != "True":
 
-            return ({"Error": "User has not verified thier email"})
+            return ({"Error": "User has not verified thier email"}), 400
         
         if newRole != "user" and newRole != "admin":
 
-            return ({"Error": "Unknown role"})
+            return ({"Error": "Unknown role"}), 400
         
         if update_user.role == newRole:
 
-            return ({"Msg": "Role not updated but same"})
+            return ({"Msg": "Role not updated but same"}), 304
         
         update_user.role = newRole
 
