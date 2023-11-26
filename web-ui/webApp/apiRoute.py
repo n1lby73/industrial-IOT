@@ -337,7 +337,7 @@ class registerApi(Resource):
 
         genOtpStartTime = otpStartTime
 
-        msg = Message('Api email Verification', recipients=[email])
+        msg = Message('Email Verification', recipients=[email])
         msg.html = render_template("emailVerification.html", otp=otp)
 
         try:
