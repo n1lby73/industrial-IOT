@@ -363,7 +363,7 @@ class registerApi(Resource):
 
                 "Success": "new user created and otp sent to mail",
                 "email": email
-                
+
             })
         
         except Exception as e:
@@ -378,37 +378,26 @@ class registerApi(Resource):
             db.session.close()
 
 class verifyEmailApi(Resource):
-    @jwt_required()
     def __init__(self):
 
         self.parser = reqparse.RequestParser()
-        self.parser.add_argument("otp", required=True)
 
-    def put(self):
+    def post(self):
+
+        self.parser.add_argument("otp", required=True)
+        self.parser.add_argument("email", required=True)
 
         global genOtpStartTime
-        try:
 
-            user = get_jwt_identity()
-            email = user["email"]
-        
-        except ExpiredSignatureError:
-
-            # Handle the expired token error
-            return jsonify({"error": "Token has expired. Please re-authenticate."}), 401
-        
-        except:
-            
-            return jsonify({"error": "Invalid token."}), 401
+        args = self.parser.parse_args()
+        user_otp = args["otp"]
+        email = args["email"]
 
         logged_user = users.query.filter_by(email=email).first()
 
         if logged_user.verifiedEmail == "True":
 
             return {"Msg":"email verification already completed"}
-
-        args = self.parser.parse_args()
-        user_otp = args["otp"]
 
         if logged_user.otp != user_otp:
 
@@ -458,7 +447,120 @@ class verifyEmailApi(Resource):
         finally:
 
             db.session.close()
+    
+    def put(self):
 
+        self.parser.add_argument("email", required=True)
+        self.parser.add_argument("newEmail", required=True)
+
+        global genOtpStartTime
+
+        args = self.parser.parse_args()
+        updatedEmail = args["newEmail"]
+        email = args["email"]
+
+        try:
+
+            logged_user = users.query.filter_by(email=email).first()
+
+            if logged_user:
+
+                otp, otpStartTime = genOTP()
+
+                genOtpStartTime = otpStartTime
+
+                msg = Message('Email Verification', recipients=[updatedEmail])
+                msg.html = render_template("emailVerification.html", otp=otp)
+
+                try:
+
+                    mail.send(msg)
+
+                except:
+
+                    return ({"Error": "Invalid email format"})
+
+                logged_user.otp = otp
+                logged_user.email = updatedEmail
+
+                try:
+
+                    db.session.commit()
+                    
+                    return ({
+
+                        "Success": "email update completed and otp sent to new email",
+                        "email": email
+
+                    })
+                
+                except Exception as e:
+
+                    db.session.rollback()
+                    error_message = str(e) 
+
+                    return jsonify({"Error": "update unsuccessfull", "Details": str(e)}), 500 
+        
+                finally:
+
+                    db.session.close()
+
+        except:
+            
+            return ({"Error":"Invalid old email"}), 400    
+
+    def get(self):
+
+        self.parser.add_argument("email", required=True)
+
+        try:
+            global genOtpStartTime
+
+            email = args["email"]
+            
+            logged_user = users.query.filter_by(email=email).first()
+
+            if logged_user.verifiedEmail == "True":
+
+                return {"Msg":"email verification already completed"}
+            
+            otp, otpStartTime = genOTP()
+
+            genOtpStartTime = otpStartTime
+
+            msg = Message('Industrial IOT email Verification', recipients=[email])
+            msg.html = render_template("emailVerification.html", otp=otp)
+            
+            try:
+
+                mail.send(msg)
+
+            except:
+
+                return ({"Error": "Invalid email format"}), 400
+
+            logged_user.otp = otp
+
+            try:
+                db.session.commit()
+
+                return ({"status": "otp sent to mail"})
+            
+            except Exception as e:
+
+                db.session.rollback()
+                error_message = str(e) 
+
+                return jsonify({"Error": "could not send to mail", "Details": str(e)}), 500 
+        
+            finally:
+
+                db.session.close()
+        
+        except:
+
+            return ({"error": "OTP generation failed"}), 500
+    
 class genOtpApi(Resource):
     @jwt_required()
     def get(self):
