@@ -30,6 +30,7 @@ CORS(app, resources={r"/api/*": {"origins": [
     'http://impedo.serveo.net',
     'https://industrialiot.onrender.com',
     'http://localhost:3000',
+    'http://localhost:5173',
     'http://serveo.net:4565'
 ]}})
 
