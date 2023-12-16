@@ -401,7 +401,7 @@ class verifyEmailApi(Resource):
 
         if logged_user.otp != user_otp:
 
-            return ({"Error": "Invalid otp entered"})
+            return ({"Error": "Invalid otp entered"}), 400
         
         currentTime = time.time()
 
@@ -413,7 +413,7 @@ class verifyEmailApi(Resource):
 
                 db.session.commit()
 
-                return ({"error": "Expired otp, request for a new one"})
+                return ({"error": "Expired otp, request for a new one"}), 400
             
             except Exception as e:
 
@@ -435,7 +435,7 @@ class verifyEmailApi(Resource):
 
             db.session.commit()
 
-            return ({"Success": "Email verified successfully"})
+            return ({"Success": "Email verified successfully"}), 200
         
         except Exception as e:
 
