@@ -359,7 +359,12 @@ class registerApi(Resource):
             db.session.add(new_user)
             db.session.commit()
 
-            return ({"Sucess": "new user created and otp sent to mail"})
+            return ({
+
+                "Success": "new user created and otp sent to mail",
+                "email": email
+                
+            })
         
         except Exception as e:
 
