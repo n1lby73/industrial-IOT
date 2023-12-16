@@ -459,55 +459,51 @@ class verifyEmailApi(Resource):
         updatedEmail = args["newEmail"]
         email = args["email"]
 
-        try:
 
-            logged_user = users.query.filter_by(email=email).first()
+        logged_user = users.query.filter_by(email=email).first()
 
-            if logged_user:
+        if logged_user:
 
-                otp, otpStartTime = genOTP()
+            otp, otpStartTime = genOTP()
 
-                genOtpStartTime = otpStartTime
+            genOtpStartTime = otpStartTime
 
-                msg = Message('Email Verification', recipients=[updatedEmail])
-                msg.html = render_template("emailVerification.html", otp=otp)
+            msg = Message('Email Verification', recipients=[updatedEmail])
+            msg.html = render_template("emailVerification.html", otp=otp)
 
-                try:
+            try:
 
-                    mail.send(msg)
+                mail.send(msg)
 
-                except:
+            except:
 
-                    return ({"Error": "Invalid email format"})
+                return ({"Error": "Invalid email format"})
 
-                logged_user.otp = otp
-                logged_user.email = updatedEmail
+            logged_user.otp = otp
+            logged_user.email = updatedEmail
 
-                try:
+            try:
 
-                    db.session.commit()
+                db.session.commit()
                     
-                    return ({
+                return ({
 
-                        "Success": "email update completed and otp sent to new email",
-                        "email": email
-
-                    })
-                
-                except Exception as e:
-
-                    db.session.rollback()
-                    error_message = str(e) 
-
-                    return jsonify({"Error": "update unsuccessfull", "Details": str(e)}), 500 
-        
-                finally:
-
-                    db.session.close()
-
-        except:
+                    "Success": "email update completed and otp sent to new email",
+                    "email": updatedEmail
+                })
             
-            return ({"Error":"Invalid old email"}), 400    
+            except Exception as e:
+
+                db.session.rollback()
+                error_message = str(e) 
+
+                return jsonify({"Error": "update unsuccessfull", "Details": str(e)}), 500 
+        
+            finally:
+
+                db.session.close()
+                    
+        return ({"Error":"Invalid old email"}), 400       
 
     def get(self):
 
