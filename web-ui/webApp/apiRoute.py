@@ -397,7 +397,7 @@ class verifyEmailApi(Resource):
 
         if logged_user.verifiedEmail == "True":
 
-            return {"Msg":"email verification already completed"}
+            return {"Msg":"email verification already completed"}, 409
 
         if logged_user.otp != user_otp:
 
@@ -461,7 +461,12 @@ class verifyEmailApi(Resource):
 
 
         logged_user = users.query.filter_by(email=email).first()
+        confirmUpdatedEmail = users.query.filter_by(email=updatedEmail).first()
 
+        if confirmUpdatedEmail:
+
+            return ({"error": "email already exist, login instead"}), 400
+        
         if logged_user:
 
             otp, otpStartTime = genOTP()
@@ -490,7 +495,7 @@ class verifyEmailApi(Resource):
 
                     "Success": "email update completed and otp sent to new email",
                     "email": updatedEmail
-                })
+                }), 200
             
             except Exception as e:
 
