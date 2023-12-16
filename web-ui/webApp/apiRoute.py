@@ -280,6 +280,10 @@ class loginApi(Resource):
             refresh_token = create_refresh_token(identity=loggedUser)
             access_token = create_access_token(identity=loggedUser, fresh=True, additional_claims={"refresh_jti": decode_token(refresh_token)["jti"]})
 
+            if user.verifiedEmail != "True":
+
+                return ({"error": "email verification not complete"}), 403
+            
             response = jsonify(
 
                 {
