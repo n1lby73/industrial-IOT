@@ -515,6 +515,7 @@ class verifyEmailApi(Resource):
 
         try:
             global genOtpStartTime
+            args = self.parser.parse_args()
 
             email = args["email"]
             
@@ -544,7 +545,7 @@ class verifyEmailApi(Resource):
             try:
                 db.session.commit()
 
-                return ({"status": "otp sent to mail"})
+                return ({"success": "otp sent to mail"})
             
             except Exception as e:
 
