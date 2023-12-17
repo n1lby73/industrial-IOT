@@ -332,10 +332,10 @@ class registerApi(Resource):
         existingMail = users.query.filter_by(email=email).first()
 
         if existingUserName:
-            return ({"Error": "Username is already taken"})
+            return ({"Error": "Username is already taken"}), 400
         
         if existingMail:
-            return ({"Error": "Email already exit"})
+            return ({"Error": "Email already exit"}), 400
 
         otp, otpStartTime = genOTP()
 
@@ -350,7 +350,7 @@ class registerApi(Resource):
 
         except:
 
-            return ({"Error": "Invalid email format"})
+            return ({"Error": "Invalid email format"}), 400
         
         new_user = users(email=email, username=username, role="user", password=generate_password_hash(password), otp=otp)
         
@@ -364,7 +364,7 @@ class registerApi(Resource):
                 "Success": "new user created and otp sent to mail",
                 "email": email
 
-            })
+            }), 200
         
         except Exception as e:
 
