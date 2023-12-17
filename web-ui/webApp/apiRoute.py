@@ -482,7 +482,7 @@ class verifyEmailApi(Resource):
 
             except:
 
-                return ({"Error": "Invalid email format"})
+                return ({"Error": "Invalid email format"}), 400
 
             logged_user.otp = otp
             logged_user.email = updatedEmail
@@ -495,6 +495,7 @@ class verifyEmailApi(Resource):
 
                     "Success": "email update completed and otp sent to new email",
                     "email": updatedEmail
+
                 }), 200
             
             except Exception as e:
@@ -546,14 +547,14 @@ class verifyEmailApi(Resource):
             try:
                 db.session.commit()
 
-                return ({"success": "otp sent to mail"})
+                return ({"success": "otp sent to mail"}), 200
             
             except Exception as e:
 
                 db.session.rollback()
                 error_message = str(e) 
 
-                return jsonify({"Error": "could not send to mail", "Details": str(e)}), 500 
+                return jsonify({"Error": "could not update db", "Details": str(e)}), 500 
         
             finally:
 
