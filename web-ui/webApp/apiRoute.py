@@ -312,7 +312,7 @@ class loginApi(Resource):
 
 class registerApi(Resource):
 
-    global genOtpStartTime
+    # global genOtpStartTime
 
     def __init__(self):
 
@@ -339,6 +339,8 @@ class registerApi(Resource):
 
         otp, otpStartTime = genOTP()
 
+        global genOtpStartTime 
+        
         genOtpStartTime = otpStartTime
 
         msg = Message('Email Verification', recipients=[email])
