@@ -518,6 +518,7 @@ class verifyEmailApi(Resource):
         self.parser.add_argument("email", required=True)
 
         try:
+            
             global genOtpStartTime
             args = self.parser.parse_args()
 
