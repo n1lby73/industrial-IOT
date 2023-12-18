@@ -340,7 +340,7 @@ class registerApi(Resource):
         otp, otpStartTime = genOTP()
 
         global genOtpStartTime 
-        
+
         genOtpStartTime = otpStartTime
 
         msg = Message('Email Verification', recipients=[email])
@@ -562,9 +562,11 @@ class verifyEmailApi(Resource):
 
                 db.session.close()
         
-        except:
+        except Exception as e:
 
-            return ({"error": "OTP generation failed"}), 500
+            error_message = str(e) 
+
+            return ({"error": "OTP generation failed", "Details": str(e)}), 500
     
 class genOtpApi(Resource):
     @jwt_required()
