@@ -31,7 +31,7 @@ CORS(app, resources={r"/api/*": {"origins": [
     'https://industrialiot.onrender.com',
     'http://localhost:3000',
     'http://localhost:5173',
-    'https://vermillion-mooncake-c13f76.netlify.app/', #dev dannydoc
+    'https://vermillion-mooncake-c13f76.netlify.app', #dev dannydoc
     'http://serveo.net:4565'
 ]}})
 
