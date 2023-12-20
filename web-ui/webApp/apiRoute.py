@@ -266,7 +266,7 @@ class loginApi(Resource):
     def post(self):
 
         args = self.parser.parse_args()
-        email = args["email"]
+        email = args["email"].lower()
         password = args["password"]
 
         try:
@@ -324,8 +324,8 @@ class registerApi(Resource):
     def post(self):
 
         args = self.parser.parse_args()
-        email = args["email"]
-        username = args["username"]
+        email = args["email"].lower()
+        username = args["username"].lower()
         password = args["password"]
 
         existingUserName = users.query.filter_by(username=username).first()
@@ -393,7 +393,7 @@ class verifyEmailApi(Resource):
 
         args = self.parser.parse_args()
         user_otp = args["otp"]
-        email = args["email"]
+        email = args["email"].lower()
 
         logged_user = users.query.filter_by(email=email).first()
 
@@ -458,8 +458,8 @@ class verifyEmailApi(Resource):
         global genOtpStartTime
 
         args = self.parser.parse_args()
-        updatedEmail = args["newEmail"]
-        email = args["email"]
+        updatedEmail = args["newEmail"].lower()
+        email = args["email"].lower()
 
 
         logged_user = users.query.filter_by(email=email).first()
@@ -522,7 +522,7 @@ class verifyEmailApi(Resource):
             global genOtpStartTime
             args = self.parser.parse_args()
 
-            email = args["email"]
+            email = args["email"].lower()
             
             logged_user = users.query.filter_by(email=email).first()
 
@@ -631,7 +631,7 @@ class resetPasswordApi(Resource):
         
         self.parser.add_argument("email", required=True)
         args = self.parser.parse_args()
-        email = args["email"]
+        email = args["email"].lower()
 
         logged_user = users.query.filter_by(email=email).first()
 
@@ -834,8 +834,8 @@ class updateRoleApi(Resource):
     def put(self):
 
         args = self.parser.parse_args()
-        userEmail = args["email"]
-        newRole = args["role"]
+        userEmail = args["email"].lower()
+        newRole = args["role"].lower()
 
         user = get_jwt_identity()
         email = user["email"]
@@ -891,7 +891,7 @@ class deleteApi(Resource):
     def delete(self):
 
         args = self.parser.parse_args()
-        userEmail = args["email"]
+        userEmail = args["email"].lower()
 
         user = get_jwt_identity()
         role = user["role"]
