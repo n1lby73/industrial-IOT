@@ -80,7 +80,7 @@ class refreshApi(Resource):
         claims = {"refresh_jti":refresh_token}
         access_token = create_access_token(identity=id, additional_claims=claims)
 
-        return jsonify(access_token=access_token)
+        return jsonify(access_token=access_token), 200
 
 class pinStatusApi(Resource):
     @jwt_required()
