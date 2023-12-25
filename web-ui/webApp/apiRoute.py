@@ -157,7 +157,7 @@ class updatePinApi(Resource):
 
             db.session.commit()
 
-            return ({"Message": "pin updated successfully"}),200
+            return ({"success": "pin updated successfully"}),200
         
         except Exception as e:
 
@@ -253,7 +253,7 @@ class syncEmergencyApi(Resource):
         value = {"emergency":emergency}
         socketio.emit("emergency", value)
 
-        return ({"msg":"broadcast successful"}), 200
+        return ({"success":"broadcast successful"}), 200
         
 class loginApi(Resource):
 
@@ -287,7 +287,7 @@ class loginApi(Resource):
             response = jsonify(
 
                 {
-                    "msg": "login successful",
+                    "success": "login successful",
                     "token":{
                         "access_token":access_token, "refresh_token":refresh_token
                     }
@@ -363,7 +363,7 @@ class registerApi(Resource):
 
             return ({
 
-                "Success": "new user created and otp sent to mail",
+                "success": "new user created and otp sent to mail",
                 "email": email
 
             }), 200
@@ -437,7 +437,7 @@ class verifyEmailApi(Resource):
 
             db.session.commit()
 
-            return ({"Success": "Email verified successfully"}), 200
+            return ({"success": "Email verified successfully"}), 200
         
         except Exception as e:
 
@@ -495,7 +495,7 @@ class verifyEmailApi(Resource):
                     
                 return ({
 
-                    "Success": "email update completed and otp sent to new email",
+                    "success": "email update completed and otp sent to new email",
                     "email": updatedEmail
 
                 }), 200
@@ -664,7 +664,7 @@ class resetPasswordApi(Resource):
 
                 return ({"Error": "Invalid email format"})
 
-            return ({"Msg": "Token sent to email"})
+            return ({"success": "Token sent to email"})
         
         except Exception as e:
 
@@ -712,7 +712,7 @@ class resetPasswordApi(Resource):
 
             db.session.close()
 
-        return ({"Msg": "Password updated successfully"})
+        return ({"success": "Password updated successfully"})
     
 class resetOutTokenApi(Resource):
 
@@ -778,7 +778,7 @@ class resetOutTokenApi(Resource):
 
             db.session.commit()
 
-            return ({"Success":"Password updated successfully"})
+            return ({"success":"Password updated successfully"})
         
         except Exception as e:
 
@@ -796,7 +796,7 @@ class logOutApi(Resource):
     def post(self):
 
         jti = get_jwt()["jti"]
-        response = jsonify({"msg": "logout successful"})
+        response = jsonify({"success": "logout successful"})
 
         unset_jwt_cookies(response)
 
@@ -868,7 +868,7 @@ class updateRoleApi(Resource):
         try:
             db.session.commit()
 
-            return ({"Msg": userEmail + " role, has been updated successfully"})
+            return ({"success": userEmail + " role, has been updated successfully"})
         
         except Exception as e:
 
@@ -915,7 +915,7 @@ class deleteApi(Resource):
             db.session.delete(del_user)
             db.session.commit()
 
-            return ({"Msg": userEmail + " has been deleted from the database"})
+            return ({"success": userEmail + " has been deleted from the database"})
         
         except Exception as e:
 
