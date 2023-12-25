@@ -399,7 +399,7 @@ class verifyEmailApi(Resource):
 
         if logged_user.verifiedEmail == "True":
 
-            return {"Msg":"email verification already completed"}, 409
+            return {"Msg":"email verification already completed"}, 400
 
         if logged_user.otp != user_otp:
 
