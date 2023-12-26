@@ -35,4 +35,4 @@ CORS(app, resources={r"/api/*": {"origins": [
     'http://serveo.net:4565'
 ]}})
 
-from webApp import routes, apiRoute
+from webApp import routes, apiRoute, socket
