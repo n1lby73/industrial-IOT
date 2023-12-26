@@ -142,6 +142,7 @@ class updatePinApi(Resource):
                 return {"error":"invalid pin name or number"}, 400
         
         if newState != "1" and newState != "0":
+
             return {"error":"invalid update value"}, 400
         
         onlineState = esp32.query.filter_by(pinName='OS').first()
@@ -149,13 +150,20 @@ class updatePinApi(Resource):
 
         if status == "0":
             
-            return {"Alert":"Esp is offline, can't update"}, 503
+            response = jsonify({"Alert":"Esp is offline. Current state unknown"})
+
+            socketio.emit("offline", response)
+
+            return response, 503
         
         query.switchState = newState
 
         try:
 
             db.session.commit()
+
+            response = jsonify({"stateUpdated": newState})
+            socketio.emit("webUpdate", response)
 
             return ({"success": "pin updated successfully"}),200
         
