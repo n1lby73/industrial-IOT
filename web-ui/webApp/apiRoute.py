@@ -150,11 +150,9 @@ class updatePinApi(Resource):
 
         if status == "0":
             
-            response = jsonify({"Alert":"Esp is offline. Current state unknown"})
+            socketio.emit("offline", {"Alert":"Esp is offline. Current state unknown"})
 
-            socketio.emit("offline", response)
-
-            return response, 503
+            return {"Alert":"Esp is offline. Current state unknown"}, 503
         
         query.switchState = newState
 
@@ -162,8 +160,7 @@ class updatePinApi(Resource):
 
             db.session.commit()
 
-            response = jsonify({"stateUpdated": newState})
-            socketio.emit("webUpdate", response)
+            socketio.emit("webUpdate", {"stateUpdated": newState})
 
             return ({"success": "pin updated successfully"}),200
         
