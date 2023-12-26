@@ -20,7 +20,7 @@ mail = Mail(app)
 jwt = JWTManager(app)
 login = LoginManager()
 migrate = Migrate(app, db)
-socketio = SocketIO(app, cors_allowed_origins=['http://127.0.0.1:5000','http://127.0.0.1:5500', '127.0.0.1:5500' 'https://impedo.serveo.net', 'wss://industrialiot.onrender.com', 'https://industrialiot.onrender.com', 'http://localhost:3000', 'localhost:3000', 'http://serveo.net:4565', 'serveo.net:4565'])
+socketio = SocketIO(app, cors_allowed_origins=['http://127.0.0.1:5000','http://127.0.0.1:5500', '127.0.0.1:5500' 'https://impedo.serveo.net', 'wss://industrialiot.onrender.com', 'https://industrialiot.onrender.com', 'http://localhost:3000', 'localhost:3000', 'http://serveo.net:4565', 'serveo.net:4565', 'https://4nscf0m4-5500.uks1.devtunnels.ms'])
 # socketio = SocketIO(app, cors_allowed_origins='*',  transports=['websocket', 'xhr-polling'])
 
 # Use CORS for regular HTTP routes
