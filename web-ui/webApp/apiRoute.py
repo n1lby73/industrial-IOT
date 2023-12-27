@@ -45,48 +45,25 @@ def verifyEmailRequest():
 
     if request.path in verifyEmailRoute:
 
+        identity = request.headers.get('Authorization')
+
         try:
 
-            identity = request.headers.get('Authorization')
             token = identity[len("Bearer "):]
-            
-            # Check valid token
 
-            try:
-
-                decoded_token = decode_token(token)
-                payload = decoded_token['sub']
-
-                # Check token expiration
-                current_time = datetime.utcnow()
-                token_exp = decoded_token.get('exp')
-                
-                if token_exp and current_time > datetime.utcfromtimestamp(token_exp):
-
-                    return {"error": "token expired"}, 401
-
-            except:
-
-                return {"error":"invalid token"}, 403
-
-            # # Check token expiration
-            # current_time = datetime.utcnow()
-            # token_exp = decoded_token.get('exp')
-            
-            # if token_exp and current_time > datetime.utcfromtimestamp(token_exp):
-
-            #     return {"error": "token expired"}, 401
-
-            email = payload['email']
-            logged_user = users.query.filter_by(email=email).first()
-
-            if logged_user.verifiedEmail != "True":
-
-                return {"error":"email verification not completed"}, 403
-        
         except:
 
             return {"error":"no authorization header in request"}, 400
+
+        decoded_token = decode_token(token)
+        payload = decoded_token['sub']
+
+        email = payload['email']
+        logged_user = users.query.filter_by(email=email).first()
+
+        if logged_user.verifiedEmail != "True":
+
+            return {"error":"email verification not completed"}, 403
 
 @app.before_request
 def verifyUserLogin():
