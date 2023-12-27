@@ -59,10 +59,15 @@ def verifyEmailRequest():
             if logged_user.verifiedEmail != "True":
 
                 return {"error":"email verification not completed"}, 403
+        
+        except jwt.ExpiredSignatureError:
+            return {"error": "token expired"}, 401
+        except jwt.InvalidTokenError:
+            return {"error": "invalid token"}, 401
         except:
 
             return {"error":"no authorization header in request"}, 400
-            
+
 @app.before_request
 def verifyUserLogin():
 
