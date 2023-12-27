@@ -18,96 +18,161 @@ def check_if_token_revoked(jwtToken):
 
         return True
 
+def socket_authorization_and_emitter(listenHandler, data, room):
+
+    try:
+
+        if data is None:
+
+            raise TypeError(f"no data passed on emitting the {listenHandler} event")
+
+        tokenValue = data['authorization']
+            
+        if tokenValue:
+
+            decoded_token = jwt.decode(tokenValue, os.getenv("SECRET_KEY"), algorithms=['HS256'])
+
+            isRevoked = check_if_token_revoked(tokenValue)
+
+            if isRevoked:
+
+                return ({"error":"revoked token"})
+
+            if listenHandler == "role":
+
+                roleDict = decoded_token["sub"]
+
+                userRole = roleDict["role"]
+
+                socketio.emit('roleProcessed',{"role":userRole}, room=room)
+
+            elif listenHandler == "motorState":
+
+                query = esp32.query.filter_by(esp32pin="26").first()
+                state = query.switchState
+
+                socketio.emit('motorStateProcessed',{"state":state}, room=room)
+
+            return ({"success":f"{listenHandler} emitted successfully"}),200
+
+
+        else:
+
+            return ({"error":"invalid data structure passed"}), 400
+
+    except jwt.ExpiredSignatureError:
+
+        return ({"error":"Token has expired"}), 401
+
+    except jwt.InvalidTokenError:
+
+        return ({"error":"Invalid token"}), 401
+
+    except TypeError as e:
+
+        return (f"Error: {e}"), 400
+
+
 # Emitting sockets locations are: 
 # syncEmergencyApi with event emergency
 # updatePinApi with event offline and webUpdate
 # syncHardChanges with event localUpdate
 
 @socketio.on('role')
-def websocket(role=None):
+def websocket(roleData=None):
 
-    try:
-
-        if role is None:
-
-            raise TypeError("no data passed on emitting the role event")
-
-        tokenValue = role['authorization']
-            
-        if tokenValue:
-
-            decoded_token = jwt.decode(tokenValue, os.getenv("SECRET_KEY"), algorithms=['HS256'])
-
-            isRevoked = check_if_token_revoked(tokenValue)
-
-            if isRevoked:
-
-                return ({"error":"revoked token"})
-
-            roleDict = decoded_token["sub"]
-
-            userRole = roleDict["role"]
-
-            socketio.emit('roleProcessed',{"role":userRole}, room=request.sid)
-
-            return ({"success":"role emitted successfully"}),200
-
-        else:
-
-            return ({"error":"invalid data structure passed"}), 400
-
-    except jwt.ExpiredSignatureError:
-
-        return ({"error":"Token has expired"}), 401
-
-    except jwt.InvalidTokenError:
-
-        return ({"error":"Invalid token"}), 401
-
-    except TypeError as e:
-
-        return (f"Error: {e}"), 400
+    socket_authorization_and_emitter("role", roleData, request.sid)
 
 @socketio.on('motorState')
-def websocket(motorState=None):
+def websocket(motorStateData=None):
 
-    try:
+    socket_authorization_and_emitter("motorState", motorStateData, request.sid)
 
-        if motorState is None:
+# @socketio.on('role')
+# def websocket(role=None):
 
-            raise TypeError("no data passed on emitting the motorstate event")
+#     try:
 
-        tokenValue = motorState['authorization']
+#         if role is None:
+
+#             raise TypeError("no data passed on emitting the role event")
+
+#         tokenValue = role['authorization']
             
-        if tokenValue:
+#         if tokenValue:
 
-            decoded_token = jwt.decode(tokenValue, os.getenv("SECRET_KEY"), algorithms=['HS256'])
+#             decoded_token = jwt.decode(tokenValue, os.getenv("SECRET_KEY"), algorithms=['HS256'])
 
-            isRevoked = check_if_token_revoked(tokenValue)
+#             isRevoked = check_if_token_revoked(tokenValue)
 
-            if isRevoked:
+#             if isRevoked:
 
-                return ({"error":"revoked token"})
+#                 return ({"error":"revoked token"})
 
-            query = esp32.query.filter_by(esp32pin="26").first()
-            state = query.switchState
+#             roleDict = decoded_token["sub"]
 
-            socketio.emit('motorStateProcessed',{"state":state}, room=request.sid)
+#             userRole = roleDict["role"]
 
-            return ({"success":"motor state emitted successfully"}),200
+#             socketio.emit('roleProcessed',{"role":userRole}, room=request.sid)
 
-        else:
+#             return ({"success":"role emitted successfully"}),200
 
-            return ({"error":"invalid data structure passed"}), 400
+#         else:
 
-    except jwt.ExpiredSignatureError:
+#             return ({"error":"invalid data structure passed"}), 400
 
-        return ({"error":"Token has expired"}), 401
+#     except jwt.ExpiredSignatureError:
 
-    except jwt.InvalidTokenError:
+#         return ({"error":"Token has expired"}), 401
 
-        return ({"error":"Invalid token"}), 401
+#     except jwt.InvalidTokenError:
 
-    except TypeError as e:
+#         return ({"error":"Invalid token"}), 401
 
-        return (f"Error: {e}"), 400
+#     except TypeError as e:
+
+#         return (f"Error: {e}"), 400
+
+# @socketio.on('motorState')
+# def websocket(motorState=None):
+
+#     try:
+
+#         if motorState is None:
+
+#             raise TypeError("no data passed on emitting the motorstate event")
+
+#         tokenValue = motorState['authorization']
+            
+#         if tokenValue:
+
+#             decoded_token = jwt.decode(tokenValue, os.getenv("SECRET_KEY"), algorithms=['HS256'])
+
+#             isRevoked = check_if_token_revoked(tokenValue)
+
+#             if isRevoked:
+
+#                 return ({"error":"revoked token"})
+
+#             query = esp32.query.filter_by(esp32pin="26").first()
+#             state = query.switchState
+
+#             socketio.emit('motorStateProcessed',{"state":state}, room=request.sid)
+
+#             return ({"success":"motor state emitted successfully"}),200
+
+#         else:
+
+#             return ({"error":"invalid data structure passed"}), 400
+
+#     except jwt.ExpiredSignatureError:
+
+#         return ({"error":"Token has expired"}), 401
+
+#     except jwt.InvalidTokenError:
+
+#         return ({"error":"Invalid token"}), 401
+
+#     except TypeError as e:
+
+#         return (f"Error: {e}"), 400
