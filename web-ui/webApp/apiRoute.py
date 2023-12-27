@@ -52,10 +52,12 @@ def verifyEmailRequest():
             
             # Check valid token
 
-            decoded_token = decode_token(token)
-            payload = decoded_token['sub']
+            try:
 
-            if not payload:
+                decoded_token = decode_token(token)
+                payload = decoded_token['sub']
+
+            except:
 
                 return {"error":"invalid token"}, 403
 
