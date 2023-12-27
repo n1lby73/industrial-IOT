@@ -1,10 +1,22 @@
 from flask_jwt_extended import get_jwt_identity,verify_jwt_in_request
+from webApp.models import token
 from dotenv import load_dotenv
 from webApp import socketio
 from flask import request
 import jwt, os
 
 load_dotenv()
+
+def check_if_token_revoked(jwtToken):
+
+    decoded_token = jwt.decode(jwtToken, os.getenv("SECRET_KEY"), algorithms=['HS256'])
+
+    jti = decoded_token["jti"]
+    Token = token.query.filter_by(jti=jti).first()
+
+    if Token:
+
+        return True
 
 # Emitting sockets locations are: 
 # syncEmergencyApi with event emergency
@@ -17,45 +29,41 @@ def websocket(role=None):
     try:
 
         if role is None:
+
             raise TypeError("Argument 'role' is missing")
 
-        token = role.get('headers')
+        tokenValue = role['authorization']
             
         if token:
 
-            try:
+            decoded_token = jwt.decode(tokenValue, os.getenv("SECRET_KEY"), algorithms=['HS256'])
 
-                headers = token.get("Authorization")
-                tokenValue = headers[len("Bearer "):]
+            isRevoked = check_if_token_revoked(tokenValue)
 
-                decoded_token = jwt.decode(tokenValue, os.getenv("SECRET_KEY"), algorithms=['HS256'])
+            if isRevoked:
 
-                socketio.emit('storeRole',{"role":tokenValue}, room=request.sid)
-            
-            except jwt.ExpiredSignatureError:
-        
-                print("Token has expired")
+                return ({"error":"revoked token"})
 
-            except jwt.InvalidTokenError:
-        
-                print("Invalid token")
+            roleDict = decoded_token["sub"]
 
-            except:
+            userRole = roleDict["role"]
 
-                print("not valid")
+            socketio.emit('roleProcessed',{"role":userRole}, room=request.sid)
+
+            return ({"success":"role emitted successfully"}),200
+
         else:
-            print(role)
-            print ("no token")
+
+            return ({"error":"invalid data structure passed"}), 400
+
+    except jwt.ExpiredSignatureError:
+
+        return ({"error":"Token has expired"}), 401
+
+    except jwt.InvalidTokenError:
+
+        return ({"error":"Invalid token"}), 401
 
     except TypeError as e:
 
-        return (f"error: {e}"), 400
-        print(f"error: {e}")
-    
-    # except jwt.ExpiredSignatureError:
-        
-    #     print("Token has expired.")
-
-    # # except jwt.InvalidTokenError:
-        
-    # #     print("Invalid token.")
+        return (f"Error: {e}"), 400
