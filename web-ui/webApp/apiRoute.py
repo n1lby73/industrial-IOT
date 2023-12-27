@@ -57,13 +57,13 @@ def verifyEmailRequest():
                 decoded_token = decode_token(token)
                 payload = decoded_token['sub']
 
-            # Check token expiration
-            current_time = datetime.utcnow()
-            token_exp = decoded_token.get('exp')
-            
-            if token_exp and current_time > datetime.utcfromtimestamp(token_exp):
+                # Check token expiration
+                current_time = datetime.utcnow()
+                token_exp = decoded_token.get('exp')
+                
+                if token_exp and current_time > datetime.utcfromtimestamp(token_exp):
 
-                return {"error": "token expired"}, 401
+                    return {"error": "token expired"}, 401
 
             except:
 
