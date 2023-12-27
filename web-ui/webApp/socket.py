@@ -30,11 +30,11 @@ def websocket(role=None):
 
         if role is None:
 
-            raise TypeError("Argument 'role' is missing")
+            raise TypeError("no data passed on emitting the role event")
 
         tokenValue = role['authorization']
             
-        if token:
+        if tokenValue:
 
             decoded_token = jwt.decode(tokenValue, os.getenv("SECRET_KEY"), algorithms=['HS256'])
 
