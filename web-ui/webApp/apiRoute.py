@@ -45,19 +45,24 @@ def verifyEmailRequest():
 
     if request.path in verifyEmailRoute:
 
-        identity = request.headers.get('Authorization')
-        token = identity[len("Bearer "):]
-        
-        decoded_token = decode_token(token)
-        payload = decoded_token['sub']
+        try:
 
-        email = payload['email']
-        logged_user = users.query.filter_by(email=email).first()
+            identity = request.headers.get('Authorization')
+            token = identity[len("Bearer "):]
+            
+            decoded_token = decode_token(token)
+            payload = decoded_token['sub']
 
-        if logged_user.verifiedEmail != "True":
+            email = payload['email']
+            logged_user = users.query.filter_by(email=email).first()
 
-            return {"error":"email verification not completed"}, 403
-        
+            if logged_user.verifiedEmail != "True":
+
+                return {"error":"email verification not completed"}, 403
+        except:
+
+            return {"error":"no authorization header in request"}, 400
+            
 @app.before_request
 def verifyUserLogin():
 
