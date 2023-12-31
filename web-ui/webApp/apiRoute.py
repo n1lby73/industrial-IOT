@@ -169,7 +169,7 @@ class updatePinApi(Resource):
 
             socketio.emit("webUpdate", {"stateUpdated": newState})
 
-            return ({"success": "pin updated successfully"}),200
+            return jsonify({"success": "pin updated successfully"}),200
         
         except Exception as e:
 
