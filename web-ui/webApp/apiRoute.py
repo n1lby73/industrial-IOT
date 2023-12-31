@@ -119,7 +119,7 @@ class pinStatusApi(Resource):
 
 # pnon ==> pin name or number
 class updatePinApi(Resource):
-    @jwt_required()
+#    @jwt_required()
     def __init__(self):
 
         self.parser = reqparse.RequestParser()
@@ -128,11 +128,11 @@ class updatePinApi(Resource):
 
     def put(self):
         
-        user = get_jwt_identity()
-        role = user["role"]
+ #       user = get_jwt_identity()
+  #      role = user["role"]
 
-        if role == "user":
-            return {"error":"not authorized"}, 401
+   #     if role == "user":
+    #        return {"error":"not authorized"}, 401
         
         args = self.parser.parse_args()
         pnon = args["pin"]
