@@ -40,5 +40,5 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 
 # Use CORS for regular HTTP routes
 CORS(app, resources={r"/api/*": {"origins": ["*"]}})
-
+CORS(app, resources={r"/api/updatepin": {"origins": "*"}})
 from webApp import routes, apiRoute, socket
