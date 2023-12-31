@@ -126,7 +126,7 @@ class updatePinApi(Resource):
         self.parser.add_argument("pin", required=True)
         self.parser.add_argument("state", required=True)
 
-    def post(self):
+    def put(self):
         
         user = get_jwt_identity()
         role = user["role"]
