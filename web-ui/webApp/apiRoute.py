@@ -106,16 +106,16 @@ class pinStatusApi(Resource):
 
         if status == "0":
 
-            return {"Alert":"Esp is offline. Current state unknown"}
+            return jsonify({"Alert":"Esp is offline. Current state unknown"}), 503
 
         if pin == stato:
             
             query = esp32.query.filter_by(esp32pin=stato).first()
             state = query.switchState
 
-            return ({"motor state": state}), 200
+            return jsonify({"motor state": state}), 200
         
-        return ({"error":"invalid pin"})
+        return jsonify({"error":"invalid pin"}), 400
 
 # pnon ==> pin name or number
 class updatePinApi(Resource):
