@@ -264,7 +264,7 @@ class syncEmergencyApi(Resource):
         value = {"emergency":emergency}
         socketio.emit("emergency", value)
 
-        return ({"success":"broadcast successful"}), 200
+        return jsonify({"success":"broadcast successful"}), 200
         
 class loginApi(Resource):
 
