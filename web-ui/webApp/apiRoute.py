@@ -345,10 +345,10 @@ class registerApi(Resource):
         existingMail = users.query.filter_by(email=email).first()
 
         if existingUserName:
-            return ({"error": "username is already taken"}), 400
+            return jsonify({"error": "username is already taken"}), 400
         
         if existingMail:
-            return ({"error": "email already exist"}), 400
+            return jsonify({"error": "email already exist"}), 400
 
         otp, otpStartTime = genOTP()
 
@@ -365,7 +365,7 @@ class registerApi(Resource):
 
         except:
 
-            return ({"error": "invalid email format"}), 400
+            return jsonify({"error": "invalid email format"}), 400
         
         new_user = users(email=email, username=username, role="user", password=generate_password_hash(password), otp=otp)
         
@@ -374,7 +374,7 @@ class registerApi(Resource):
             db.session.add(new_user)
             db.session.commit()
 
-            return ({
+            return jsonify({
 
                 "success": "new user created and otp sent to mail",
                 "email": email
