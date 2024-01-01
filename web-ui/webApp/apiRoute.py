@@ -348,7 +348,7 @@ class registerApi(Resource):
             return ({"Error": "Username is already taken"}), 400
         
         if existingMail:
-            return ({"Error": "Email already exit"}), 400
+            return ({"Error": "Email already exist"}), 400
 
         otp, otpStartTime = genOTP()
 
