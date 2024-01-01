@@ -284,7 +284,7 @@ class loginApi(Resource):
             user = users.query.filter_by(email=email).first()
             
             if not user or not check_password_hash(user.password, password):
-                return ({"msg": "incorrect credentials"}), 400
+                return jsonify({"msg": "incorrect credentials"}), 400
 
             loggedUser = {"email":email, "username":user.username, "role":user.role, "verified":user.verifiedEmail}
             refresh_token = create_refresh_token(identity=loggedUser)
@@ -292,7 +292,7 @@ class loginApi(Resource):
 
             if user.verifiedEmail != "True":
 
-                return ({"error": "email verification not complete"}), 403
+                return jsonify({"error": "email verification not complete"}), 403
             
             response = jsonify(
 
@@ -314,7 +314,7 @@ class loginApi(Resource):
             db.session.rollback()
             error_message = str(e) 
 
-            return jsonify({"Error": "Could not login", "Details": str(e)})
+            return jsonify({"error": "could not login", "details": str(e)}),500
         
         finally:
 
