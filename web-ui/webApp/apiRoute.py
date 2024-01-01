@@ -234,9 +234,7 @@ class synchardchangesApi(Resource):
 
             db.session.commit()
 
-            value = {"update":status}
-
-            socketio.emit("localUpdate", value)
+            socketio.emit("localUpdate", {"update":status})
 
             return jsonify(success = status)   
              
