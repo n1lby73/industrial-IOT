@@ -222,7 +222,7 @@ class synchardchangesApi(Resource):
 
         if not query:
 
-            return ({"error":"invalid pin entered"}), 400
+            return jsonify({"error":"invalid pin entered"}), 400
         
         state = query.switchState
 
