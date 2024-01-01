@@ -133,7 +133,7 @@ class updatePinApi(Resource):
 
        if role == "user":
 
-        return {"error":"not authorized"}, 401
+        return jsonify({"error":"not authorized"}), 401
         
         args = self.parser.parse_args()
         pnon = args["pin"]
@@ -147,11 +147,11 @@ class updatePinApi(Resource):
 
             if not query:
 
-                return {"error":"invalid pin name or number"}, 400
+                return jsonify({"error":"invalid pin name or number"}), 400
         
         if newState != "1" and newState != "0":
 
-            return {"error":"invalid update value"}, 400
+            return jsonify({"error":"invalid update value"}), 400
         
         onlineState = esp32.query.filter_by(pinName='OS').first()
         status = onlineState.switchState
@@ -160,7 +160,7 @@ class updatePinApi(Resource):
             
             socketio.emit("offline", {"Alert":"Esp is offline. Current state unknown"})
 
-            return {"Alert":"Esp is offline. Current state unknown"}, 503
+            return jsonify({"Alert":"Esp is offline. Current state unknown"}), 503
         
         query.switchState = newState
 
@@ -177,7 +177,7 @@ class updatePinApi(Resource):
             db.session.rollback()
             error_message = str(e) 
 
-            return jsonify({"Error": "Failed to update pin", "Details": str(e)}), 500 
+            return jsonify({"error": "Failed to update pin", "Details": str(e)}), 500 
         
         finally:
 
