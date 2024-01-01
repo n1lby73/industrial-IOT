@@ -202,7 +202,7 @@ class queryApi(Resource):
 
             return jsonify(success = state)
         
-        return ({"error": "invalid pin"}), 404
+        return jsonify({"error": "invalid pin"}), 404
 
 class synchardchangesApi(Resource):
 
