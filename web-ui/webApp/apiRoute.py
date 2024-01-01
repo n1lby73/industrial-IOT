@@ -261,8 +261,7 @@ class syncEmergencyApi(Resource):
         args = self.parser.parse_args()
         emergency = args["emergency"]
 
-        value = {"emergency":emergency}
-        socketio.emit("emergency", value)
+        socketio.emit("emergency", {"emergency":emergency})
 
         return jsonify({"success":"broadcast successful"}), 200
         
