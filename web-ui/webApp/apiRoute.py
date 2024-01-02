@@ -736,7 +736,7 @@ class resetOutTokenApi(Resource):
 
         if 'access_token_cookie' in request.cookies:   
 
-            return ({"Error": "User is logged in"}), 401
+            return jsonify({"error": "user is logged in"}), 401
         
         args = self.parser.parse_args()
         token = args["token"]
@@ -751,11 +751,11 @@ class resetOutTokenApi(Resource):
 
         if not verifyUser:
                 
-            return ({"Error":"Invalid Token"})
+            return jsonify({"error":"invalid token"}), 400
         
         if verifyUser.token != token:
 
-            return ({"Error":"Invalid Token"})
+            return jsonify({"error":"invalid token"}), 400
             
         currentTime = time.time()
 
@@ -767,14 +767,14 @@ class resetOutTokenApi(Resource):
 
                 db.session.commit()
 
-                return ({"error": "Expired token"}),400
+                return jsonify({"error": "Expired token"}),400
             
             except Exception as e:
 
                 db.session.rollback()
                 error_message = str(e) 
 
-                return jsonify({"Error": "Failed to trash expired token", "Details": str(e)}), 500 
+                return jsonify({"error": "failed to trash expired token", "details": str(e)}), 500 
         
             finally:
 
@@ -788,14 +788,14 @@ class resetOutTokenApi(Resource):
 
             db.session.commit()
 
-            return ({"success":"Password updated successfully"})
+            return jsonify({"success":"password updated successfully"}), 200
         
         except Exception as e:
 
             db.session.rollback()
             error_message = str(e) 
 
-            return jsonify({"Error": "Password update unsuccessfull", "Details": str(e)}), 500 
+            return jsonify({"error": "password update unsuccessfull", "details": str(e)}), 500 
         
         finally:
 
