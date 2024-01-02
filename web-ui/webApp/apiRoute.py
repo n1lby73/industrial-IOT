@@ -647,7 +647,7 @@ class resetPasswordApi(Resource):
 
         if not logged_user:
 
-            return ({"Error":"Incorrect email"})
+            return jsonify({"error":"incorrect email"}), 400
         
         global genOtpStartTime
 
@@ -672,16 +672,16 @@ class resetPasswordApi(Resource):
 
             except:
 
-                return ({"Error": "Invalid email format"})
+                return jsonify({"error": "invalid email format"}), 400
 
-            return ({"success": "Token sent to email"})
+            return jsonify({"success": "token sent to email"}), 200
         
         except Exception as e:
 
             db.session.rollback()
             error_message = str(e) 
 
-            return jsonify({"Error": "Failed to store token", "Details": str(e)}), 500 
+            return jsonify({"error": "failed to store token", "details": str(e)}), 500 
         
         finally:
 
@@ -703,7 +703,7 @@ class resetPasswordApi(Resource):
 
         if not check_password_hash(logged_user.password, oldPass):
 
-            return ({"Error":"Incorrect old password, logout to reset password or try again"}), 400
+            return jsonify({"error":"incorrect old password, logout to reset password or try again"}), 400
         
         logged_user.password = generate_password_hash(newPass)
 
@@ -716,13 +716,13 @@ class resetPasswordApi(Resource):
             db.session.rollback()
             error_message = str(e) 
 
-            return jsonify({"Error": "Failed to update password", "Details": str(e)}), 500 
+            return jsonify({"error": "failed to update password", "details": str(e)}), 500 
         
         finally:
 
             db.session.close()
 
-        return ({"success": "Password updated successfully"})
+        return ({"success": "password updated successfully"})
     
 class resetOutTokenApi(Resource):
 
