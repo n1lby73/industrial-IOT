@@ -722,7 +722,7 @@ class resetPasswordApi(Resource):
 
             db.session.close()
 
-        return ({"success": "password updated successfully"})
+        return jsonify({"success": "password updated successfully"}), 200
     
 class resetOutTokenApi(Resource):
 
