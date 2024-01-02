@@ -284,7 +284,7 @@ class loginApi(Resource):
             user = users.query.filter_by(email=email).first()
             
             if not user or not check_password_hash(user.password, password):
-                return jsonify({"msg": "incorrect credentials"}), 400
+                return jsonify({"error": "incorrect credentials"}), 400
 
             loggedUser = {"email":email, "username":user.username, "role":user.role, "verified":user.verifiedEmail}
             refresh_token = create_refresh_token(identity=loggedUser)
