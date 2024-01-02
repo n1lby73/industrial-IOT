@@ -827,7 +827,7 @@ class logOutApi(Resource):
             db.session.rollback()
             error_message = str(e) 
 
-            return jsonify({"Error": "logout unsuccesful", "Details": str(e)}), 500 
+            return jsonify({"error": "logout unsuccesful", "details": str(e)}), 500 
         
         finally:
 
