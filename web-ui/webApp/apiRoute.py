@@ -53,7 +53,7 @@ def verifyEmailRequest():
 
         except:
 
-            return {"error":"no authorization header in request"}, 400
+            return jsonify({"error":"no authorization header in request"}), 400
 
         decoded_token = decode_token(token)
         payload = decoded_token['sub']
@@ -63,7 +63,7 @@ def verifyEmailRequest():
 
         if logged_user.verifiedEmail != "True":
 
-            return {"error":"email verification not completed"}, 403
+            return jsonify({"error":"email verification not completed"}), 403
 
 @app.before_request
 def verifyUserLogin():
@@ -72,11 +72,11 @@ def verifyUserLogin():
 
         if 'access_token_cookie' in request.cookies and request.method != "PUT":   
 
-            return ({"Error": "User is logged in, use 'PUT' method."}), 401
+            return jsonify({"Error": "User is logged in, use 'PUT' method."}), 401
         
         if 'access_token_cookie' not in request.cookies and request.method != "GET":
 
-            return ({"Error": "User is logged out, use 'GET' method."}), 401
+            return jsonify({"Error": "User is logged out, use 'GET' method."}), 401
      
 class refreshApi(Resource):
     @jwt_required(refresh=True)
