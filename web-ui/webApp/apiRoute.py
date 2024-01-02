@@ -767,7 +767,7 @@ class resetOutTokenApi(Resource):
 
                 db.session.commit()
 
-                return jsonify({"error": "Expired token"}),400
+                return jsonify({"error": "expired token"}),400
             
             except Exception as e:
 
