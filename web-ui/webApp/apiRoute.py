@@ -503,7 +503,7 @@ class verifyEmailApi(Resource):
 
                 db.session.commit()
                     
-                return ({
+                return jsonify({
 
                     "success": "email update completed and otp sent to new email",
                     "email": updatedEmail
@@ -521,7 +521,7 @@ class verifyEmailApi(Resource):
 
                 db.session.close()
                     
-        return ({"Error":"Invalid old email"}), 400       
+        return jsonify({"error":"invalid old email"}), 400       
 
     def get(self):
 
