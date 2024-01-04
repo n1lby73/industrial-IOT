@@ -133,7 +133,7 @@ class updatePinApi(Resource):
 
        if role == "user":
 
-        return jsonify({"error":"not authorized"}), 401
+        return ({"error":"not authorized"}), 401
         
         args = self.parser.parse_args()
         pnon = args["pin"]
@@ -147,7 +147,7 @@ class updatePinApi(Resource):
 
             if not query:
 
-                return jsonify({"error":"invalid pin name or number"}), 400
+                return ({"error":"invalid pin name or number"}), 400
         
         if newState != "1" and newState != "0":
 
@@ -160,7 +160,7 @@ class updatePinApi(Resource):
             
             socketio.emit("offline", {"Alert":"Esp is offline. Current state unknown"})
 
-            return jsonify({"Alert":"Esp is offline. Current state unknown"}), 503
+            return ({"Alert":"Esp is offline. Current state unknown"}), 503
         
         query.switchState = newState
 
@@ -170,14 +170,14 @@ class updatePinApi(Resource):
 
             socketio.emit("webUpdate", {"stateUpdated": newState})
 
-            return jsonify({"success": "pin updated successfully"}),200
+            return ({"success": "pin updated successfully"}),200
         
         except Exception as e:
 
             db.session.rollback()
             error_message = str(e) 
 
-            return jsonify({"error": "Failed to update pin", "Details": str(e)}), 500 
+            return ({"error": "Failed to update pin", "Details": str(e)}), 500 
         
         finally:
 
@@ -284,7 +284,7 @@ class loginApi(Resource):
             user = users.query.filter_by(email=email).first()
             
             if not user or not check_password_hash(user.password, password):
-                return jsonify({"error": "incorrect credentials"}), 400
+                return ({"error": "incorrect credentials"}), 400
 
             loggedUser = {"email":email, "username":user.username, "role":user.role, "verified":user.verifiedEmail}
             refresh_token = create_refresh_token(identity=loggedUser)
@@ -292,7 +292,7 @@ class loginApi(Resource):
 
             if user.verifiedEmail != "True":
 
-                return jsonify({"error": "email verification not complete"}), 403
+                return ({"error": "email verification not complete"}), 403
             
             response = jsonify(
 
@@ -314,7 +314,7 @@ class loginApi(Resource):
             db.session.rollback()
             error_message = str(e) 
 
-            return jsonify({"error": "could not login", "details": str(e)}),500
+            return ({"error": "could not login", "details": str(e)}),500
         
         finally:
 
