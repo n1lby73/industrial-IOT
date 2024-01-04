@@ -125,15 +125,15 @@ class updatePinApi(Resource):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument("pin", required=True)
         self.parser.add_argument("state", required=True)
-
+`1              `
     def put(self):
         
-    #    user = get_jwt_identity()
-    #    role = user["role"]
+       user = get_jwt_identity()
+       role = user["role"]
 
-    #    if role == "user":
+       if role == "user":
 
-    #     return ({"error":"not authorized"}), 401
+        return ({"error":"not authorized"}), 401
         
         args = self.parser.parse_args()
         pnon = args["pin"]
@@ -151,7 +151,7 @@ class updatePinApi(Resource):
         
         if newState != "1" and newState != "0":
 
-            return jsonify({"error":"invalid update value"}), 400
+            return ({"error":"invalid update value"}), 400
         
         onlineState = esp32.query.filter_by(pinName='OS').first()
         status = onlineState.switchState
