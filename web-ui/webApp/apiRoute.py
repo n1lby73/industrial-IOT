@@ -53,7 +53,7 @@ def verifyEmailRequest():
 
         except:
 
-            return jsonify({"error":"no authorization header in request"}), 400
+            return ({"error":"no authorization header in request"}), 400
 
         decoded_token = decode_token(token)
         payload = decoded_token['sub']
@@ -63,7 +63,7 @@ def verifyEmailRequest():
 
         if logged_user.verifiedEmail != "True":
 
-            return jsonify({"error":"email verification not completed"}), 403
+            return ({"error":"email verification not completed"}), 403
 
 @app.before_request
 def verifyUserLogin():
@@ -128,12 +128,12 @@ class updatePinApi(Resource):
 
     def put(self):
         
-       user = get_jwt_identity()
-       role = user["role"]
+    #    user = get_jwt_identity()
+    #    role = user["role"]
 
-       if role == "user":
+    #    if role == "user":
 
-        return ({"error":"not authorized"}), 401
+    #     return ({"error":"not authorized"}), 401
         
         args = self.parser.parse_args()
         pnon = args["pin"]
