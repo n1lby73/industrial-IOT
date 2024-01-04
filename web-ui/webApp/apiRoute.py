@@ -323,6 +323,7 @@ class loginApi(Resource):
 class registerApi(Resource):
 
     # global genOtpStartTime
+    # removed jsonify from all response in this route as it leads to server error
 
     def __init__(self):
 
@@ -390,6 +391,9 @@ class registerApi(Resource):
             db.session.close()
 
 class verifyEmailApi(Resource):
+
+   # removed jsonify
+
     def __init__(self):
 
         self.parser = reqparse.RequestParser()
@@ -407,13 +411,17 @@ class verifyEmailApi(Resource):
 
         logged_user = users.query.filter_by(email=email).first()
 
+        if not logged_user:
+
+            return ({"error": "email does not exist"}), 400
+
         if logged_user.verifiedEmail == "True":
 
-            return jsonify({"alert":"email verification already completed"}), 409
+            return ({"alert":"email verification already completed"}), 409
 
         if logged_user.otp != user_otp:
 
-            return jsonify({"error": "invalid otp entered"}), 400
+            return ({"error": "invalid otp entered"}), 400
         
         currentTime = time.time()
 
@@ -425,14 +433,14 @@ class verifyEmailApi(Resource):
 
                 db.session.commit()
 
-                return jsonify({"error": "expired otp, request for a new one"}), 400
+                return ({"error": "expired otp, request for a new one"}), 400
             
             except Exception as e:
 
                 db.session.rollback()
                 error_message = str(e) 
 
-                return jsonify({"error": "failed to update db", "details": str(e)}), 500 
+                return ({"error": "failed to update db", "details": str(e)}), 500 
         
             finally:
 
@@ -447,14 +455,14 @@ class verifyEmailApi(Resource):
 
             db.session.commit()
 
-            return jsonify({"success": "email verified successfully"}), 200
+            return ({"success": "email verified successfully"}), 200
         
         except Exception as e:
 
             db.session.rollback()
             error_message = str(e) 
 
-            return jsonify({"error": "verification unsuccessfull", "Details": str(e)}), 500 
+            return ({"error": "verification unsuccessfull", "Details": str(e)}), 500 
         
         finally:
 
@@ -477,7 +485,7 @@ class verifyEmailApi(Resource):
 
         if confirmUpdatedEmail:
 
-            return jsonify({"error": "email already exist, login instead"}), 409
+            return ({"error": "email already exist, login instead"}), 409
         
         if logged_user:
 
@@ -494,7 +502,7 @@ class verifyEmailApi(Resource):
 
             except:
 
-                return jsonify({"Error": "Invalid email format"}), 400
+                return ({"Error": "Invalid email format"}), 400
 
             logged_user.otp = otp
             logged_user.email = updatedEmail
@@ -503,7 +511,7 @@ class verifyEmailApi(Resource):
 
                 db.session.commit()
                     
-                return jsonify({
+                return ({
 
                     "success": "email update completed and otp sent to new email",
                     "email": updatedEmail
@@ -515,7 +523,7 @@ class verifyEmailApi(Resource):
                 db.session.rollback()
                 error_message = str(e) 
 
-                return jsonify({"error": "update unsuccessfull", "details": str(e)}), 500 
+                return ({"error": "update unsuccessfull", "details": str(e)}), 500 
         
             finally:
 
@@ -538,7 +546,7 @@ class verifyEmailApi(Resource):
 
             if logged_user.verifiedEmail == "True":
 
-                return jsonify({"alert":"email verification already completed"}), 409
+                return ({"alert":"email verification already completed"}), 409
             
             otp, otpStartTime = genOTP()
 
@@ -553,21 +561,21 @@ class verifyEmailApi(Resource):
 
             except:
 
-                return jsonify({"error": "invalid email format"}), 400
+                return ({"error": "invalid email format"}), 400
 
             logged_user.otp = otp
 
             try:
                 db.session.commit()
 
-                return jsonify({"success": "otp sent to mail"}), 200
+                return ({"success": "otp sent to mail"}), 200
             
             except Exception as e:
 
                 db.session.rollback()
                 error_message = str(e) 
 
-                return jsonify({"error": "could not update db", "details": str(e)}), 500 
+                return ({"error": "could not update db", "details": str(e)}), 500 
         
             finally:
 
@@ -577,7 +585,7 @@ class verifyEmailApi(Resource):
 
             error_message = str(e) 
 
-            return jsonify({"error": "OTP generation failed", "details": str(e)}), 500
+            return ({"error": "OTP generation failed", "details": str(e)}), 500
     
 class genOtpApi(Resource):
     @jwt_required()
