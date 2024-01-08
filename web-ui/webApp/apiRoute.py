@@ -20,15 +20,15 @@ trackLogin = ['/api/resetpass', '/api/resetpass/']
 
 @jwt.unauthorized_loader
 def handle_unauthorized(callback):
-    return jsonify({"error": "Missing Authorization Header"}), 401
+    return ({"error": "Missing Authorization Header"}), 401
 
 @jwt.expired_token_loader
 def my_expired_token_callback(jwt_header, jwt_payload):
-    return jsonify({"message": "expired token"}), 401
+    return ({"message": "expired token"}), 401
 
 @jwt.invalid_token_loader
 def handle_invalid(error):
-    return jsonify({"message": "invalid token",
+    return ({"message": "invalid token",
                     "error":error}), 401    
 
 @jwt.token_in_blocklist_loader
