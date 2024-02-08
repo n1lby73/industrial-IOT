@@ -17,7 +17,7 @@ int pbStateOld;
 int pbStateNew;
 int localMotorState;
 int motorState;
-int globalState;
+// int globalState;
 
 #define ssid "esp8266"
 #define password "forTheLoveOfEmbededSystem"
