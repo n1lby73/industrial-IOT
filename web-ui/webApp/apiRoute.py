@@ -679,7 +679,7 @@ class resetPasswordApi(Resource):
 
             except:
 
-                return jsonify({"error": "invalid email format"}), 400
+                return ({"error": "invalid email format"}), 400
 
             return ({"success": "token sent to email"}), 200
         
@@ -688,7 +688,7 @@ class resetPasswordApi(Resource):
             db.session.rollback()
             error_message = str(e) 
 
-            return jsonify({"error": "failed to store token", "details": str(e)}), 500 
+            return ({"error": "failed to store token", "details": str(e)}), 500 
         
         finally:
 
