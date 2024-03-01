@@ -357,7 +357,7 @@ class registerApi(Resource):
         msg.html = render_template("emailVerification.html", otp=otp)
 
         try:
-            print ("here")
+
             mail.send(msg)
 
         except:
